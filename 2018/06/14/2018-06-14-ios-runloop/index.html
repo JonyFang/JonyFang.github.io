@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/tree/4.0.0-rc.2'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+  <title>RunLoop 梳理 - JonyFang</title>
+  
+    <meta name="keywords" content="iOS,底层原理">
+  
+
+  
+    <meta name="description" content="RunLoop 是 iOS 比较的核心之一，本篇用于梳理 RunLoop 相关的概念和底层实现。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+    
+      <meta name='theme-color' content='#FFFFFF'>
+    
+      <meta name='msapplication-TileColor' content='#1BC3FB'>
+    
+      <meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>
+    
+  
+
+  <!-- link -->
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/css/all.min.css">
+
+  
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  
+
+  <!-- import link -->
+  
+  
+  <link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>
+  <link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>
+  <link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>
+  <link rel='mask-icon' color='#1BC3FB' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/safari-pinned-tab.svg'>
+  <link rel='manifest' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/site.webmanifest'>
+  
+
+  
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+</head>
+
+<body>
+  <header class="l_header auto shadow blur" style='opacity: 0' >
+  <div class='container'>
+  <div class='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a class="s-comment fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fas fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li>
+          <a class="s-menu fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+		</div>
+	</div>
+  </div>
+</header>
+
+  <div class="l_body">
+    <div class="l_cover">
+
+  
+  
+      <div class='cover-wrapper post dock' style="display: none;">
+        
+          <div class='cover-bg lazyload placeholder' data-bg="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/05174de636d75be2f17c.jpg/lbzFIp65ZiQETn8.jpg"></div>
+        
+        <div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Jony's Blog</p>
+    
+    
+      <p class="subtitle">牢记梦想，自然生长</p>
+    
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/"
+              
+              
+              id="home">
+              <i class='fas fa-rss fa-fw'></i><p>博文</p>
+            </a>
+          
+            <a href="/categories/"
+              
+              
+              id="categories">
+              <i class='fas fa-folder-open fa-fw'></i><p>分类</p>
+            </a>
+          
+            <a href="/archives/"
+              
+              
+              id="archives">
+              <i class='fas fa-archive fa-fw'></i><p>归档</p>
+            </a>
+          
+            <a href="/about/"
+              
+              
+              id="about">
+              <i class='fas fa-info-circle fa-fw'></i><p>关于</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div class="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+  
+
+</div>
+
+    <div class='safearea'>
+      <div class='body-wrapper' id="pjax-container">
+        
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+
+
+<div id="pjax-data" style="display: none">
+  <div id="pjax-ispage">true</div>
+  <div id="pjax-pageTitle">RunLoop 梳理</div>
+  <div id="pjax-enable-cover">true</div>
+  <div id="pjax-comment-path"></div>
+  <div id="pjax-comment-placeholder"></div>
+</div>
+
+
+<script>
+  // 处理封面 此时 jquery 还没加载
+  if ("none" == "none") { // 移除封面
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "none";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.add("show");
+  } else {
+    if ("none" == "half") { // 半屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'half');
+      document.getElementsByClassName('scroll-down')[0].style.display = "none";
+    } else if ("none" == "full") { // 全屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'full');
+      document.getElementsByClassName('scroll-down')[0].style.display = "";
+    }
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.remove("show");
+  }
+</script>
+
+
+        
+        
+
+<div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title">
+        RunLoop 梳理
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/a764dcce0b25a615c8ac.jpg/PgrSQHZ6fBidbRF.jpg">
+    <p>JonyFang</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/iOS/">iOS</a><span class="sep"></span><a class="category-link" href="/categories/%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/">底层原理</a><span class="sep"></span><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018年6月14日</p>
+  </a>
+</div>
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <p>RunLoop 是 iOS 比较的核心之一，本篇用于梳理 RunLoop 相关的概念和底层实现。</p>
+<a id="more"></a>
+
+<h2 id="什么是-RunLoop？"><a href="#什么是-RunLoop？" class="headerlink" title="什么是 RunLoop？"></a>什么是 RunLoop？</h2><p>对于一个线程，一般情况下一次只执行一个任务，如果任务执行完成线程也会立刻退出。而对于一个 App，我们希望的是，即使 App 内没有任何的任务需要线程去处理了，但不能够让这些线程退出。即不能退出应用。这时就需要一种机制既能让线程能随时处理事件，且在处理完成后不退出。比如主线程，在我们启动应用之后就会一直存在，当有交互发生时，对应去处理相关的事件。RunLoop 就很好了满足了这个需求，它能够在没有收到消息的时候让线程休眠以避免资源浪费，当有消息来时会立刻唤醒线程处理。</p>
+<p>这也是我们需要 RunLoop 的原因。</p>
+<h2 id="RunLoop-与线程之间的关系"><a href="#RunLoop-与线程之间的关系" class="headerlink" title="RunLoop 与线程之间的关系"></a>RunLoop 与线程之间的关系</h2><p>苹果不允许直接创建 RunLoop，它提供了两个自动获取的函数：<code>CFRunLoopGetMain()</code> 和 <code>CFRunLoopGetCurrent()</code>。CFRunLoop 是基于 pthread 来管理的。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 全局的 Dictionary，</span></span><br><span class="line"><span class="comment">// key 是 pthread_t， value 是 CFRunLoopRef</span></span><br><span class="line"><span class="keyword">static</span> CFMutableDictionaryRef loopsDic;</span><br><span class="line"><span class="comment">// 访问 loopsDic 时的锁</span></span><br><span class="line"><span class="keyword">static</span> CFSpinLock_t loopsLock;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 获取一个 pthread 对应的 RunLoop。</span></span><br><span class="line">CFRunLoopRef _CFRunLoopGet(<span class="keyword">pthread_t</span> thread) &#123;</span><br><span class="line">    OSSpinLockLock(&amp;loopsLock);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (!loopsDic) &#123;</span><br><span class="line">        <span class="comment">// 第一次进入时，初始化全局 Dic，并先为主线程创建一个 RunLoop。</span></span><br><span class="line">        loopsDic = CFDictionaryCreateMutable();</span><br><span class="line">        CFRunLoopRef mainLoop = _CFRunLoopCreate();</span><br><span class="line">        CFDictionarySetValue(loopsDic, pthread_main_thread_np(), mainLoop);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 直接从 Dictionary 里获取。</span></span><br><span class="line">    CFRunLoopRef loop = CFDictionaryGetValue(loopsDic, thread);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (!loop) &#123;</span><br><span class="line">        <span class="comment">// 取不到时，创建一个</span></span><br><span class="line">        loop = _CFRunLoopCreate();</span><br><span class="line">        CFDictionarySetValue(loopsDic, thread, loop);</span><br><span class="line">        <span class="comment">// 注册一个回调，当线程销毁时，同时销毁其对应的 RunLoop。</span></span><br><span class="line">        _CFSetTSD(..., thread, loop, __CFFinalizeRunLoop);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    OSSpinLockUnLock(&amp;loopsLock);</span><br><span class="line">    <span class="keyword">return</span> loop;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function">CFRunLoopRef <span class="title">CFRunLoopGetMain</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> _CFRunLoopGet(pthread_main_thread_np());</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function">CFRunLoopRef <span class="title">CFRunLoopGetCurrent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> _CFRunLoopGet(pthread_self());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，线程和 RunLoop 之间是一一对应的，其关系是保存在一个全局的 Dictionary 里。第一次进入时，初始化全局 Dictionary，并先为主线程创建一个 RunLoop，将关系保存在 Dictionary 中。线程结束时销毁 RunLoop。我们只能在一个线程的内部获取其 RunLoop（主线程除外）。</p>
+<h2 id="NSRunLoop-和-CFRunLoopRef-的关系"><a href="#NSRunLoop-和-CFRunLoopRef-的关系" class="headerlink" title="NSRunLoop 和 CFRunLoopRef 的关系"></a>NSRunLoop 和 CFRunLoopRef 的关系</h2><p>NSRunLoop 是基于 CFRunLoopFef 封装。CGRunLoopRef 属于 CoreFoundation 框架，提供的是纯 c 函数的 API，这些 API 是线程安全的。NSRunLoop 提供的是面向对象的 API，这些 API 不是线程安全的。</p>
+<h2 id="RunLoop-的内部实现逻辑"><a href="#RunLoop-的内部实现逻辑" class="headerlink" title="RunLoop 的内部实现逻辑"></a>RunLoop 的内部实现逻辑</h2><p>RunLoop 的内部实现逻辑大致如下：</p>
+<p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/ce7309d48082a4247e3f.png/sMkc5hvuyQe23bO.png" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/ce7309d48082a4247e3f.png/sMkc5hvuyQe23bO.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<p>内部实现逻辑的代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 用 DefaultMode 启动</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CFRunLoopRun</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    CFRunLoopRunSpecific(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, <span class="number">1.0e10</span>, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 用指定的 Mode 启动，允许设置 RunLoop 超时时间</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">CFRunLoopRunInMode</span><span class="params">(CFStringRef modeName, CFTimeInterval seconds, Boolean stopAfterHandle)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> CFRunLoopRunSpecific(CFRunLoopGetCurrent(), modeName, seconds, returnAfterSourceHandled);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// RunLoop 的实现</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">CFRunLoopRunSpecific</span><span class="params">(runloop, modeName, seconds, stopAfterHandle)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 首先根据 modeName 找到对应 mode</span></span><br><span class="line">    CFRunLoopModeRef currentMode = __CFRunLoopFindMode(runloop, modeName, <span class="literal">false</span>);</span><br><span class="line">    <span class="comment">// 如果 mode 里没有 source/timer/observer, 直接返回。</span></span><br><span class="line">    <span class="keyword">if</span> (__CFRunLoopModeIsEmpty(currentMode)) <span class="keyword">return</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 1. 通知 Observers: RunLoop 即将进入 loop。</span></span><br><span class="line">    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopEntry);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 内部函数，进入loop</span></span><br><span class="line">    __CFRunLoopRun(runloop, currentMode, seconds, returnAfterSourceHandled) &#123;</span><br><span class="line">        </span><br><span class="line">        Boolean sourceHandledThisLoop = NO;</span><br><span class="line">        <span class="keyword">int</span> retVal = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line"> </span><br><span class="line">            <span class="comment">// 2. 通知 Observers: RunLoop 即将触发 Timer 回调。</span></span><br><span class="line">            __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeTimers);</span><br><span class="line">            <span class="comment">// 3. 通知 Observers: RunLoop 即将触发 Source0 (非 port) 回调。</span></span><br><span class="line">            __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeSources);</span><br><span class="line">            <span class="comment">// 执行被加入的 block</span></span><br><span class="line">            __CFRunLoopDoBlocks(runloop, currentMode);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 4. RunLoop 触发 Source0 (非 port) 回调。</span></span><br><span class="line">            sourceHandledThisLoop = __CFRunLoopDoSources0(runloop, currentMode, stopAfterHandle);</span><br><span class="line">            <span class="comment">// 执行被加入的 block</span></span><br><span class="line">            __CFRunLoopDoBlocks(runloop, currentMode);</span><br><span class="line"> </span><br><span class="line">            <span class="comment">// 5. 如果有 Source1 (基于 port) 处于 ready 状态，直接处理这个 Source1 然后跳转去处理消息。</span></span><br><span class="line">            <span class="keyword">if</span> (__Source0DidDispatchPortLastTime) &#123;</span><br><span class="line">                Boolean hasMsg = __CFRunLoopServiceMachPort(dispatchPort, &amp;msg)</span><br><span class="line">                <span class="keyword">if</span> (hasMsg) <span class="keyword">goto</span> handle_msg;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 通知 Observers: RunLoop 的线程即将进入休眠(sleep)。</span></span><br><span class="line">            <span class="keyword">if</span> (!sourceHandledThisLoop) &#123;</span><br><span class="line">                __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeWaiting);</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 7. 调用 mach_msg 等待接受 mach_port 的消息。线程将进入休眠, 直到被下面某一个事件唤醒。</span></span><br><span class="line">            <span class="comment">// • 一个基于 port 的 Source 的事件。</span></span><br><span class="line">            <span class="comment">// • 一个 Timer 到时间了</span></span><br><span class="line">            <span class="comment">// • RunLoop 自身的超时时间到了</span></span><br><span class="line">            <span class="comment">// • 被其他什么调用者手动唤醒</span></span><br><span class="line">            __CFRunLoopServiceMachPort(waitSet, &amp;msg, <span class="keyword">sizeof</span>(msg_buffer), &amp;livePort) &#123;</span><br><span class="line">                mach_msg(msg, MACH_RCV_MSG, port); <span class="comment">// thread wait for receive msg</span></span><br><span class="line">            &#125;</span><br><span class="line"> </span><br><span class="line">            <span class="comment">// 8. 通知 Observers: RunLoop 的线程刚刚被唤醒了。</span></span><br><span class="line">            __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopAfterWaiting);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 收到消息，处理消息。</span></span><br><span class="line">            handle_msg:</span><br><span class="line"> </span><br><span class="line">            <span class="comment">// 9.1 如果一个 Timer 到时间了，触发这个Timer的回调。</span></span><br><span class="line">            <span class="keyword">if</span> (msg_is_timer) &#123;</span><br><span class="line">                __CFRunLoopDoTimers(runloop, currentMode, mach_absolute_time())</span><br><span class="line">            &#125; </span><br><span class="line"> </span><br><span class="line">            <span class="comment">// 9.2 如果有 dispatch 到 main_queue 的 block，执行 block。</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (msg_is_dispatch) &#123;</span><br><span class="line">                __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__(msg);</span><br><span class="line">            &#125; </span><br><span class="line"> </span><br><span class="line">            <span class="comment">// 9.3 如果一个 Source1 (基于 port) 发出事件了，处理这个事件</span></span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                CFRunLoopSourceRef source1 = __CFRunLoopModeFindSourceForMachPort(runloop, currentMode, livePort);</span><br><span class="line">                sourceHandledThisLoop = __CFRunLoopDoSource1(runloop, currentMode, source1, msg);</span><br><span class="line">                <span class="keyword">if</span> (sourceHandledThisLoop) &#123;</span><br><span class="line">                    mach_msg(reply, MACH_SEND_MSG, reply);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 执行加入到 Loop 的 block</span></span><br><span class="line">            __CFRunLoopDoBlocks(runloop, currentMode);</span><br><span class="line">            </span><br><span class="line"> </span><br><span class="line">            <span class="keyword">if</span> (sourceHandledThisLoop &amp;&amp; stopAfterHandle) &#123;</span><br><span class="line">                <span class="comment">// 进入 loop 时参数说处理完事件就返回。</span></span><br><span class="line">                retVal = kCFRunLoopRunHandledSource;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (timeout) &#123;</span><br><span class="line">                <span class="comment">// 超出传入参数标记的超时时间了</span></span><br><span class="line">                retVal = kCFRunLoopRunTimedOut;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (__CFRunLoopIsStopped(runloop)) &#123;</span><br><span class="line">                <span class="comment">// 被外部调用者强制停止了</span></span><br><span class="line">                retVal = kCFRunLoopRunStopped;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (__CFRunLoopModeIsEmpty(runloop, currentMode)) &#123;</span><br><span class="line">                <span class="comment">// source/timer/observer 一个都没有了</span></span><br><span class="line">                retVal = kCFRunLoopRunFinished;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 如果没超时，mode 里没空，loop 也没被停止，那继续 loop。</span></span><br><span class="line">        &#125; <span class="keyword">while</span> (retVal == <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 10. 通知 Observers: RunLoop 即将退出。</span></span><br><span class="line">    __CFRunLoopDoObservers(rl, currentMode, kCFRunLoopExit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RunLoop-的-Mode"><a href="#RunLoop-的-Mode" class="headerlink" title="RunLoop 的 Mode"></a>RunLoop 的 Mode</h2><p>开发过程中常遇到的一个场景是，在我们写 NSTimer 时为了避免滑动事件影响 NSTimer 的回调，我们通常会把 mode 置为 <code>NSRunLoopCommonModes</code>。</p>
+<p>这里的 <code>NSRunLoopCommonModes</code> 是什么？</p>
+<p>先看下 <code>CFRunLoopMode</code> 和 <code>CFRunLoop</code> 的结构：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">CFRunLoopMode</span> &#123;</span></span><br><span class="line">    CFStringRef _name;            <span class="comment">// Mode Name, 例如 @"kCFRunLoopDefaultMode"</span></span><br><span class="line">    CFMutableSetRef _sources0;    <span class="comment">// Set</span></span><br><span class="line">    CFMutableSetRef _sources1;    <span class="comment">// Set</span></span><br><span class="line">    CFMutableArrayRef _observers; <span class="comment">// Array</span></span><br><span class="line">    CFMutableArrayRef _timers;    <span class="comment">// Array</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">CFRunLoop</span> &#123;</span></span><br><span class="line">    CFMutableSetRef _commonModes;     <span class="comment">// Set</span></span><br><span class="line">    CFMutableSetRef _commonModeItems; <span class="comment">// Set&lt;Source/Observer/Timer&gt;</span></span><br><span class="line">    CFRunLoopModeRef _currentMode;    <span class="comment">// Current Runloop Mode</span></span><br><span class="line">    CFMutableSetRef _modes;           <span class="comment">// Set</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>主线程的 RunLoop 里有两种 Mode：<code>kCFRunLoopDefaultMode</code> 和 <code>UITrackingRunLoopMode</code>。这两种 Mode 都被标记为<code>Common</code>属性。App 平常所处的 mode 是 <code>kCFRunLoopDefaultMode</code>；当有滑动事件触发时，RunLoop 会切换 mode 到 <code>UITrackingRunLoopMode</code>。</p>
+<p>前面提到创建一个 Timer，默认会被加到 DefaultMode，正常情况下 Timer 会得到重复回调。但如果此时滑动一个 ScrollView，RunLoop 就会将 mode 切换为 TrackingRunLoopMode，这时 Timer 就不会被正常的回调。当然，此时 Timer 也不会影响到滑动操作。</p>
+<p>到这里，我们大概知道了 RunLoop 系统预置的 model 有这几种：</p>
+<ul>
+<li>NSDefaultRunLoopMode(kCFRunLoopDefaultMode)：默认模式</li>
+<li>UITrackingRunLoopMode：滑动模式</li>
+<li>NSRunLoopCommonModes：通用模式，无论处于滑动或默认状态都能够响应实践</li>
+</ul>
+<h3 id="CommonModes"><a href="#CommonModes" class="headerlink" title="CommonModes"></a>CommonModes</h3><p>一个 Mode 可以通过将其 ModeName 添加到 RunLoop 的 <code>commonModes</code> 中，来将自己设置为 <code>CommonMode</code>。每当 RunLoop 的内容发生变化时，RunLoop 都会将事件同步到 CommonMode 的 mode item，什么是 mode item 后文会讲到。这也解释了为什么 timer 加入到 NSRunLoopCommonModes 中会被正确的回调。</p>
+<p>在 NSRunLoop 这一层没有提供操作 Mode 的接口，在 <strong>CFRunLoopRef</strong> 对外提供了两个操作 Mode 的接口，只有增加 mode 的接口：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">CFRunLoopAddCommonMode(CFRunLoopRef runloop, CFStringRef modeName);</span><br><span class="line">CFRunLoopRunInMode(CFStringRef modeName, ...);</span><br></pre></td></tr></table></figure>
+
+<h3 id="mode-item"><a href="#mode-item" class="headerlink" title="mode item"></a>mode item</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">CFRunLoopMode</span> &#123;</span></span><br><span class="line">    CFStringRef _name;            <span class="comment">// Mode Name, 例如 @"kCFRunLoopDefaultMode"</span></span><br><span class="line">    CFMutableSetRef _sources0;    <span class="comment">// Set</span></span><br><span class="line">    CFMutableSetRef _sources1;    <span class="comment">// Set</span></span><br><span class="line">    CFMutableArrayRef _observers; <span class="comment">// Array</span></span><br><span class="line">    CFMutableArrayRef _timers;    <span class="comment">// Array</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>__CFRunLoopMode</code> 结构体中的 <code>_sources0</code>、<code>_sources1</code>、<code>_observers</code>、<code>_timers</code> 都属于 mode item。结构图如下：</p>
+<p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/7a53120e056aa7787acd.png/PasF52LWn3NKwHS.png" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/7a53120e056aa7787acd.png/PasF52LWn3NKwHS.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<ul>
+<li><p>Source0 只包含了一个回调（函数指针），它并不能主动触发事件。使用时，你需要先调用 CFRunLoopSourceSignal(source)，将这个 Source 标记为待处理，然后手动调用 CFRunLoopWakeUp(runloop) 来唤醒 RunLoop，让其处理这个事件。</p>
+</li>
+<li><p>Source1 包含了一个 mach_port 和一个回调（函数指针），被用于通过内核和其他线程相互发送消息。这种 Source 能主动唤醒 RunLoop 的线程。</p>
+</li>
+<li><p>Timer 是基于时间的触发器，它和 NSTimer 是toll-free bridged 的，可以混用。其包含一个时间长度和一个回调（函数指针）。当其加入到 RunLoop 时，RunLoop会注册对应的时间点，当时间点到时，RunLoop会被唤醒以执行那个回调。</p>
+</li>
+<li><p>Observer 是观察者，每个 Observer 都包含了一个回调（函数指针），当 RunLoop 的状态发生变化时，观察者就能通过回调接受到这个变化。可以观测的时间点有以下几个：</p>
+  <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">CF_OPTIONS</span><span class="params">(CFOptionFlags, CFRunLoopActivity)</span> </span>&#123;</span><br><span class="line">    kCFRunLoopEntry         = (<span class="number">1U</span>L &lt;&lt; <span class="number">0</span>), <span class="comment">// 即将进入Loop</span></span><br><span class="line">    kCFRunLoopBeforeTimers  = (<span class="number">1U</span>L &lt;&lt; <span class="number">1</span>), <span class="comment">// 即将处理 Timer</span></span><br><span class="line">    kCFRunLoopBeforeSources = (<span class="number">1U</span>L &lt;&lt; <span class="number">2</span>), <span class="comment">// 即将处理 Source</span></span><br><span class="line">    kCFRunLoopBeforeWaiting = (<span class="number">1U</span>L &lt;&lt; <span class="number">5</span>), <span class="comment">// 即将进入休眠</span></span><br><span class="line">    kCFRunLoopAfterWaiting  = (<span class="number">1U</span>L &lt;&lt; <span class="number">6</span>), <span class="comment">// 刚从休眠中唤醒</span></span><br><span class="line">    kCFRunLoopExit          = (<span class="number">1U</span>L &lt;&lt; <span class="number">7</span>), <span class="comment">// 即将退出Loop</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>一个 mode item 可以被同时加入多个 mode。但一个 item 被重复加入同一个 mode 时是无效的。如果一个 mode 中一个 item 都没有，则 RunLoop 会直接退出，不进入循环。</p>
+<h2 id="RunLoop-启动和退出"><a href="#RunLoop-启动和退出" class="headerlink" title="RunLoop 启动和退出"></a>RunLoop 启动和退出</h2><h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>这边以 NSRunLoop 为例，CFRunLoopRef 类似， 启动有 3 个方法：</p>
+<ul>
+<li>run</li>
+<li>runUntilDate:</li>
+<li>runMode:beforeDate:</li>
+</ul>
+<p>run 底层是不断（循环）调用 <code>runMode:beforeDate:</code> 来达到运行目的。<code>runUntilDate:</code> 底层也是调用 <code>runMode:beforeDate:</code> 来运行，和 run 不同的是，在指定的时间也就是 UntilDate 参数到后会停止调用。</p>
+<h3 id="退出"><a href="#退出" class="headerlink" title="退出"></a>退出</h3><p>在系统提供的停止 RunLoop 方法只有 <code>CFRunLoopStop()</code>，<code>CFRunLoopStop()</code> 方法只会结束当前的 RunLoop 调用，而不会结束后续的调用。也就意味着 如果你是用方法一也就是 run 的方式启动 RunLoop，那么这个 RunLoop 不会被退出，因为它会不断的启动，因为 run 底层是不断（循环）调用 <code>runMode:beforeDate:</code> 来达到运行目的。如果你是使用 <code>runUntilDate:</code> 启动的，那么超时结束后会自动终止 RunLoop，如果是 <code>runMode:beforeDate:</code> 那么你可以精确的控制 RunLoop 的停止。</p>
+<h2 id="RunLoop-的应用"><a href="#RunLoop-的应用" class="headerlink" title="RunLoop 的应用"></a>RunLoop 的应用</h2><p>RunLoop 用途广泛，如 AutoreleasePool，PerformSelecter，GCD，AsyncDisplayKit 等都有涉及到。</p>
+<blockquote>
+<p>参考文章：</p>
+<ul>
+<li><a href="https://opensource.apple.com/tarballs/CF/" target="_blank" rel="noopener">CoreFoundation 源码</a></li>
+<li><a href="https://blog.ibireme.com/2015/05/18/runloop/" target="_blank" rel="noopener">深入理解 RunLoop</a></li>
+<li><a href="https://mazengyi.dev/2017/08/10/runloop/#runloop-%E5%90%AF%E5%8A%A8%E5%92%8C%E9%80%80%E5%87%BA" target="_blank" rel="noopener">RunLoop</a></li>
+</ul>
+</blockquote>
+
+  
+    
+    <div class='footer'>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=https://blog.jonyfang.com/2018/06/14/2018-06-14-ios-runloop/>https://blog.jonyfang.com/2018/06/14/2018-06-14-ios-runloop/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/iOS/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>iOS</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>底层原理</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.jonyfang.com/2018/06/14/2018-06-14-ios-runloop/&title=RunLoop 梳理 - JonyFang&summary=RunLoop 是 iOS 比较的核心之一，本篇用于梳理 RunLoop 相关的概念和底层实现。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://blog.jonyfang.com/2018/06/14/2018-06-14-ios-runloop/&title=RunLoop 梳理 - JonyFang&summary=RunLoop 是 iOS 比较的核心之一，本篇用于梳理 RunLoop 相关的概念和底层实现。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://blog.jonyfang.com/2018/06/14/2018-06-14-ios-runloop/&title=RunLoop 梳理 - JonyFang&summary=RunLoop 是 iOS 比较的核心之一，本篇用于梳理 RunLoop 相关的概念和底层实现。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-telegram" title="" rel="external nofollow noopener noreferrer"
+          
+            href="https://t.me/share/url?url=https://blog.jonyfang.com/2018/06/14/2018-06-14-ios-runloop/&text=RunLoop 梳理 - JonyFang"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2018/07/11/2018-07-11-osspinlock-to-osUnfairLock/'>
+          <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>OSSpinLock 与 os_unfair_lock</p>
+          <p class='content'>OSSpinLock 因为线程安全问题已被 Apple 废弃。苹果建议使用 os_unfair_lock 替换，os_unfair_lock 是互斥锁。
+
+
+使用示例：
+#import &lt;...</p>
+        </a>
+      
+      
+        <a class='next' href='/2018/06/12/2018-06-12-objc-autoreleasePool/'>
+          <p class='title'>AutoreleasePool 实现原理<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>AutoreleasePool（自动释放池）是 OC 中一种内存自动回收的机制。在 MRC 中，可以通过 [obj autorelease] 来延迟内存的释放；而 ARC 中的 autorele...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+  
+
+  <article class="post white-box reveal shadow" id="comments">
+    <p ct><i class='fas fa-comments'></i> 评论</p>
+    
+    <div id="valine_container" class="valine_thread">
+  <i class="fas fa-cog fa-spin fa-fw fa-2x"></i>
+</div>
+
+  </article>
+
+
+
+
+
+
+</div>
+<aside class='l_side'>
+  
+  
+    
+    
+
+
+
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-RunLoop？"><span class="toc-text">什么是 RunLoop？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RunLoop-与线程之间的关系"><span class="toc-text">RunLoop 与线程之间的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NSRunLoop-和-CFRunLoopRef-的关系"><span class="toc-text">NSRunLoop 和 CFRunLoopRef 的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RunLoop-的内部实现逻辑"><span class="toc-text">RunLoop 的内部实现逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RunLoop-的-Mode"><span class="toc-text">RunLoop 的 Mode</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CommonModes"><span class="toc-text">CommonModes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mode-item"><span class="toc-text">mode item</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RunLoop-启动和退出"><span class="toc-text">RunLoop 启动和退出</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#启动"><span class="toc-text">启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#退出"><span class="toc-text">退出</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RunLoop-的应用"><span class="toc-text">RunLoop 的应用</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+
+      </div>
+      
+  
+  <footer class="footer clearfix">
+    <br><br>
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="mailto:jony.chunfang@gmaill.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://github.com/JonyFang"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=1063555"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © 2015-2020 JonyFang</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+
+      <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+  </div>
+  <div>
+    <!-- required -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5/dist/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  function pjax_fancybox() {
+    $(".md").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+      var element = document.createElement("a"); // a 标签
+      $(element).attr("class", "fancybox");
+      $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+      $(element).attr("href", $(this).attr("src"));
+      if ($(this).attr("data-original")) {
+        $(element).attr("href", $(this).attr("data-original"));
+      }
+      $(element).attr("data-fancybox", "images");
+      var caption = "";   // 描述信息
+      if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+        $(element).attr('data-caption', $(this).attr('alt'));
+        caption = $(this).attr('alt');
+      }
+      var div = document.createElement("div");
+      $(div).addClass("fancybox");
+      $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+      var span = document.createElement("span");
+      $(span).addClass("image-caption");
+      $(span).text(caption); // 加描述
+      $(this).after(span);  // 再套一层描述
+      // 背景层
+      var bgDiv = document.createElement("div");
+      $(bgDiv).addClass("bg");
+      if ($(this).attr('bg')) {
+        $(bgDiv).css('background', $(this).attr('bg'));
+      }
+      $(this).wrap(bgDiv); // 背景层
+      $(this).wrap(element);  // 最后套 a 标签
+    })
+    $(".md").find("img").fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+      closeClick: true,
+      helpers: {
+        overlay: {closeClick: true}
+      },
+      buttons: [
+        "zoom",
+        "close"
+      ]
+    });
+  };
+  $(function () {
+    pjax_fancybox();
+  });
+</script>
+
+
+<!-- internal -->
+
+
+
+
+<!-- optional -->
+
+  <script>
+  
+  var SEARCH_SERVICE = "hexo" || "hexo";
+  var ROOT = "/" || "/";
+  if (!ROOT.endsWith('/')) ROOT += '/';
+</script>
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.0/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+  
+    <script>
+      window.FPConfig = {
+        delay: 0,
+        ignoreKeywords: [],
+        maxRPS: 5,
+        hoverDelay: 25
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script>
+  
+
+
+
+
+
+
+
+
+  <script>
+  let APlayerController = new Object();
+  APlayerController.id = '1063555';  // 设定全局音乐播放ID
+  APlayerController.volume = '0.7';
+</script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js"></script>
+
+
+
+
+
+
+
+
+  
+  
+<script src="/js/valine.js"></script>
+
+
+<script>
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link'.split(',').filter(function (item) {
+    return GUEST_INFO.indexOf(item) > -1
+  });
+  var REQUIRED_FIELDS = ['nick', 'mail', 'link'];
+  var requiredFields = 'nick,mail'.split(',').filter(function (item) {
+    return REQUIRED_FIELDS.indexOf(item) > -1
+  });
+
+  function emoji(path, idx, ext) {
+    return path + "/" + path + "-" + idx + "." + ext;
+  }
+
+  var emojiMaps = {};
+  for (var i = 1; i <= 54; i++) {
+    emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+  }
+  for (var i = 1; i <= 101; i++) {
+    emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+  }
+  for (var i = 1; i <= 116; i++) {
+    emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+  }
+  for (var i = 1; i <= 125; i++) {
+    emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+  }
+  for (var i = 1; i <= 4; i++) {
+    emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+  }
+
+  function pjax_valine() {
+    if(!document.querySelectorAll("#valine_container")[0])return;
+
+    let pagePlaceholder = $.trim($('#pjax-comment-placeholder').text()) || "快来评论吧~";
+
+    let path = $.trim($('#pjax-comment-path').text());
+    if (path.length == 0) {
+      let defaultPath = '';
+      path = defaultPath || decodeURI(window.location.pathname);
+    }
+
+    var valine = new Valine();
+    valine.init({
+      el: '#valine_container',
+      meta: meta,
+      placeholder: pagePlaceholder,
+      path: path,
+      appId: "9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI",
+      appKey: "tIyMmSe8wzMgEJRCoUgzKV1B",
+      pageSize: '10',
+      avatar: 'robohash',
+      lang: 'zh-cn',
+      visitor: 'true',
+      highlight: 'true',
+      mathJax: 'false',
+      enableQQ: 'true',
+      requiredFields: requiredFields,
+      emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+      emojiMaps: emojiMaps
+    })
+  }
+
+  $(function () {
+    pjax_valine();
+  });
+</script>
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+
+  
+    
+<script src="/js/search.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script defer>
+
+  const LCCounter = {
+    app_id: '9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI',
+    app_key: 'tIyMmSe8wzMgEJRCoUgzKV1B',
+    custom_api_server: '',
+
+    // 查询存储的记录
+    getRecord(Counter, url, title) {
+      return new Promise(function (resolve, reject) {
+        Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({url})))
+          .then(resp => resp.json())
+          .then(({results, code, error}) => {
+            if (code === 401) {
+              throw error;
+            }
+            if (results && results.length > 0) {
+              var record = results[0];
+              resolve(record);
+            } else {
+              Counter('post', '/classes/Counter', {url, title: title, times: 0})
+                .then(resp => resp.json())
+                .then((record, error) => {
+                  if (error) {
+                    throw error;
+                  }
+                  resolve(record);
+                }).catch(error => {
+                console.error('Failed to create', error);
+                reject(error);
+              });
+            }
+          }).catch((error) => {
+          console.error('LeanCloud Counter Error:', error);
+          reject(error);
+        });
+      })
+    },
+
+    // 发起自增请求
+    increment(Counter, incrArr) {
+      return new Promise(function (resolve, reject) {
+        Counter('post', '/batch', {
+          "requests": incrArr
+        }).then((res) => {
+          res = res.json();
+          if (res.error) {
+            throw res.error;
+          }
+          resolve(res);
+        }).catch((error) => {
+          console.error('Failed to save visitor count', error);
+          reject(error);
+        });
+      });
+    },
+
+    // 构建自增请求体
+    buildIncrement(objectId) {
+      return {
+        "method": "PUT",
+        "path": `/1.1/classes/Counter/${ objectId }`,
+        "body": {
+          "times": {
+            '__op': 'Increment',
+            'amount': 1
+          }
+        }
+      }
+    },
+
+    // 校验是否为有效的 UV
+    validUV() {
+      var key = 'LeanCloudUVTimestamp';
+      var flag = localStorage.getItem(key);
+      if (flag) {
+        // 距离标记小于 24 小时则不计为 UV
+        if (new Date().getTime() - parseInt(flag) <= 86400000) {
+          return false;
+        }
+      }
+      localStorage.setItem(key, new Date().getTime().toString());
+      return true;
+    },
+
+    addCount(Counter) {
+      var enableIncr = '' === 'true' && window.location.hostname !== 'localhost';
+      enableIncr = true;
+      var getterArr = [];
+      var incrArr = [];
+      // 请求 PV 并自增
+      var pvCtn = document.querySelector('#lc-sv');
+      if (pvCtn || enableIncr) {
+        var pvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-sv', 'Visits').then((record) => {
+          incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-sv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + 1;
+              if (pvCtn) {
+                pvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(pvGetter);
+      }
+
+      // 请求 UV 并自增
+      var uvCtn = document.querySelector('#lc-uv');
+      if (uvCtn || enableIncr) {
+        var uvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-uv', 'Visitors').then((record) => {
+          var vuv = this.validUV();
+          vuv && incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-uv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + (vuv ? 1 : 0);
+              if (uvCtn) {
+                uvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(uvGetter);
+      }
+
+      // 请求文章的浏览数，如果是当前页面就自增
+      var allPV = document.querySelectorAll('#lc-pv');
+      if (allPV.length > 0 || enableIncr) {
+        for (i = 0; i < allPV.length; i++) {
+          let pv = allPV[i];
+          let title = pv.getAttribute('data-title');
+          var url = 'https://blog.jonyfang.com' + pv.getAttribute('data-path');
+          if (url) {
+            var viewGetter = this.getRecord(Counter, url, title).then((record) => {
+              // 是当前页面就自增
+              if (pv.getAttribute('data-path') == window.location.pathname) {
+                incrArr.push(this.buildIncrement(record.objectId));
+              }
+              if (pv) {
+                var ele = pv.querySelector('#lc-pv #number');
+                if (ele) {
+                  if (pv.getAttribute('data-path') == window.location.pathname) {
+                    ele.innerText = (record.times || 0) + 1;
+                  } else {
+                    ele.innerText = record.times || 0;
+                  }
+                  pv.style.display = 'inline';
+                }
+              }
+            });
+            getterArr.push(viewGetter);
+          }
+        }
+      }
+
+      // 如果启动计数自增，批量发起自增请求
+      if (enableIncr) {
+        Promise.all(getterArr).then(() => {
+          incrArr.length > 0 && this.increment(Counter, incrArr);
+        })
+      }
+
+    },
+
+
+    fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${ api_server }/1.1${ url }`, {
+          method,
+          headers: {
+            'X-LC-Id': this.app_id,
+            'X-LC-Key': this.app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      this.addCount(Counter);
+    },
+
+    refreshCounter() {
+      var api_server = this.app_id.slice(-9) !== '-MdYXbMMI' ? this.custom_api_server : `https://${ this.app_id.slice(0, 8).toLowerCase() }.api.lncldglobal.com`;
+      if (api_server) {
+        this.fetchData(api_server);
+      } else {
+        fetch('https://app-router.leancloud.cn/2/route?appId=' + this.app_id)
+          .then(resp => resp.json())
+          .then(({api_server}) => {
+            this.fetchData('https://' + api_server);
+          });
+      }
+    }
+
+  };
+
+  LCCounter.refreshCounter();
+
+  document.addEventListener('pjax:complete', function () {
+    LCCounter.refreshCounter();
+  });
+</script>
+
+
+
+<!-- more -->
+
+
+    
+      
+
+
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+
+<!-- 样式位于：source/css/_third-party/pjaxanimate.styl -->
+
+<div class="pjax-animate">
+  
+    <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+    <div id="loading-bar-wrapper"><script>NProgress.configure({parent:"#loading-bar-wrapper",trickleSpeed: 100})</script></div>
+    <script>
+      window.ShowLoading = function() {
+        NProgress.start();
+      };
+      window.HideLoading = function() {
+        NProgress.done();
+      }
+    </script>
+  
+</div>
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox])',
+        selectors: [
+          "title",
+          "#pjax-container",
+          "#pjax-header-nav-list"
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      window.subData = null; // 移除标题（用于一二级导航栏切换处）
+      $.fancybox.close();    // 关闭弹窗
+      $('.l_header .switcher .s-search').removeClass('active'); // 关闭移动端激活的搜索框
+      $('.l_header').removeClass('z_search-open'); // 关闭移动端激活的搜索框
+      $('.wrapper').removeClass('sub'); // 跳转页面时关闭二级导航
+
+      // 解绑事件 避免重复监听
+      $('.s-top').unbind('click');
+      $('.menu a').unbind('click');
+      $(window).unbind('resize');
+      $(window).unbind('scroll');
+      $(document).unbind('scroll');
+      $(document).unbind('click');
+      $('body').unbind('click');
+      window.ShowLoading();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 关于百度统计对 SPA 页面的处理：
+      // 方案一：百度统计>管理>单页应用设置中，打开开启按钮即可对SPA进行统计。 https://tongji.baidu.com/web/help/article?id=324
+      // 方案二：取消注释下列代码。 https://tongji.baidu.com/web/help/article?id=235
+      // 
+
+      // 关于谷歌统计对 SPA 页面的处理：
+      // 当应用以动态方式加载内容并更新地址栏中的网址时，也应该更新通过 gtag.js 存储的网页网址。
+      // https://developers.google.cn/analytics/devguides/collection/gtagjs/single-page-applications?hl=zh-cn
+      
+
+      $('.nav-main').find('.list-v').not('.menu-phone').removeAttr("style",""); // 移除小尾巴的移除
+      $('.menu-phone.list-v').removeAttr("style",""); // 移除小尾巴的移除
+      $('script[data-pjax], .pjax-reload script').each(function () {
+        $(this).parent().append($(this).remove());
+      });
+      try{
+        pjax_fancybox();
+        
+        
+        
+        
+        
+          pjax_valine();
+        
+        
+        
+        
+        
+      } catch (e) {
+        console.log(e);
+      }
+      window.HideLoading();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      window.HideLoading();
+      window.location.href = e.triggerElement.href;
+    });
+</script>
+
+    
+  </div>
+</body>
+</html>

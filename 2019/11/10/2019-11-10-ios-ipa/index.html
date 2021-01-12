@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/tree/4.0.0-rc.2'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+  <title>iOS IPA 包体积优化 - JonyFang</title>
+  
+    <meta name="keywords" content="iOS,优化相关">
+  
+
+  
+    <meta name="description" content="记录 IPA 包体积优化过程中的一些思路。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+    
+      <meta name='theme-color' content='#FFFFFF'>
+    
+      <meta name='msapplication-TileColor' content='#1BC3FB'>
+    
+      <meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>
+    
+  
+
+  <!-- link -->
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/css/all.min.css">
+
+  
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  
+
+  <!-- import link -->
+  
+  
+  <link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>
+  <link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>
+  <link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>
+  <link rel='mask-icon' color='#1BC3FB' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/safari-pinned-tab.svg'>
+  <link rel='manifest' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/site.webmanifest'>
+  
+
+  
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+</head>
+
+<body>
+  <header class="l_header auto shadow blur" style='opacity: 0' >
+  <div class='container'>
+  <div class='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a class="s-comment fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fas fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li>
+          <a class="s-menu fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+		</div>
+	</div>
+  </div>
+</header>
+
+  <div class="l_body">
+    <div class="l_cover">
+
+  
+  
+      <div class='cover-wrapper post dock' style="display: none;">
+        
+          <div class='cover-bg lazyload placeholder' data-bg="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/05174de636d75be2f17c.jpg/lbzFIp65ZiQETn8.jpg"></div>
+        
+        <div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Jony's Blog</p>
+    
+    
+      <p class="subtitle">牢记梦想，自然生长</p>
+    
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/"
+              
+              
+              id="home">
+              <i class='fas fa-rss fa-fw'></i><p>博文</p>
+            </a>
+          
+            <a href="/categories/"
+              
+              
+              id="categories">
+              <i class='fas fa-folder-open fa-fw'></i><p>分类</p>
+            </a>
+          
+            <a href="/archives/"
+              
+              
+              id="archives">
+              <i class='fas fa-archive fa-fw'></i><p>归档</p>
+            </a>
+          
+            <a href="/about/"
+              
+              
+              id="about">
+              <i class='fas fa-info-circle fa-fw'></i><p>关于</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div class="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+  
+
+</div>
+
+    <div class='safearea'>
+      <div class='body-wrapper' id="pjax-container">
+        
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+
+
+<div id="pjax-data" style="display: none">
+  <div id="pjax-ispage">true</div>
+  <div id="pjax-pageTitle">iOS IPA 包体积优化</div>
+  <div id="pjax-enable-cover">true</div>
+  <div id="pjax-comment-path"></div>
+  <div id="pjax-comment-placeholder"></div>
+</div>
+
+
+<script>
+  // 处理封面 此时 jquery 还没加载
+  if ("none" == "none") { // 移除封面
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "none";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.add("show");
+  } else {
+    if ("none" == "half") { // 半屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'half');
+      document.getElementsByClassName('scroll-down')[0].style.display = "none";
+    } else if ("none" == "full") { // 全屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'full');
+      document.getElementsByClassName('scroll-down')[0].style.display = "";
+    }
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.remove("show");
+  }
+</script>
+
+
+        
+        
+
+<div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title">
+        iOS IPA 包体积优化
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/a764dcce0b25a615c8ac.jpg/PgrSQHZ6fBidbRF.jpg">
+    <p>JonyFang</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/iOS/">iOS</a><span class="sep"></span><a class="category-link" href="/categories/%E4%BC%98%E5%8C%96%E7%9B%B8%E5%85%B3/">优化相关</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2019年11月10日</p>
+  </a>
+</div>
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <p>记录 IPA 包体积优化过程中的一些思路。</p>
+<a id="more"></a>
+
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>随着业务量的不断增加，应用安装包大小也在迅速的增长，而安装包大小的增加对应用的推广拉新会造成比较大的影响。因为这样，我们进行了 2 期的安装包大小的优化，第一期优化从 107MB 到 84MB，第二期优化 8MB。本篇主要是用于记录优化过程中的一些思路。</p>
+<h2 id="优化方向"><a href="#优化方向" class="headerlink" title="优化方向"></a>优化方向</h2><p>优化前我们首先要确定的是<strong>优化指标</strong>及<strong>优化方向</strong>。我们最终是以 ipa 包中 <strong>xxx.app</strong> 大小作为优化前后的对比项。优化方向上，首先我们需要看下 ipa 包中 <strong>xxx.app</strong> 有哪些组成。</p>
+<p>解压 <strong>xxx.app</strong>，会看到的模块有：</p>
+<ul>
+<li>AppIcons。各尺寸的应用图标。</li>
+<li>Assets.car。Asset Catalog 的编译产物。</li>
+<li>Frameworks。存放着动态库。</li>
+<li>编译后的可执行文件</li>
+<li>PlugIns。插件路径（如 Today Extension）</li>
+<li>其他</li>
+</ul>
+<p>通过文件结构，我们大概有的优化思路是：</p>
+<ul>
+<li>资源文件（图片或配置文件）的处理</li>
+<li>代码的处理，以减小编译后可执行文件大小</li>
+<li>Today Extension 的代码优化</li>
+<li>编译配置是否有可优化的点</li>
+</ul>
+<p>根据这 4 个优化方向，具体看下对应的优化方案。</p>
+<h2 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h2><h3 id="资源文件优化"><a href="#资源文件优化" class="headerlink" title="资源文件优化"></a>资源文件优化</h3><h4 id="图片资源"><a href="#图片资源" class="headerlink" title="图片资源"></a>图片资源</h4><p>关于图片，我们使用的也是通用的方案，主要是两方面的处理：</p>
+<ul>
+<li>无用图片的移除</li>
+<li>图片压缩</li>
+</ul>
+<p>项目从 3.8.0 版本开始，图片资源除去启动图及部分场景下使用的 AppIcon，其他图片全部迁移到了 <strong>Images.xcassets</strong> 中，所以针对 Images.xcassets 进行图片处理。</p>
+<ol>
+<li><p>无用图片的移除</p>
+<ul>
+<li>通过资源关键字进行全局匹配，筛选出未使用的资源文件</li>
+<li>这里我们使用的是 <a href="https://github.com/tinymind/LSUnusedResources" target="_blank" rel="noopener">LSUnusedResources</a></li>
+<li>查找出图片后，需要人工再对图片的使用情况做确定。之后对应删除</li>
+</ul>
+</li>
+<li><p>图片压缩</p>
+<ul>
+<li>经过上一步的无用图移除，剩下的图片是当前版本所需要的，可以对这些图片进行无损压缩</li>
+<li>因为 <a href="https://tinypng.com/" target="_blank" rel="noopener">TinyPNG</a>有限制，最终我们使用的是批量处理工具 <a href="https://github.com/iSparta/iSparta" target="_blank" rel="noopener">iSparta</a></li>
+</ul>
+</li>
+</ol>
+<p>比较惊讶的是，我们查找到了 15869.44KB（15MB）的无用图片及压缩了 6MB。</p>
+<h4 id="查找重复文件"><a href="#查找重复文件" class="headerlink" title="查找重复文件"></a>查找重复文件</h4><p>我们通过 <a href="https://github.com/adrianlopezroche/fdupes" target="_blank" rel="noopener">fdupes</a> 工具来扫描查找重复文件。fdupes 是通过校验所有资源的 MD5，筛选出项目的重复资源。文件比较顺序依次为：</p>
+<ul>
+<li>大小对比</li>
+<li>部分 MD5 签名对比</li>
+<li>完整 MD5 签名对比</li>
+<li>逐字节对比</li>
+</ul>
+<p>相关命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装</span></span><br><span class="line">brew install fdupes</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看某文件夹下的重复文件</span></span><br><span class="line">fdupes -Sr ./filepath &gt; outlog.txt</span><br></pre></td></tr></table></figure>
+
+<h4 id="大文件转下载"><a href="#大文件转下载" class="headerlink" title="大文件转下载"></a>大文件转下载</h4><p>非必要的大文件资源，如字体库、皮肤资源、子页面大图，不放到 ipa 包中，转为下载的方式。</p>
+<h4 id="关于-Images-xcassets"><a href="#关于-Images-xcassets" class="headerlink" title="关于 Images.xcassets"></a>关于 Images.xcassets</h4><p>iOS9 开始苹果建议将图片资源文件放入 Images.xcassets 中。Images.xcassets 中的图片在加载后会有缓存，可以提升加载速度；打包时会进行自动的 PNG 图片压缩，再根据运行设备的不同分发 x2/x3 图片资源。</p>
+<p>Pod 库也可以通过 Images.xcassets 来存放图片资源，在 podspec 中指定 resource_bundles：</p>
+<figure class="highlight ruby"><table><tr><td class="code"><pre><span class="line">s.resource_bundles = &#123;</span><br><span class="line">	<span class="string">'podname'</span> =&gt; [<span class="string">'./Assets/*.xcassets'</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>相关的编译配置：</p>
+<ul>
+<li>Compress PNG Files</li>
+<li>Remove Text Metadata From PNG Files</li>
+</ul>
+<p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/e65d83300e63700e28dc.jpg/eapx2uVosiERQjK.jpg" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/e65d83300e63700e28dc.jpg/eapx2uVosiERQjK.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<h3 id="代码层面优化"><a href="#代码层面优化" class="headerlink" title="代码层面优化"></a>代码层面优化</h3><p>按责分配模块，review 代码，去除重复代码。也是工作量比较大的一个模块。</p>
+<h3 id="编译选项配置"><a href="#编译选项配置" class="headerlink" title="编译选项配置"></a>编译选项配置</h3><ol>
+<li><p>指定编译生成包所支持的架构<br> <strong>Build Settings -&gt; Valid Architectures</strong> 中，因为不再支持 iOS9 以下及 32位，我们去掉了对 armv7 的支持，以减小 ipa 包大小。<br> <img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/ba49ac08d769e824ad74.jpg/xYdZObM5yheKuHP.jpg" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/ba49ac08d769e824ad74.jpg/xYdZObM5yheKuHP.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+</li>
+<li><p>编译器优化级别<br> <strong>Build Settings -&gt; Optimization Level</strong> 在 release 版选择 Fastest, Smallest。会优化可执行文件的大小，使其尽可能小。</p>
+</li>
+<li><p>去除符号信息<br> <strong>Build Settings</strong> 中 <strong>Strip Linked Product / Deployment Postprocessing</strong> 在 release 版本设置为 YES，可以去除不必要的调试符号。<br> Strip Linked Product 默认为 YES，Deployment Postprocessing 默认为 NO，而 Strip Linked Product 在 Deployment Postprocessing 设置为 YES 的时候才生效。</p>
+</li>
+</ol>
+<p>这些配置选项的在旧版 Xcode 生成的项目中不一定默认遵循，可以检查下，以达到一定的编译优化。</p>
+<h3 id="App-Thinning"><a href="#App-Thinning" class="headerlink" title="App Thinning"></a>App Thinning</h3><p>iOS9 开始引入了 App Thinning，相关 Session 介绍：<a href="https://developer.apple.com/videos/play/wwdc2015/404/" target="_blank" rel="noopener">WWDC15 - App Thinning in Xcode</a>。</p>
+<p>App Thinning 的概念是，当用户安装应用时，苹果会根据当前用户的机型来选择合适的资源文件及对应 CPU 架构的二进制可执行文件（即不会同时存在 armv7、arm64 的情况），减少了用户的下载流量和安装占用的空间。</p>
+<p>App Thinning 的开启方式是，在上传 App 时，配置 App Thinning 即可。</p>
+<p>App Thinning 分为三部分：</p>
+<ul>
+<li>Slicing</li>
+<li>Bitcode</li>
+<li>On-Demand Resources</li>
+</ul>
+<h4 id="Slicing"><a href="#Slicing" class="headerlink" title="Slicing"></a>Slicing</h4><p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/c4ba946b8b6249162e83.png/kt5oGmqTswx2Qgc.png" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/c4ba946b8b6249162e83.png/kt5oGmqTswx2Qgc.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<p>原理入图所示。在我们将 Archive 的 App Record 传到 iTunes Connect 后，它会被分割为不同的变体，不同的点是<strong>CPU 架构的二进制可执行文件</strong>（如 armv7 或 arm64）及 <strong>资源文件</strong>（如 Image.xcassets 中 x2/x3 的图片）。</p>
+<p>当用户从 App Store 下载时，只会下载特定的变体。</p>
+<h4 id="Bitcode"><a href="#Bitcode" class="headerlink" title="Bitcode"></a>Bitcode</h4><p>Bitcode 是编译好的程序中间码，在苹果推出新的架构或有新的 LLVM 优化时，不需要重新上传 App。</p>
+<p>开启方式是，<strong>Build Settings -&gt; Enable Bitcode</strong> 置为 YES 即可，需要 App 中所有的静态库和动态库都支持，避免编译失败。</p>
+<h4 id="On-Demand-Resources"><a href="#On-Demand-Resources" class="headerlink" title="On-Demand Resources"></a>On-Demand Resources</h4><p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/7a84fc48eaedc392f459.png/xbujfLloSBYDdH3.png" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/7a84fc48eaedc392f459.png/xbujfLloSBYDdH3.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<p>按需加载资源。在 Build Settings 中需要开启 <strong>Enable On Demand Resource</strong>，接着在 <strong>Resource Tags</strong> 中添加对应的资源文件，使用时通过 <code>NSBundleResourceRequest</code> 获取按需加载的资源文件。</p>
+<p>更多详细介绍：<a href="https://developer.apple.com/videos/play/wwdc2015/214/" target="_blank" rel="noopener">WWDC15 - Introducing On Demand Resources</a></p>
+<h3 id="其他方向"><a href="#其他方向" class="headerlink" title="其他方向"></a>其他方向</h3><ul>
+<li>Framework 只保留需要的指令集。可以通过 lipo 命令处理。</li>
+<li>App Extension 中使用动态库，以和主 App 共享同一个库。</li>
+<li>第三方库在引入时慎重，尽量只引入需要的模块。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>主要是从资源文件、code review 及编译选项配置几个方面，进行 App 的瘦身。过程中要利用苹果自身的机制，如 Image.xcassets、App Thinning 机制。</p>
+<p>iOS 项目在开发初期，我们很容易忽略安装包大小的增长，除去后期的优化，在日常开发中也需要关注的一些点。</p>
+<ul>
+<li>资源文件在引入时，需要按需做无损压缩和有损压缩</li>
+<li>不要为了一个小功能而引入一个大的库</li>
+<li>平时开发过程中，废弃模块要及时清理</li>
+<li>同类开源库，只引入一个</li>
+<li>最好能够有预警机制，打完包后，能够生产一份分析文件，列出与上次包的大小对比</li>
+</ul>
+
+  
+    
+    <div class='footer'>
+      
+        <div class='references'>
+          <section class='header'>
+            
+              <i class="fas fa-quote-left fa-fw" aria-hidden="true"></i>
+            
+            <span>参考资料</span>
+          </section>
+          <section class='body'>
+            <ul>
+              
+                <li>
+                  <a href="https://developer.apple.com/videos/play/wwdc2015/404/" rel="external nofollow noopener noreferrer" target="_blank">
+                  WWDC15-404-App Thinning in Xcode
+                  </a>
+                </li>
+              
+            </ul>
+          </section>
+        </div>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=https://blog.jonyfang.com/2019/11/10/2019-11-10-ios-ipa/>https://blog.jonyfang.com/2019/11/10/2019-11-10-ios-ipa/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/iOS/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>iOS</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E4%BC%98%E5%8C%96%E7%9B%B8%E5%85%B3/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>优化相关</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.jonyfang.com/2019/11/10/2019-11-10-ios-ipa/&title=iOS IPA 包体积优化 - JonyFang&summary=记录 IPA 包体积优化过程中的一些思路。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://blog.jonyfang.com/2019/11/10/2019-11-10-ios-ipa/&title=iOS IPA 包体积优化 - JonyFang&summary=记录 IPA 包体积优化过程中的一些思路。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://blog.jonyfang.com/2019/11/10/2019-11-10-ios-ipa/&title=iOS IPA 包体积优化 - JonyFang&summary=记录 IPA 包体积优化过程中的一些思路。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-telegram" title="" rel="external nofollow noopener noreferrer"
+          
+            href="https://t.me/share/url?url=https://blog.jonyfang.com/2019/11/10/2019-11-10-ios-ipa/&text=iOS IPA 包体积优化 - JonyFang"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2019/12/15/2019-12-15-ios-speed/'>
+          <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>iOS 启动速度优化调研</p>
+          <p class='content'>本篇主要是对应用启动时间优化的梳理。
+
+启动过程的技术调研App 总启动时间 t 分为两部分：
+
+main() 之前的加载时间 t1
+main() 之后的加载时间 t2
+
+即 t = t1 + ...</p>
+        </a>
+      
+      
+        <a class='next' href='/2019/11/07/2019-11-07-yytext/'>
+          <p class='title'>YYText 中的 CoreText<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>富文本框架里YYText在性能方面的表现很出色，它基于 CoreText 做了大量基础处理并实现了两个上层视图组件：YYLabel 和 YYTextView。在了解富文本处理之前，我们还需要对 ...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+  
+
+  <article class="post white-box reveal shadow" id="comments">
+    <p ct><i class='fas fa-comments'></i> 评论</p>
+    
+    <div id="valine_container" class="valine_thread">
+  <i class="fas fa-cog fa-spin fa-fw fa-2x"></i>
+</div>
+
+  </article>
+
+
+
+
+
+
+</div>
+<aside class='l_side'>
+  
+  
+    
+    
+
+
+
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优化方向"><span class="toc-text">优化方向</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优化方案"><span class="toc-text">优化方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#资源文件优化"><span class="toc-text">资源文件优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#图片资源"><span class="toc-text">图片资源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查找重复文件"><span class="toc-text">查找重复文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#大文件转下载"><span class="toc-text">大文件转下载</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#关于-Images-xcassets"><span class="toc-text">关于 Images.xcassets</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码层面优化"><span class="toc-text">代码层面优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编译选项配置"><span class="toc-text">编译选项配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#App-Thinning"><span class="toc-text">App Thinning</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Slicing"><span class="toc-text">Slicing</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Bitcode"><span class="toc-text">Bitcode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#On-Demand-Resources"><span class="toc-text">On-Demand Resources</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他方向"><span class="toc-text">其他方向</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+
+      </div>
+      
+  
+  <footer class="footer clearfix">
+    <br><br>
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="mailto:jony.chunfang@gmaill.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://github.com/JonyFang"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=1063555"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © 2015-2020 JonyFang</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+
+      <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+  </div>
+  <div>
+    <!-- required -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5/dist/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  function pjax_fancybox() {
+    $(".md").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+      var element = document.createElement("a"); // a 标签
+      $(element).attr("class", "fancybox");
+      $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+      $(element).attr("href", $(this).attr("src"));
+      if ($(this).attr("data-original")) {
+        $(element).attr("href", $(this).attr("data-original"));
+      }
+      $(element).attr("data-fancybox", "images");
+      var caption = "";   // 描述信息
+      if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+        $(element).attr('data-caption', $(this).attr('alt'));
+        caption = $(this).attr('alt');
+      }
+      var div = document.createElement("div");
+      $(div).addClass("fancybox");
+      $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+      var span = document.createElement("span");
+      $(span).addClass("image-caption");
+      $(span).text(caption); // 加描述
+      $(this).after(span);  // 再套一层描述
+      // 背景层
+      var bgDiv = document.createElement("div");
+      $(bgDiv).addClass("bg");
+      if ($(this).attr('bg')) {
+        $(bgDiv).css('background', $(this).attr('bg'));
+      }
+      $(this).wrap(bgDiv); // 背景层
+      $(this).wrap(element);  // 最后套 a 标签
+    })
+    $(".md").find("img").fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+      closeClick: true,
+      helpers: {
+        overlay: {closeClick: true}
+      },
+      buttons: [
+        "zoom",
+        "close"
+      ]
+    });
+  };
+  $(function () {
+    pjax_fancybox();
+  });
+</script>
+
+
+<!-- internal -->
+
+
+
+
+<!-- optional -->
+
+  <script>
+  
+  var SEARCH_SERVICE = "hexo" || "hexo";
+  var ROOT = "/" || "/";
+  if (!ROOT.endsWith('/')) ROOT += '/';
+</script>
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.0/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+  
+    <script>
+      window.FPConfig = {
+        delay: 0,
+        ignoreKeywords: [],
+        maxRPS: 5,
+        hoverDelay: 25
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script>
+  
+
+
+
+
+
+
+
+
+  <script>
+  let APlayerController = new Object();
+  APlayerController.id = '1063555';  // 设定全局音乐播放ID
+  APlayerController.volume = '0.7';
+</script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js"></script>
+
+
+
+
+
+
+
+
+  
+  
+<script src="/js/valine.js"></script>
+
+
+<script>
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link'.split(',').filter(function (item) {
+    return GUEST_INFO.indexOf(item) > -1
+  });
+  var REQUIRED_FIELDS = ['nick', 'mail', 'link'];
+  var requiredFields = 'nick,mail'.split(',').filter(function (item) {
+    return REQUIRED_FIELDS.indexOf(item) > -1
+  });
+
+  function emoji(path, idx, ext) {
+    return path + "/" + path + "-" + idx + "." + ext;
+  }
+
+  var emojiMaps = {};
+  for (var i = 1; i <= 54; i++) {
+    emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+  }
+  for (var i = 1; i <= 101; i++) {
+    emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+  }
+  for (var i = 1; i <= 116; i++) {
+    emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+  }
+  for (var i = 1; i <= 125; i++) {
+    emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+  }
+  for (var i = 1; i <= 4; i++) {
+    emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+  }
+
+  function pjax_valine() {
+    if(!document.querySelectorAll("#valine_container")[0])return;
+
+    let pagePlaceholder = $.trim($('#pjax-comment-placeholder').text()) || "快来评论吧~";
+
+    let path = $.trim($('#pjax-comment-path').text());
+    if (path.length == 0) {
+      let defaultPath = '';
+      path = defaultPath || decodeURI(window.location.pathname);
+    }
+
+    var valine = new Valine();
+    valine.init({
+      el: '#valine_container',
+      meta: meta,
+      placeholder: pagePlaceholder,
+      path: path,
+      appId: "9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI",
+      appKey: "tIyMmSe8wzMgEJRCoUgzKV1B",
+      pageSize: '10',
+      avatar: 'robohash',
+      lang: 'zh-cn',
+      visitor: 'true',
+      highlight: 'true',
+      mathJax: 'false',
+      enableQQ: 'true',
+      requiredFields: requiredFields,
+      emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+      emojiMaps: emojiMaps
+    })
+  }
+
+  $(function () {
+    pjax_valine();
+  });
+</script>
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+
+  
+    
+<script src="/js/search.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script defer>
+
+  const LCCounter = {
+    app_id: '9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI',
+    app_key: 'tIyMmSe8wzMgEJRCoUgzKV1B',
+    custom_api_server: '',
+
+    // 查询存储的记录
+    getRecord(Counter, url, title) {
+      return new Promise(function (resolve, reject) {
+        Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({url})))
+          .then(resp => resp.json())
+          .then(({results, code, error}) => {
+            if (code === 401) {
+              throw error;
+            }
+            if (results && results.length > 0) {
+              var record = results[0];
+              resolve(record);
+            } else {
+              Counter('post', '/classes/Counter', {url, title: title, times: 0})
+                .then(resp => resp.json())
+                .then((record, error) => {
+                  if (error) {
+                    throw error;
+                  }
+                  resolve(record);
+                }).catch(error => {
+                console.error('Failed to create', error);
+                reject(error);
+              });
+            }
+          }).catch((error) => {
+          console.error('LeanCloud Counter Error:', error);
+          reject(error);
+        });
+      })
+    },
+
+    // 发起自增请求
+    increment(Counter, incrArr) {
+      return new Promise(function (resolve, reject) {
+        Counter('post', '/batch', {
+          "requests": incrArr
+        }).then((res) => {
+          res = res.json();
+          if (res.error) {
+            throw res.error;
+          }
+          resolve(res);
+        }).catch((error) => {
+          console.error('Failed to save visitor count', error);
+          reject(error);
+        });
+      });
+    },
+
+    // 构建自增请求体
+    buildIncrement(objectId) {
+      return {
+        "method": "PUT",
+        "path": `/1.1/classes/Counter/${ objectId }`,
+        "body": {
+          "times": {
+            '__op': 'Increment',
+            'amount': 1
+          }
+        }
+      }
+    },
+
+    // 校验是否为有效的 UV
+    validUV() {
+      var key = 'LeanCloudUVTimestamp';
+      var flag = localStorage.getItem(key);
+      if (flag) {
+        // 距离标记小于 24 小时则不计为 UV
+        if (new Date().getTime() - parseInt(flag) <= 86400000) {
+          return false;
+        }
+      }
+      localStorage.setItem(key, new Date().getTime().toString());
+      return true;
+    },
+
+    addCount(Counter) {
+      var enableIncr = '' === 'true' && window.location.hostname !== 'localhost';
+      enableIncr = true;
+      var getterArr = [];
+      var incrArr = [];
+      // 请求 PV 并自增
+      var pvCtn = document.querySelector('#lc-sv');
+      if (pvCtn || enableIncr) {
+        var pvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-sv', 'Visits').then((record) => {
+          incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-sv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + 1;
+              if (pvCtn) {
+                pvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(pvGetter);
+      }
+
+      // 请求 UV 并自增
+      var uvCtn = document.querySelector('#lc-uv');
+      if (uvCtn || enableIncr) {
+        var uvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-uv', 'Visitors').then((record) => {
+          var vuv = this.validUV();
+          vuv && incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-uv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + (vuv ? 1 : 0);
+              if (uvCtn) {
+                uvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(uvGetter);
+      }
+
+      // 请求文章的浏览数，如果是当前页面就自增
+      var allPV = document.querySelectorAll('#lc-pv');
+      if (allPV.length > 0 || enableIncr) {
+        for (i = 0; i < allPV.length; i++) {
+          let pv = allPV[i];
+          let title = pv.getAttribute('data-title');
+          var url = 'https://blog.jonyfang.com' + pv.getAttribute('data-path');
+          if (url) {
+            var viewGetter = this.getRecord(Counter, url, title).then((record) => {
+              // 是当前页面就自增
+              if (pv.getAttribute('data-path') == window.location.pathname) {
+                incrArr.push(this.buildIncrement(record.objectId));
+              }
+              if (pv) {
+                var ele = pv.querySelector('#lc-pv #number');
+                if (ele) {
+                  if (pv.getAttribute('data-path') == window.location.pathname) {
+                    ele.innerText = (record.times || 0) + 1;
+                  } else {
+                    ele.innerText = record.times || 0;
+                  }
+                  pv.style.display = 'inline';
+                }
+              }
+            });
+            getterArr.push(viewGetter);
+          }
+        }
+      }
+
+      // 如果启动计数自增，批量发起自增请求
+      if (enableIncr) {
+        Promise.all(getterArr).then(() => {
+          incrArr.length > 0 && this.increment(Counter, incrArr);
+        })
+      }
+
+    },
+
+
+    fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${ api_server }/1.1${ url }`, {
+          method,
+          headers: {
+            'X-LC-Id': this.app_id,
+            'X-LC-Key': this.app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      this.addCount(Counter);
+    },
+
+    refreshCounter() {
+      var api_server = this.app_id.slice(-9) !== '-MdYXbMMI' ? this.custom_api_server : `https://${ this.app_id.slice(0, 8).toLowerCase() }.api.lncldglobal.com`;
+      if (api_server) {
+        this.fetchData(api_server);
+      } else {
+        fetch('https://app-router.leancloud.cn/2/route?appId=' + this.app_id)
+          .then(resp => resp.json())
+          .then(({api_server}) => {
+            this.fetchData('https://' + api_server);
+          });
+      }
+    }
+
+  };
+
+  LCCounter.refreshCounter();
+
+  document.addEventListener('pjax:complete', function () {
+    LCCounter.refreshCounter();
+  });
+</script>
+
+
+
+<!-- more -->
+
+
+    
+      
+
+
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+
+<!-- 样式位于：source/css/_third-party/pjaxanimate.styl -->
+
+<div class="pjax-animate">
+  
+    <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+    <div id="loading-bar-wrapper"><script>NProgress.configure({parent:"#loading-bar-wrapper",trickleSpeed: 100})</script></div>
+    <script>
+      window.ShowLoading = function() {
+        NProgress.start();
+      };
+      window.HideLoading = function() {
+        NProgress.done();
+      }
+    </script>
+  
+</div>
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox])',
+        selectors: [
+          "title",
+          "#pjax-container",
+          "#pjax-header-nav-list"
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      window.subData = null; // 移除标题（用于一二级导航栏切换处）
+      $.fancybox.close();    // 关闭弹窗
+      $('.l_header .switcher .s-search').removeClass('active'); // 关闭移动端激活的搜索框
+      $('.l_header').removeClass('z_search-open'); // 关闭移动端激活的搜索框
+      $('.wrapper').removeClass('sub'); // 跳转页面时关闭二级导航
+
+      // 解绑事件 避免重复监听
+      $('.s-top').unbind('click');
+      $('.menu a').unbind('click');
+      $(window).unbind('resize');
+      $(window).unbind('scroll');
+      $(document).unbind('scroll');
+      $(document).unbind('click');
+      $('body').unbind('click');
+      window.ShowLoading();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 关于百度统计对 SPA 页面的处理：
+      // 方案一：百度统计>管理>单页应用设置中，打开开启按钮即可对SPA进行统计。 https://tongji.baidu.com/web/help/article?id=324
+      // 方案二：取消注释下列代码。 https://tongji.baidu.com/web/help/article?id=235
+      // 
+
+      // 关于谷歌统计对 SPA 页面的处理：
+      // 当应用以动态方式加载内容并更新地址栏中的网址时，也应该更新通过 gtag.js 存储的网页网址。
+      // https://developers.google.cn/analytics/devguides/collection/gtagjs/single-page-applications?hl=zh-cn
+      
+
+      $('.nav-main').find('.list-v').not('.menu-phone').removeAttr("style",""); // 移除小尾巴的移除
+      $('.menu-phone.list-v').removeAttr("style",""); // 移除小尾巴的移除
+      $('script[data-pjax], .pjax-reload script').each(function () {
+        $(this).parent().append($(this).remove());
+      });
+      try{
+        pjax_fancybox();
+        
+        
+        
+        
+        
+          pjax_valine();
+        
+        
+        
+        
+        
+      } catch (e) {
+        console.log(e);
+      }
+      window.HideLoading();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      window.HideLoading();
+      window.location.href = e.triggerElement.href;
+    });
+</script>
+
+    
+  </div>
+</body>
+</html>

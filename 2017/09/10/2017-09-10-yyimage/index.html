@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/tree/4.0.0-rc.2'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+  <title>YYImage 源码梳理 - JonyFang</title>
+  
+    <meta name="keywords" content="iOS,源码阅读">
+  
+
+  
+    <meta name="description" content="图片相关的处理，在移动应用中属于比较重要的一个角色。本篇主要是对 YYImage 的源码实现做一个梳理，内容结构：
+
+UIImage 相关的处理
+YYImage 框架结构
+YYImage
+YYFrameImage
+YYSpriteSheetImage
+YYAnimatedImage
+YYAnimatedImage...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+    
+      <meta name='theme-color' content='#FFFFFF'>
+    
+      <meta name='msapplication-TileColor' content='#1BC3FB'>
+    
+      <meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>
+    
+  
+
+  <!-- link -->
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/css/all.min.css">
+
+  
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  
+
+  <!-- import link -->
+  
+  
+  <link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>
+  <link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>
+  <link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>
+  <link rel='mask-icon' color='#1BC3FB' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/safari-pinned-tab.svg'>
+  <link rel='manifest' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/site.webmanifest'>
+  
+
+  
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+</head>
+
+<body>
+  <header class="l_header auto shadow blur" style='opacity: 0' >
+  <div class='container'>
+  <div class='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a class="s-comment fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fas fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li>
+          <a class="s-menu fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+		</div>
+	</div>
+  </div>
+</header>
+
+  <div class="l_body">
+    <div class="l_cover">
+
+  
+  
+      <div class='cover-wrapper post dock' style="display: none;">
+        
+          <div class='cover-bg lazyload placeholder' data-bg="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/05174de636d75be2f17c.jpg/lbzFIp65ZiQETn8.jpg"></div>
+        
+        <div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Jony's Blog</p>
+    
+    
+      <p class="subtitle">牢记梦想，自然生长</p>
+    
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/"
+              
+              
+              id="home">
+              <i class='fas fa-rss fa-fw'></i><p>博文</p>
+            </a>
+          
+            <a href="/categories/"
+              
+              
+              id="categories">
+              <i class='fas fa-folder-open fa-fw'></i><p>分类</p>
+            </a>
+          
+            <a href="/archives/"
+              
+              
+              id="archives">
+              <i class='fas fa-archive fa-fw'></i><p>归档</p>
+            </a>
+          
+            <a href="/about/"
+              
+              
+              id="about">
+              <i class='fas fa-info-circle fa-fw'></i><p>关于</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div class="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+  
+
+</div>
+
+    <div class='safearea'>
+      <div class='body-wrapper' id="pjax-container">
+        
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+
+
+<div id="pjax-data" style="display: none">
+  <div id="pjax-ispage">true</div>
+  <div id="pjax-pageTitle">YYImage 源码梳理</div>
+  <div id="pjax-enable-cover">true</div>
+  <div id="pjax-comment-path"></div>
+  <div id="pjax-comment-placeholder"></div>
+</div>
+
+
+<script>
+  // 处理封面 此时 jquery 还没加载
+  if ("none" == "none") { // 移除封面
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "none";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.add("show");
+  } else {
+    if ("none" == "half") { // 半屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'half');
+      document.getElementsByClassName('scroll-down')[0].style.display = "none";
+    } else if ("none" == "full") { // 全屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'full');
+      document.getElementsByClassName('scroll-down')[0].style.display = "";
+    }
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.remove("show");
+  }
+</script>
+
+
+        
+        
+
+<div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title">
+        YYImage 源码梳理
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/a764dcce0b25a615c8ac.jpg/PgrSQHZ6fBidbRF.jpg">
+    <p>JonyFang</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/iOS/">iOS</a><span class="sep"></span><a class="category-link" href="/categories/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/">源码阅读</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017年9月10日</p>
+  </a>
+</div>
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <p>图片相关的处理，在移动应用中属于比较重要的一个角色。本篇主要是对 <a href="https://github.com/ibireme/YYImage" target="_blank" rel="noopener">YYImage</a> 的源码实现做一个梳理，内容结构：</p>
+<ul>
+<li>UIImage 相关的处理</li>
+<li>YYImage 框架结构</li>
+<li>YYImage</li>
+<li>YYFrameImage</li>
+<li>YYSpriteSheetImage</li>
+<li>YYAnimatedImage</li>
+<li>YYAnimatedImageView</li>
+<li>YYImageCoder</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="UIImage-相关处理"><a href="#UIImage-相关处理" class="headerlink" title="UIImage 相关处理"></a>UIImage 相关处理</h2><p>一张图片从磁盘到显示到屏幕的大致过程为：</p>
+<ul>
+<li>从磁盘加载图片信息</li>
+<li>解码图片二进制数据为位图</li>
+<li>通过 CoreAnimation 框架处理最终绘制到屏幕上</li>
+</ul>
+<p>这一过程中耗时较大的操作是<strong>图片解码</strong>的过程。</p>
+<h3 id="图片的加载和解压"><a href="#图片的加载和解压" class="headerlink" title="图片的加载和解压"></a>图片的加载和解压</h3><p>日常开发中，我们常会通过 UIImage 的 <code>imageNamed:</code> 或 <code>imageWithData:</code> 方法从内存中加载图片生成 UIImage 对象。在这一过程中，图片不会进行解压，当 RunLoop 准备处理图片显示的处理（CATransaction）时，才进行解压，而这个解压过程是在主线程中执行的，所以大图解压也是导致卡顿的一个重要因素。</p>
+<h4 id="imageNamed"><a href="#imageNamed" class="headerlink" title="imageNamed:"></a>imageNamed:</h4><p>在我们使用 <code>imageNamed:</code> 加载图片信息生成 UIImage 对象的同时，图片的信息会被缓存起来。所以在使用该方法第一次加载某图片时，会消耗较多时间，而之后再加载该图会快很多。</p>
+<p>到这里图片还未进行解压操作，当某图片要绘制到屏幕前，会进行解压操作，系统也会将解压信息缓存到内存中。这些缓存是全局的，也就是说，即使当前 UIImage 对象被释放也不会影响该图片的缓存，只有当应用收到内存警告会应用进入后台才会进行缓存处理。具体的缓存清理策略是由系统决定的。</p>
+<h4 id="imageWithData"><a href="#imageWithData" class="headerlink" title="imageWithData:"></a>imageWithData:</h4><p>在我们使用 <code>imageWithData:</code> 加载图片生成 UIImage 对象时，从加载图片信息到解压图片进行屏幕上绘制的这一过程中。都不会将图片信息及解压信息以全局的形式缓存，在该 UIImage 对象释放时，相关的图片信息及解压信息都会被销毁。</p>
+<h4 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h4><ul>
+<li><strong><code>imageNamed:</code></strong> 会产生全局的内存占用，但第二次使用同一张图时，可以直接使用缓存数据，性能更好。</li>
+<li><strong><code>imageWIthData:</code></strong> 可以理解为即用即生成，即使是同一张图的重复使用，每次都需要走一遍加载和解压的过程。</li>
+</ul>
+<p>对比来看，<strong><code>imageNamed:</code></strong> 方法适合小而高频次使用的图片；<strong><code>imageWithData:</code></strong> 方法适合大而低频次的图片。</p>
+<p>基于前面的了解可以对图片的加载和解压过程做一些优化。</p>
+<ul>
+<li>加载的优化：可以在异步线程中通过 <a href="https://developer.apple.com/documentation/uikit/uiimage/1624123-imagewithcontentsoffile?language=occ" target="_blank" rel="noopener">imageWithContentsOfFile:</a> 方法加载图片。</li>
+<li>解压的优化：系统默认将解压的耗时操作放到了主线程中执行，比较通用的做法是在异步线程中通过 <a href="https://developer.apple.com/documentation/coregraphics/1455939-cgbitmapcontextcreate" target="_blank" rel="noopener">CGBitmapContextCreate</a> 方法主动将二进制图片数据解压成位图数据，</li>
+</ul>
+<h4 id="大图处理"><a href="#大图处理" class="headerlink" title="大图处理"></a>大图处理</h4><p>主流 iOS 设备最高支持 4096x4096 的纹理尺寸，若图片像素过大，在显示时会额外消耗资源来处理图片。且常会的图片加载过程会占用过多的内存。</p>
+<p>大图加载的出发点是，这张图最终的展示效果是需要怎样的？如果大图展示能够满足展示窗口的展示效果，一定程度上我们可以进行大图的压缩。</p>
+<p>在我们缩小图片是，会按取平均值的方式把多个像素点变为一个像素点，但超大图处理的过程中，老设备很可能会出现 OOM 的情况。原因是常规图片绘制的过程中，会先解码图片，再生成原始分辨率大小的 bitmap，这会很消耗内存。</p>
+<p>解决办法是使用更底层的 <strong><code>ImageIO</code></strong> 接口，它可以直接读取图像大小和元数据信息，不带来额外的内存开销。</p>
+<p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/5ac66d5b10a17fa72db3.png/EnCVrcjPLiM5Hwg.png" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/5ac66d5b10a17fa72db3.png/EnCVrcjPLiM5Hwg.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<p>另一种解决办法是，WWDC2018 苹果工程师建议开发者使用 <strong><code>UIGraphicsImageRenderer</code></strong> 来代替 <strong><code>UIGraphicsBeginImageContextWithOptions</code></strong>。该方法从 iOS10 引入，在 iOS12 中自动选择最佳的图片格式，可以减少很多的内存。</p>
+<p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/ea37043b9c82f5b187c8.png/m8KDjyH7We2CvQ5.png" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/ea37043b9c82f5b187c8.png/m8KDjyH7We2CvQ5.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<h2 id="YYImage-框架结构"><a href="#YYImage-框架结构" class="headerlink" title="YYImage 框架结构"></a>YYImage 框架结构</h2><p>前面铺垫了解了一些 UIImage 相关的处理过程。再来看下 YYImage 的框架结构。</p>
+<p>YYImage 特性（来自 README）：</p>
+<ul>
+<li>支持以下类型动画图像的播放/编码/解码:<br>  WebP, APNG, GIF。</li>
+<li>支持以下类型静态图像的显示/编码/解码:<br>  WebP, PNG, GIF, JPEG, JP2, TIFF, BMP, ICO, ICNS。</li>
+<li>支持以下类型图片的渐进式/逐行扫描/隔行扫描解码:<br>  PNG, GIF, JPEG, BMP。</li>
+<li>支持多张图片构成的帧动画播放，支持单张图片的 sprite sheet 动画。</li>
+<li>高效的动态内存缓存管理，以保证高性能低内存的动画播放。</li>
+<li>完全兼容 UIImage 和 UIImageView，使用方便。</li>
+<li>保留可扩展的接口，以支持自定义动画。</li>
+<li>每个类和方法都有完善的文档注释。</li>
+</ul>
+<p>YYImage 的目录结构：</p>
+<ul>
+<li>YYImage</li>
+<li>YYFrameImage</li>
+<li>YYSpriteSheetImage</li>
+<li>YYAnimatedImageView</li>
+<li>YYImageCoder</li>
+</ul>
+<p>主要分为三个层级，分别为：</p>
+<ul>
+<li>继承自 UIImage 的图像层</li>
+<li>继承自 UIImageView 的视图层</li>
+<li>编解码层</li>
+</ul>
+<p>其中 YYImage、YYFrameImage、YYSpriteSheetImage 都继承自 UIImage。YYAnimatedImageView 继承自 UIImageView，用于处理框架自定义的图片类。YYImageCoder 负责编码和解码。</p>
+<h2 id="YYImage"><a href="#YYImage" class="headerlink" title="YYImage"></a>YYImage</h2><p>YYImage 是 UIImage 的子类，支持 png、jpeg、jpg、gif、webp、apng 格式图片的解码，提供了类似 UIImage 的初始化方法。其中为了避免 <strong><code>imageName:</code></strong> 方法产生全局缓存，重载了该方法。源码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">+ (YYImage *)imageNamed:(<span class="built_in">NSString</span> *)name &#123;</span><br><span class="line">    <span class="keyword">if</span> (name.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    <span class="keyword">if</span> ([name hasSuffix:<span class="string">@"/"</span>]) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *res = name.stringByDeletingPathExtension;</span><br><span class="line">    <span class="built_in">NSString</span> *ext = name.pathExtension;</span><br><span class="line">    <span class="built_in">NSString</span> *path = <span class="literal">nil</span>;</span><br><span class="line">    <span class="built_in">CGFloat</span> scale = <span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// If no extension, guess by system supported (same as UIImage).</span></span><br><span class="line">    <span class="built_in">NSArray</span> *exts = ext.length &gt; <span class="number">0</span> ? @[ext] : @[<span class="string">@""</span>, <span class="string">@"png"</span>, <span class="string">@"jpeg"</span>, <span class="string">@"jpg"</span>, <span class="string">@"gif"</span>, <span class="string">@"webp"</span>, <span class="string">@"apng"</span>];</span><br><span class="line">    <span class="built_in">NSArray</span> *scales = _NSBundlePreferredScales();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> s = <span class="number">0</span>; s &lt; scales.count; s++) &#123;</span><br><span class="line">        scale = ((<span class="built_in">NSNumber</span> *)scales[s]).floatValue;</span><br><span class="line">        <span class="built_in">NSString</span> *scaledName = _NSStringByAppendingNameScale(res, scale);</span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">NSString</span> *e <span class="keyword">in</span> exts) &#123;</span><br><span class="line">            path = [[<span class="built_in">NSBundle</span> mainBundle] pathForResource:scaledName ofType:e];</span><br><span class="line">            <span class="keyword">if</span> (path) <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (path) <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (path.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSData</span> *data = [<span class="built_in">NSData</span> dataWithContentsOfFile:path];</span><br><span class="line">    <span class="keyword">if</span> (data.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> [[<span class="keyword">self</span> alloc] initWithData:data scale:scale];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>根据图片名取得拓展名，若未指定拓展名，遍历查询所有支持的类型</li>
+<li>scales 为根据设备拿到的对应分辨率，@[@1,@2,@3]</li>
+<li>得到有效 path 后，break</li>
+<li>调用 <strong><code>initWithData:scale:</code></strong> 方法进行初始化</li>
+</ul>
+<p>初始化方法最终都会调用 <strong><code>-initWithData:scale:</code></strong> 来进行初始化，源码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">instancetype</span>)initWithData:(<span class="built_in">NSData</span> *)data scale:(<span class="built_in">CGFloat</span>)scale &#123;</span><br><span class="line">    <span class="keyword">if</span> (data.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    <span class="keyword">if</span> (scale &lt;= <span class="number">0</span>) scale = [<span class="built_in">UIScreen</span> mainScreen].scale;</span><br><span class="line">    _preloadedLock = dispatch_semaphore_create(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        YYImageDecoder *decoder = [YYImageDecoder decoderWithData:data scale:scale];</span><br><span class="line">        YYImageFrame *frame = [decoder frameAtIndex:<span class="number">0</span> decodeForDisplay:<span class="literal">YES</span>];</span><br><span class="line">        <span class="built_in">UIImage</span> *image = frame.image;</span><br><span class="line">        <span class="keyword">if</span> (!image) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">        <span class="keyword">self</span> = [<span class="keyword">self</span> initWithCGImage:image.CGImage scale:decoder.scale orientation:image.imageOrientation];</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">self</span>) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">        _animatedImageType = decoder.type;</span><br><span class="line">        <span class="keyword">if</span> (decoder.frameCount &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            _decoder = decoder;</span><br><span class="line">            _bytesPerFrame = <span class="built_in">CGImageGetBytesPerRow</span>(image.CGImage) * <span class="built_in">CGImageGetHeight</span>(image.CGImage);</span><br><span class="line">            _animatedImageMemorySize = _bytesPerFrame * decoder.frameCount;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">self</span>.yy_isDecodedForDisplay = <span class="literal">YES</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>方法实现过程：</p>
+<ul>
+<li>初始化信号量 <strong>_preloadedLock</strong></li>
+<li>初始化图像解码器 <strong>_decoder</strong>（YYImageDecoder ）</li>
+<li>通过解压器获取第一帧解压后的图像</li>
+<li>通过 <code>-initWithCGImage:scale:orientation:</code> 初始化得到 YYImage 实例</li>
+<li>若帧数 &gt; 1<ul>
+<li>暂存解码器 <strong>_decoder</strong></li>
+<li>暂存每帧内存占用大小 <strong>_bytesPerFrame</strong></li>
+<li>暂存总内存占用大小 <strong>_animatedImageMemorySize</strong></li>
+</ul>
+</li>
+<li>return 初始化完成的 YYImage</li>
+</ul>
+<p>需要注意的几个点：</p>
+<ol>
+<li><p><strong><code>_preloadedLock</code></strong>：<strong>dispatch_semaphore_t</strong> 信号量锁，的目的是为了保证 <strong><code>_preloadedFrames</code></strong> 在内存中的读写安全。</p>
+</li>
+<li><p><strong><code>_preloadedFrames</code></strong>：对应 <strong>preloadAllAnimatedImageFrames</strong> 对外属性。若开启预加载所有帧到内存，<code>_preloadedFrames</code> 数组会保存所有帧的图像。</p>
+</li>
+<li><p>为什么锁选信号量：原因是 <strong>_preloadedFrames</strong> 的读写本身不会太耗时，不会有长时间的等待，使用信号量这样的自旋锁会比较合适。</p>
+</li>
+</ol>
+<h2 id="YYFrameImage"><a href="#YYFrameImage" class="headerlink" title="YYFrameImage"></a>YYFrameImage</h2><p>YYFrameImage 是专门用来处理帧动画图片的类，可以配置每一帧的图片信息和显示时长，也是 UIImage 的子类，仅支持 png 和 jpeg 格式。</p>
+<p>主要的初始化方法：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">nullable</span> <span class="keyword">instancetype</span>)initWithImagePaths:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSString</span> *&gt; *)paths</span><br><span class="line">                             frameDurations:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSNumber</span> *&gt; *)frameDurations</span><br><span class="line">                                  loopCount:(<span class="built_in">NSUInteger</span>)loopCount;</span><br><span class="line">- (<span class="keyword">nullable</span> <span class="keyword">instancetype</span>)initWithImageDataArray:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSData</span> *&gt; *)dataArray</span><br><span class="line">                                 frameDurations:(<span class="built_in">NSArray</span> *)frameDurations</span><br><span class="line">                                      loopCount:(<span class="built_in">NSUInteger</span>)loopCount;</span><br></pre></td></tr></table></figure>
+
+<p>方法实现过程：</p>
+<ul>
+<li>通过 path 拿到 NSData（或直接使用传入的 NSData）</li>
+<li>通过 <strong>yy_imageByDecoded</strong> 解压 data，得到 UIImage</li>
+<li>通过 UIImage，再带上帧动画相关的私有变量，封装得到 YYFrameImage</li>
+<li>return YYFrameImage</li>
+</ul>
+<h2 id="YYSpriteSheetImage"><a href="#YYSpriteSheetImage" class="headerlink" title="YYSpriteSheetImage"></a>YYSpriteSheetImage</h2><p>YYSpriteSheetImage 是用于支持 SpriteSheet 动画显示的图像类，也是 UIImage 的子类。SpriteSheet 动画可以理解为在一张大图上分布有很多块小图，不同时刻显示不同的小图，已达到动画展示的目的。一张图的加载耗时相对多图会好很多，避免了一些非必要的资源浪费。</p>
+<p>接口源码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">nullable</span> <span class="keyword">instancetype</span>)initWithSpriteSheetImage:(<span class="built_in">UIImage</span> *)image</span><br><span class="line">                                     contentRects:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSValue</span> *&gt; *)contentRects</span><br><span class="line">                                   frameDurations:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSNumber</span> *&gt; *)frameDurations</span><br><span class="line">                                        loopCount:(<span class="built_in">NSUInteger</span>)loopCount;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">readonly</span>) <span class="built_in">NSArray</span>&lt;<span class="built_in">NSValue</span> *&gt; *contentRects;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">readonly</span>) <span class="built_in">NSArray</span>&lt;<span class="built_in">NSValue</span> *&gt; *frameDurations;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">readonly</span>) <span class="built_in">NSUInteger</span> loopCount;</span><br></pre></td></tr></table></figure>
+
+<p>方法实现过程：</p>
+<ul>
+<li>根据传入数据，初始化 SpriteSheet 动画播放过程中需要的参数<ul>
+<li><code>_contentRects</code></li>
+<li><code>_frameDurations</code></li>
+<li><code>_loopCount</code></li>
+</ul>
+</li>
+<li>封装得到 YYSpriteSheetImage，并返回</li>
+</ul>
+<h2 id="YYAnimatedImage-协议"><a href="#YYAnimatedImage-协议" class="headerlink" title="YYAnimatedImage 协议"></a>YYAnimatedImage 协议</h2><p>YYAnimatedImage 协议将 YYAnimatedImageView 和 YYImage、YYFrameImage、YYSpriteSheetImage 之间构成了联系。不论是这三种图像类或以后会有拓展的图像类，他们之间虽然存在区别，但最终动画展示的原理是不变的。可以将共性的模块通过 YYAnimatedImage 协议来实现。</p>
+<p>对应协议源码：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">YYAnimatedImage</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"><span class="keyword">@required</span></span><br><span class="line"><span class="comment">// 总帧数</span></span><br><span class="line">- (<span class="built_in">NSUInteger</span>)animatedImageFrameCount;</span><br><span class="line"><span class="comment">// 循环次数，0 表示无限循环</span></span><br><span class="line">- (<span class="built_in">NSUInteger</span>)animatedImageLoopCount;</span><br><span class="line"><span class="comment">// 每帧在内存中的占用大小</span></span><br><span class="line">- (<span class="built_in">NSUInteger</span>)animatedImageBytesPerFrame;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取某一帧图像</span></span><br><span class="line">- (<span class="keyword">nullable</span> <span class="built_in">UIImage</span> *)animatedImageFrameAtIndex:(<span class="built_in">NSUInteger</span>)index;</span><br><span class="line"><span class="comment">// 获取某一帧的显示时间</span></span><br><span class="line">- (<span class="built_in">NSTimeInterval</span>)animatedImageDurationAtIndex:(<span class="built_in">NSUInteger</span>)index;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@optional</span></span><br><span class="line"><span class="comment">// 为 SpriteSheet 动画提供，获取某一动画的 contentsRect</span></span><br><span class="line">- (<span class="built_in">CGRect</span>)animatedImageContentsRectAtIndex:(<span class="built_in">NSUInteger</span>)index;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>共性抽离的思路在我们的日常开发中也常会用到，这里通过协议来统一接口的实现方式，使得逻辑看上去很清晰。</p>
+<h2 id="YYAnimatedImageView"><a href="#YYAnimatedImageView" class="headerlink" title="YYAnimatedImageView"></a>YYAnimatedImageView</h2><p>YYAnimatedImageView 是用来展示 YYImage、YYFrameImage、YYSpriteSheetImage 的类。由于 YYImage、YYFrameImage、YYSpriteSheetImage 都实现了 YYAnimatedImage 的协议方法，YYAnimatedImageView 可以根据不同的类型来对应展示图片。具体看下内部的实现。</p>
+<p>YYAnimatedImageView 可以理解为中间展示层，通过图像层解压的图像解码进行显示。</p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)setImage:(<span class="built_in">UIImage</span> *)image &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>.image == image) <span class="keyword">return</span>;</span><br><span class="line">    [<span class="keyword">self</span> setImage:image withType:YYAnimatedImageTypeImage];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setHighlightedImage:(<span class="built_in">UIImage</span> *)highlightedImage &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>.highlightedImage == highlightedImage) <span class="keyword">return</span>;</span><br><span class="line">    [<span class="keyword">self</span> setImage:highlightedImage withType:YYAnimatedImageTypeHighlightedImage];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setAnimationImages:(<span class="built_in">NSArray</span> *)animationImages &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>.animationImages == animationImages) <span class="keyword">return</span>;</span><br><span class="line">    [<span class="keyword">self</span> setImage:animationImages withType:YYAnimatedImageTypeImages];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setHighlightedAnimationImages:(<span class="built_in">NSArray</span> *)highlightedAnimationImages &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>.highlightedAnimationImages == highlightedAnimationImages) <span class="keyword">return</span>;</span><br><span class="line">    [<span class="keyword">self</span> setImage:highlightedAnimationImages withType:YYAnimatedImageTypeHighlightedImages];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>方法实现过程：</p>
+<ul>
+<li>在 YYAnimatedImageView 中可以看到四种 setImage 的方式</li>
+<li>先与已有 image 进行对比，如果不同则调用 <strong><code>-setImage:withType:</code></strong></li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)setImage:(<span class="keyword">id</span>)image withType:(YYAnimatedImageType)type &#123;</span><br><span class="line">    [<span class="keyword">self</span> stopAnimating];</span><br><span class="line">    <span class="keyword">if</span> (_link) [<span class="keyword">self</span> resetAnimated];</span><br><span class="line">    _curFrame = <span class="literal">nil</span>;</span><br><span class="line">    <span class="keyword">switch</span> (type) &#123;</span><br><span class="line">        <span class="keyword">case</span> YYAnimatedImageTypeNone: <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> YYAnimatedImageTypeImage: <span class="keyword">super</span>.image = image; <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> YYAnimatedImageTypeHighlightedImage: <span class="keyword">super</span>.highlightedImage = image; <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> YYAnimatedImageTypeImages: <span class="keyword">super</span>.animationImages = image; <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> YYAnimatedImageTypeHighlightedImages: <span class="keyword">super</span>.highlightedAnimationImages = image; <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    [<span class="keyword">self</span> imageChanged];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>方法实现过程：</p>
+<ul>
+<li>根据不同的 type 重置对应 type 的 image 实例</li>
+<li>最终调用 <strong><code>-imageChanged</code></strong>。</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)imageChanged &#123;</span><br><span class="line">	<span class="comment">// 获取当前 type 和 image 实例</span></span><br><span class="line">    YYAnimatedImageType newType = [<span class="keyword">self</span> currentImageType];</span><br><span class="line">    <span class="keyword">id</span> newVisibleImage = [<span class="keyword">self</span> imageForType:newType];</span><br><span class="line">    <span class="built_in">NSUInteger</span> newImageFrameCount = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">BOOL</span> hasContentsRect = <span class="literal">NO</span>;</span><br><span class="line">    <span class="comment">// 特殊处理 SpriteSheet 类型 Image</span></span><br><span class="line">    <span class="comment">// 通过判断 protocol 是否有对应实现来判断，是否是 SpriteSheetImage</span></span><br><span class="line">    <span class="keyword">if</span> ([newVisibleImage isKindOfClass:[<span class="built_in">UIImage</span> <span class="keyword">class</span>]] &amp;&amp;</span><br><span class="line">        [newVisibleImage conformsToProtocol:<span class="class"><span class="keyword">@protocol</span>(<span class="title">YYAnimatedImage</span>)]) </span>&#123;</span><br><span class="line">        newImageFrameCount = ((<span class="built_in">UIImage</span>&lt;YYAnimatedImage&gt; *) newVisibleImage).animatedImageFrameCount;</span><br><span class="line">        <span class="keyword">if</span> (newImageFrameCount &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            hasContentsRect = [((<span class="built_in">UIImage</span>&lt;YYAnimatedImage&gt; *) newVisibleImage) respondsToSelector:<span class="keyword">@selector</span>(animatedImageContentsRectAtIndex:)];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 若之前展示过 SpriteSheetImage，这里进行 layer 复位</span></span><br><span class="line">    <span class="keyword">if</span> (!hasContentsRect &amp;&amp; _curImageHasContentsRect) &#123;</span><br><span class="line">    	<span class="comment">// 复位 rect，且过程中取消隐式动画</span></span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">CGRectEqualToRect</span>(<span class="keyword">self</span>.layer.contentsRect, <span class="built_in">CGRectMake</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>)) ) &#123;</span><br><span class="line">            [<span class="built_in">CATransaction</span> begin];</span><br><span class="line">            [<span class="built_in">CATransaction</span> setDisableActions:<span class="literal">YES</span>];</span><br><span class="line">            <span class="keyword">self</span>.layer.contentsRect = <span class="built_in">CGRectMake</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">            [<span class="built_in">CATransaction</span> commit];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    _curImageHasContentsRect = hasContentsRect;</span><br><span class="line">    <span class="comment">// 若是 SpriteSheetImage，取第一帧的 contentsRect</span></span><br><span class="line">    <span class="comment">// 并定位到 image 中 contentsRect 对应的位置</span></span><br><span class="line">    <span class="keyword">if</span> (hasContentsRect) &#123;</span><br><span class="line">        <span class="built_in">CGRect</span> rect = [((<span class="built_in">UIImage</span>&lt;YYAnimatedImage&gt; *) newVisibleImage) animatedImageContentsRectAtIndex:<span class="number">0</span>];</span><br><span class="line">        [<span class="keyword">self</span> setContentsRect:rect forImage:newVisibleImage];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 多帧图特殊处理</span></span><br><span class="line">    <span class="comment">// 初始化属性 - totalLoop、_totalFrameCount 等</span></span><br><span class="line">    <span class="keyword">if</span> (newImageFrameCount &gt; <span class="number">1</span>) &#123;</span><br><span class="line">        [<span class="keyword">self</span> resetAnimated];</span><br><span class="line">        _curAnimatedImage = newVisibleImage;</span><br><span class="line">        _curFrame = newVisibleImage;</span><br><span class="line">        _totalLoop = _curAnimatedImage.animatedImageLoopCount;</span><br><span class="line">        _totalFrameCount = _curAnimatedImage.animatedImageFrameCount;</span><br><span class="line">        [<span class="keyword">self</span> calcMaxBufferCount];</span><br><span class="line">    &#125;</span><br><span class="line">    [<span class="keyword">self</span> setNeedsDisplay];</span><br><span class="line">    [<span class="keyword">self</span> didMoved];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>方法实现过程：</p>
+<ul>
+<li>获取 imageType 和图像实例（image 或 images）</li>
+<li>通过 protocol 的实现情况，判断是否是 SpriteSheetImage</li>
+<li>若不是 SpriteSheetImage 且之前展示过 SpriteSheetImage，进行 layer 复位，且取消过程中的隐式动画</li>
+<li>若是 SpriteSheetImage，取第一帧的 contentsRect，并定位到对应 image 的位置</li>
+<li>多帧图的一些属性处理，调用 <strong><code>-resetAnimated</code></strong> 重置动画的配置项</li>
+<li>调用 didMoved 来执行动画</li>
+</ul>
+<h3 id="动画过程"><a href="#动画过程" class="headerlink" title="动画过程"></a>动画过程</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)didMoved &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>.autoPlayAnimatedImage) &#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">self</span>.superview &amp;&amp; <span class="keyword">self</span>.window) &#123;</span><br><span class="line">            [<span class="keyword">self</span> startAnimating];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            [<span class="keyword">self</span> stopAnimating];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>会判断是否有 superView 及 window，都满足的情况下，开启动画。</p>
+<h3 id="解压过程"><a href="#解压过程" class="headerlink" title="解压过程"></a>解压过程</h3><p>前面 <strong><code>-resetAnimated</code></strong> 方法执行的过程中，会重置队列 <strong><code>_requestQueue</code></strong>。该队列的 <strong>maxConcurrentOperationCount</strong> 为 1，是一个串行队列。该队列作用是用来处理解压任务。</p>
+<p><strong><code>-resetAnimated</code></strong> 方法执行过程中会判断是否创建了定时器 <strong><code>_link</code></strong>，若未创建，则创建（关于定时器，放后面单独看）：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">_link = [<span class="built_in">CADisplayLink</span> displayLinkWithTarget:[_YYImageWeakProxy proxyWithTarget:<span class="keyword">self</span>] selector:<span class="keyword">@selector</span>(step:)];</span><br><span class="line"><span class="comment">// _runloopMode 为 NSRunLoopCommonModes</span></span><br><span class="line"><span class="keyword">if</span> (_runloopMode) &#123;</span><br><span class="line">    [_link addToRunLoop:[<span class="built_in">NSRunLoop</span> mainRunLoop] forMode:_runloopMode];</span><br><span class="line">&#125;</span><br><span class="line">_link.paused = <span class="literal">YES</span>;</span><br></pre></td></tr></table></figure>
+
+<p>看到会定时执行 <strong>-step:</strong> 方法，其内会判断当前 <strong>_requestQueue</strong> 是否无在执行的任务，如果没有加入新的 operation。该 operation 为 <strong><code>_YYAnimatedImageViewFetchOperation</code></strong>：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (!bufferIsFull &amp;&amp; _requestQueue.operationCount == <span class="number">0</span>) &#123; <span class="comment">// if some work not finished, wait for next opportunity</span></span><br><span class="line">    _YYAnimatedImageViewFetchOperation *operation = [_YYAnimatedImageViewFetchOperation new];</span><br><span class="line">    operation.view = <span class="keyword">self</span>;</span><br><span class="line">    operation.nextIndex = nextIndex;</span><br><span class="line">    operation.curImage = image;</span><br><span class="line">    [_requestQueue addOperation:operation];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>_YYAnimatedImageViewFetchOperation</code></strong> 继承自 NSOperation，重写了 main 来自定义解压任务。源码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)main &#123;</span><br><span class="line">    __<span class="keyword">strong</span> YYAnimatedImageView *view = _view;</span><br><span class="line">    <span class="keyword">if</span> (!view) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> ([<span class="keyword">self</span> isCancelled]) <span class="keyword">return</span>;</span><br><span class="line">    view-&gt;_incrBufferCount++;</span><br><span class="line">    <span class="keyword">if</span> (view-&gt;_incrBufferCount == <span class="number">0</span>) [view calcMaxBufferCount];</span><br><span class="line">    <span class="keyword">if</span> (view-&gt;_incrBufferCount &gt; (<span class="built_in">NSInteger</span>)view-&gt;_maxBufferCount) &#123;</span><br><span class="line">        view-&gt;_incrBufferCount = view-&gt;_maxBufferCount;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSUInteger</span> idx = _nextIndex;</span><br><span class="line">    <span class="built_in">NSUInteger</span> max = view-&gt;_incrBufferCount &lt; <span class="number">1</span> ? <span class="number">1</span> : view-&gt;_incrBufferCount;</span><br><span class="line">    <span class="built_in">NSUInteger</span> total = view-&gt;_totalFrameCount;</span><br><span class="line">    view = <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; max; i++, idx++) &#123;</span><br><span class="line">        <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (idx &gt;= total) idx = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> ([<span class="keyword">self</span> isCancelled]) <span class="keyword">break</span>;</span><br><span class="line">            __<span class="keyword">strong</span> YYAnimatedImageView *view = _view;</span><br><span class="line">            <span class="keyword">if</span> (!view) <span class="keyword">break</span>;</span><br><span class="line">            LOCK_VIEW(<span class="built_in">BOOL</span> miss = (view-&gt;_buffer[@(idx)] == <span class="literal">nil</span>));</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> (miss) &#123;</span><br><span class="line">                <span class="built_in">UIImage</span> *img = [_curImage animatedImageFrameAtIndex:idx];</span><br><span class="line">                img = img.yy_imageByDecoded;</span><br><span class="line">                <span class="keyword">if</span> ([<span class="keyword">self</span> isCancelled]) <span class="keyword">break</span>;</span><br><span class="line">                LOCK_VIEW(view-&gt;_buffer[@(idx)] = img ? img : [<span class="built_in">NSNull</span> null]);</span><br><span class="line">                view = <span class="literal">nil</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>核心代码为：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="built_in">UIImage</span> *img = [_curImage animatedImageFrameAtIndex:idx];</span><br><span class="line">img = img.yy_imageByDecoded;</span><br></pre></td></tr></table></figure>
+
+<p><strong>-animatedImageFrameAtIndex:</strong> 方法调用过程中会触发 <strong>yy_imageByDecoded</strong>，会进行解码操作。作者为了保证解码成功，又进行了第二次的解码（yy_imageByDecoded 方法内部会判断如果已经解码，不会再进行解码）。</p>
+<p>解码完成后进行缓存。</p>
+<h3 id="缓存机制"><a href="#缓存机制" class="headerlink" title="缓存机制"></a>缓存机制</h3><p>我们可以看到 YYAnimatedImageView 中声明的关于缓存的私有变量：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="built_in">NSMutableDictionary</span> *_buffer; <span class="comment">///&lt; frame buffer</span></span><br><span class="line"><span class="built_in">BOOL</span> _bufferMiss; <span class="comment">///&lt; whether miss frame on last opportunity</span></span><br><span class="line"><span class="built_in">NSUInteger</span> _maxBufferCount; <span class="comment">///&lt; maximum buffer count</span></span><br><span class="line"><span class="built_in">NSInteger</span> _incrBufferCount; <span class="comment">///&lt; current allowed buffer count (will increase by step)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="缓存的节点"><a href="#缓存的节点" class="headerlink" title="缓存的节点"></a>缓存的节点</h4><p>在解码的过程中，会将解码的内容赋值给 <strong>_buffer</strong>。</p>
+<h4 id="容量限制"><a href="#容量限制" class="headerlink" title="容量限制"></a>容量限制</h4><p>源码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// dynamically adjust buffer size for current memory.</span></span><br><span class="line">- (<span class="keyword">void</span>)calcMaxBufferCount &#123;</span><br><span class="line">    int64_t bytes = (int64_t)_curAnimatedImage.animatedImageBytesPerFrame;</span><br><span class="line">    <span class="keyword">if</span> (bytes == <span class="number">0</span>) bytes = <span class="number">1024</span>;</span><br><span class="line">    </span><br><span class="line">    int64_t total = _YYDeviceMemoryTotal();</span><br><span class="line">    int64_t free = _YYDeviceMemoryFree();</span><br><span class="line">    int64_t max = MIN(total * <span class="number">0.2</span>, free * <span class="number">0.6</span>);</span><br><span class="line">    max = MAX(max, BUFFER_SIZE); <span class="comment">// BUFFER_SIZE = 10MB</span></span><br><span class="line">    <span class="keyword">if</span> (_maxBufferSize) max = max &gt; _maxBufferSize ? _maxBufferSize : max;</span><br><span class="line">    <span class="keyword">double</span> maxBufferCount = (<span class="keyword">double</span>)max / (<span class="keyword">double</span>)bytes;</span><br><span class="line">    <span class="keyword">if</span> (maxBufferCount &lt; <span class="number">1</span>) maxBufferCount = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (maxBufferCount &gt; <span class="number">512</span>) maxBufferCount = <span class="number">512</span>;</span><br><span class="line">    _maxBufferCount = maxBufferCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最大缓存容量是动态计算的：</p>
+<ul>
+<li>设备允许容量 = min(总内存x0.2, 总空闲内存x0.6)</li>
+<li>最大计算容量 = max(设备允许容量, BUFFER_SIZE) //BUFFER_SIZE=10MB</li>
+<li>最大容量 = min(最大计算容量, 自定义最大容量)</li>
+</ul>
+<h4 id="清理机制"><a href="#清理机制" class="headerlink" title="清理机制"></a>清理机制</h4><p>在 resetAnimation 时会注册两个 Notification：内存警告、进入后台。</p>
+<p>在应用进入后台时：</p>
+<ul>
+<li>先取消全部异步的解压操作</li>
+<li>计算下一帧的下标</li>
+<li>移除不是下一帧的所有缓存，保证进入前台时，能及时显示下一帧</li>
+</ul>
+<h3 id="定时器-link"><a href="#定时器-link" class="headerlink" title="定时器 _link"></a>定时器 <code>_link</code></h3><p><strong><code>_link</code></strong> 是基于 CADisplayLink 创建的定时器，帧率刷新的特性适合用来处理帧率相关的 UI 逻辑。单独拿出来梳理，是因为作者使用了 <strong>_YYImageWeakProxy</strong> 类进行消息转发来避免循环应用。源码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> A proxy used to hold a weak object.</span></span><br><span class="line"><span class="comment"> It can be used to avoid retain cycles, such as the target in NSTimer or CADisplayLink.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">_YYImageWeakProxy</span> : <span class="title">NSProxy</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">weak</span>, <span class="keyword">readonly</span>) <span class="keyword">id</span> target;</span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithTarget:(<span class="keyword">id</span>)target;</span><br><span class="line">+ (<span class="keyword">instancetype</span>)proxyWithTarget:(<span class="keyword">id</span>)target;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">_YYImageWeakProxy</span></span></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithTarget:(<span class="keyword">id</span>)target &#123;</span><br><span class="line">    _target = target;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line">+ (<span class="keyword">instancetype</span>)proxyWithTarget:(<span class="keyword">id</span>)target &#123;</span><br><span class="line">    <span class="keyword">return</span> [[_YYImageWeakProxy alloc] initWithTarget:target];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">id</span>)forwardingTargetForSelector:(SEL)selector &#123;</span><br><span class="line">    <span class="keyword">return</span> _target;</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">void</span>)forwardInvocation:(<span class="built_in">NSInvocation</span> *)invocation &#123;</span><br><span class="line">    <span class="keyword">void</span> *null = <span class="literal">NULL</span>;</span><br><span class="line">    [invocation setReturnValue:&amp;null];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">NSMethodSignature</span> *)methodSignatureForSelector:(SEL)selector &#123;</span><br><span class="line">    <span class="keyword">return</span> [<span class="built_in">NSObject</span> instanceMethodSignatureForSelector:<span class="keyword">@selector</span>(init)];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">BOOL</span>)respondsToSelector:(SEL)aSelector &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target respondsToSelector:aSelector];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">BOOL</span>)isEqual:(<span class="keyword">id</span>)object &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target isEqual:object];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">NSUInteger</span>)hash &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target hash];</span><br><span class="line">&#125;</span><br><span class="line">- (Class)superclass &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target superclass];</span><br><span class="line">&#125;</span><br><span class="line">- (Class)<span class="keyword">class</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target <span class="keyword">class</span>];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">BOOL</span>)isKindOfClass:(Class)aClass &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target isKindOfClass:aClass];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">BOOL</span>)isMemberOfClass:(Class)aClass &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target isMemberOfClass:aClass];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">BOOL</span>)conformsToProtocol:(Protocol *)aProtocol &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target conformsToProtocol:aProtocol];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">BOOL</span>)isProxy &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">NSString</span> *)description &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target description];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">NSString</span> *)debugDescription &#123;</span><br><span class="line">    <span class="keyword">return</span> [_target debugDescription];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>消息转发过程：</p>
+<ul>
+<li>若 <strong>_target</strong> 存在，向 <strong>_YYImageWeakProxy</strong> 实例发送消息，会正常转发给 target</li>
+<li>在 <strong>_target</strong> 释放时，<strong>forwardingTargetForSelector:</strong> 重定向失败，会调用 <strong>methodSignatureForSelector:</strong> 来获取有效方法。</li>
+<li>若未获取到有效方法，抛出异常</li>
+<li>若获取到有效方法，调用 <strong>forwardInvocation:</strong> 进行消息转发。作者认为控制返回 null</li>
+</ul>
+<h2 id="YYImageCoder"><a href="#YYImageCoder" class="headerlink" title="YYImageCoder"></a>YYImageCoder</h2><p>该类主要包含：</p>
+<ul>
+<li>YYImageFrame 类（图片帧信息）</li>
+<li>YYImageDecoder 解码器</li>
+<li>YYImageEncoder 编码器</li>
+</ul>
+<p>解码过程描述：</p>
+<ul>
+<li>将 CGImageRef 转化为位图 bitmap</li>
+<li>先通过 CGBitmapContextCreate() 创建图片上下文</li>
+<li>再通过 CGContextDrawImage() 将图片绘制到上下文</li>
+<li>最后通过 CGBitmapContextCreateImage() 结合上下文生成位图</li>
+</ul>
+<p>也通过 ImageIO 实现了渐进式解码。</p>
+<p>多帧解码的过程中，会出现递归操作，作者选用了互斥锁 <strong>pthread_mutex_t</strong>。<strong>pthread_mutex_t</strong> 本身不支持递归，可以通过设置打开递归选项。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>YYImage 可以理解为是基于 UIImage 的一个拓展。</p>
+<p>功能上。一方面支持了更多的业务需求场景，如 webp 格式图片的展示。另一方面把图片的解码缓存，变为用户可控状态。我们可以根据自己的业务需求调整缓存的设定。</p>
+<p>框架结构上。线程安全的处理、重叠模块的解耦都做的很棒。日常开发过程中，可以借鉴一些结构上的思路。</p>
+<ul>
+<li>UIImage<ul>
+<li>加载、解码 bitmap、CA 框架绘制</li>
+<li>imageNamed:</li>
+<li>imageWithData:</li>
+<li>大图<ul>
+<li>4096x4096 最大纹理，老设备 OOM</li>
+<li>ImageIO 取图像元数据</li>
+<li>WWDC18 iOS10 引入 UIGraphicsImageRenderer</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>YYImage 框架<ul>
+<li>图像层</li>
+<li>视图层</li>
+<li>编解码</li>
+</ul>
+</li>
+<li>YYImage<ul>
+<li>重写 imageNamed</li>
+<li>初始化信号量 <code>_preloadedLock</code>，保证<code>_preloadedFrames</code> 读写安全</li>
+<li><code>_preloadedFrames</code> 保存所有帧图像</li>
+</ul>
+</li>
+<li>YYFrameImage<ul>
+<li>帧动画</li>
+<li>帧图片 + 显示时长</li>
+<li>png、jpeg</li>
+</ul>
+</li>
+<li>YYSpriteSheetImage<ul>
+<li>SpriteSheet 动画</li>
+<li>rect</li>
+<li>duration</li>
+<li>loopCount</li>
+</ul>
+</li>
+<li>YYAnimatedImage 协议<ul>
+<li>图像展示原理相同，展示通过该协议来实现</li>
+<li>@required</li>
+<li>@optional</li>
+</ul>
+</li>
+<li>YYAnimatedImageView<ul>
+<li>展示上面的 Image 解码的图像</li>
+<li>setImage/setHighlightedImage</li>
+<li>setAnimationImages/setHighlightedAnimationImages</li>
+<li>根据 image type 拿到具体的 image 实例</li>
+<li>拿到实例后，imageChange<ul>
+<li>SpriteSheet 单独处理</li>
+<li>重置 rect，取消隐式动画</li>
+<li>frameCount &gt; 1，进行 resetAnimation</li>
+</ul>
+</li>
+<li>resetAnimation 做的几件事<ul>
+<li>重置定时器（commonModes）</li>
+<li>使用了 NSProxy 避免循环引用</li>
+<li>添加 <code>_YYAnimatedImageViewFetchOperation</code> 进行预解码</li>
+<li>继承自 NSOperation，重写了 main 来自定义解压任务（二次解压保险）</li>
+<li>解码 image 时会进行 buffer 缓存</li>
+<li>缓存容量计算公式<ul>
+<li>设备允许容量 = min(总内存x0.2, 总空闲内存x0.6)</li>
+<li>最大计算容量 = max(设备允许容量, BUFFER_SIZE) //BUFFER_SIZE=10MB</li>
+<li>最大容量 = min(最大计算容量, 自定义最大容量)</li>
+</ul>
+</li>
+<li>缓存清理<ul>
+<li>resetAnimation 注册两通知（内存警告、进入后台）</li>
+<li>先取消全部异步解码操作</li>
+<li>计算下一帧的下标</li>
+<li>移除下一帧之外的所有缓存，以保证进入前台，可以立刻显示下一帧</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>YYImageCoder<ul>
+<li>YYImageFrame</li>
+<li>YYImageDecoder</li>
+<li>解码过程<ul>
+<li>将 CGImageRef 转为 bitmap</li>
+<li>通过 CGBitmapContextCreate() 创建上下文</li>
+</ul>
+</li>
+<li>多帧解码过程中使用了 pthread_mutex_t，因为存在递归操作，这里使用了互斥锁</li>
+</ul>
+</li>
+</ul>
+
+  
+    
+    <div class='footer'>
+      
+        <div class='references'>
+          <section class='header'>
+            
+              <i class="fas fa-quote-left fa-fw" aria-hidden="true"></i>
+            
+            <span>参考资料</span>
+          </section>
+          <section class='body'>
+            <ul>
+              
+                <li>
+                  <a href="https://juejin.im/post/6844903902400233479#heading-29" rel="external nofollow noopener noreferrer" target="_blank">
+                  YYImage 源码剖析：图片处理技巧
+                  </a>
+                </li>
+              
+                <li>
+                  <a href="https://lision.me/yyimage/" rel="external nofollow noopener noreferrer" target="_blank">
+                  YYImage 设计思路，实现细节剖析
+                  </a>
+                </li>
+              
+            </ul>
+          </section>
+        </div>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=https://blog.jonyfang.com/2017/09/10/2017-09-10-yyimage/>https://blog.jonyfang.com/2017/09/10/2017-09-10-yyimage/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/iOS/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>iOS</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>源码阅读</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.jonyfang.com/2017/09/10/2017-09-10-yyimage/&title=YYImage 源码梳理 - JonyFang&summary=图片相关的处理，在移动应用中属于比较重要的一个角色。本篇主要是对 YYImage 的源码实现做一个梳理，内容结构：
+
+UIImage 相关的处理
+YYImage 框架结构
+YYImage
+YYFrameImage
+YYSpriteSheetImage
+YYAnimatedImage
+YYAnimatedImageView
+YYImageCoder
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://blog.jonyfang.com/2017/09/10/2017-09-10-yyimage/&title=YYImage 源码梳理 - JonyFang&summary=图片相关的处理，在移动应用中属于比较重要的一个角色。本篇主要是对 YYImage 的源码实现做一个梳理，内容结构：
+
+UIImage 相关的处理
+YYImage 框架结构
+YYImage
+YYFrameImage
+YYSpriteSheetImage
+YYAnimatedImage
+YYAnimatedImageView
+YYImageCoder
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://blog.jonyfang.com/2017/09/10/2017-09-10-yyimage/&title=YYImage 源码梳理 - JonyFang&summary=图片相关的处理，在移动应用中属于比较重要的一个角色。本篇主要是对 YYImage 的源码实现做一个梳理，内容结构：
+
+UIImage 相关的处理
+YYImage 框架结构
+YYImage
+YYFrameImage
+YYSpriteSheetImage
+YYAnimatedImage
+YYAnimatedImageView
+YYImageCoder
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-telegram" title="" rel="external nofollow noopener noreferrer"
+          
+            href="https://t.me/share/url?url=https://blog.jonyfang.com/2017/09/10/2017-09-10-yyimage/&text=YYImage 源码梳理 - JonyFang"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2017/10/01/2017-10-01-yycache/'>
+          <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>YYCache 源码梳理</p>
+          <p class='content'>本篇是对 YYCache 源码阅读过程中的梳理。YYCache 是一个线程安全的高性能 Key-Value 缓存框架。代码质量很高，值得拿来学习。
+
+
+YYCache 的框架结构
+如上是 YYC...</p>
+        </a>
+      
+      
+        <a class='next' href='/2017/08/30/2017-08-30-wwdc17-505-whats-new-in-photos-apis/'>
+          <p class='title'>WWDC17 505 - Photos APIs 新特性<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>视频链接：WWDC 2017 Session 505 - What’s New in Photos APIs
+本节要介绍的是 Photos APIs 的一些新特性。简单的概括有下面这几点内容：
+...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+  
+
+  <article class="post white-box reveal shadow" id="comments">
+    <p ct><i class='fas fa-comments'></i> 评论</p>
+    
+    <div id="valine_container" class="valine_thread">
+  <i class="fas fa-cog fa-spin fa-fw fa-2x"></i>
+</div>
+
+  </article>
+
+
+
+
+
+
+</div>
+<aside class='l_side'>
+  
+  
+    
+    
+
+
+
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#UIImage-相关处理"><span class="toc-text">UIImage 相关处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#图片的加载和解压"><span class="toc-text">图片的加载和解压</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#imageNamed"><span class="toc-text">imageNamed:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#imageWithData"><span class="toc-text">imageWithData:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对比"><span class="toc-text">对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#大图处理"><span class="toc-text">大图处理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YYImage-框架结构"><span class="toc-text">YYImage 框架结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YYImage"><span class="toc-text">YYImage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YYFrameImage"><span class="toc-text">YYFrameImage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YYSpriteSheetImage"><span class="toc-text">YYSpriteSheetImage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YYAnimatedImage-协议"><span class="toc-text">YYAnimatedImage 协议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YYAnimatedImageView"><span class="toc-text">YYAnimatedImageView</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化"><span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动画过程"><span class="toc-text">动画过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解压过程"><span class="toc-text">解压过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存机制"><span class="toc-text">缓存机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#缓存的节点"><span class="toc-text">缓存的节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#容量限制"><span class="toc-text">容量限制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#清理机制"><span class="toc-text">清理机制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#定时器-link"><span class="toc-text">定时器 _link</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YYImageCoder"><span class="toc-text">YYImageCoder</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+
+      </div>
+      
+  
+  <footer class="footer clearfix">
+    <br><br>
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="mailto:jony.chunfang@gmaill.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://github.com/JonyFang"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=1063555"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © 2015-2020 JonyFang</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+
+      <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+  </div>
+  <div>
+    <!-- required -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5/dist/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  function pjax_fancybox() {
+    $(".md").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+      var element = document.createElement("a"); // a 标签
+      $(element).attr("class", "fancybox");
+      $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+      $(element).attr("href", $(this).attr("src"));
+      if ($(this).attr("data-original")) {
+        $(element).attr("href", $(this).attr("data-original"));
+      }
+      $(element).attr("data-fancybox", "images");
+      var caption = "";   // 描述信息
+      if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+        $(element).attr('data-caption', $(this).attr('alt'));
+        caption = $(this).attr('alt');
+      }
+      var div = document.createElement("div");
+      $(div).addClass("fancybox");
+      $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+      var span = document.createElement("span");
+      $(span).addClass("image-caption");
+      $(span).text(caption); // 加描述
+      $(this).after(span);  // 再套一层描述
+      // 背景层
+      var bgDiv = document.createElement("div");
+      $(bgDiv).addClass("bg");
+      if ($(this).attr('bg')) {
+        $(bgDiv).css('background', $(this).attr('bg'));
+      }
+      $(this).wrap(bgDiv); // 背景层
+      $(this).wrap(element);  // 最后套 a 标签
+    })
+    $(".md").find("img").fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+      closeClick: true,
+      helpers: {
+        overlay: {closeClick: true}
+      },
+      buttons: [
+        "zoom",
+        "close"
+      ]
+    });
+  };
+  $(function () {
+    pjax_fancybox();
+  });
+</script>
+
+
+<!-- internal -->
+
+
+
+
+<!-- optional -->
+
+  <script>
+  
+  var SEARCH_SERVICE = "hexo" || "hexo";
+  var ROOT = "/" || "/";
+  if (!ROOT.endsWith('/')) ROOT += '/';
+</script>
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.0/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+  
+    <script>
+      window.FPConfig = {
+        delay: 0,
+        ignoreKeywords: [],
+        maxRPS: 5,
+        hoverDelay: 25
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script>
+  
+
+
+
+
+
+
+
+
+  <script>
+  let APlayerController = new Object();
+  APlayerController.id = '1063555';  // 设定全局音乐播放ID
+  APlayerController.volume = '0.7';
+</script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js"></script>
+
+
+
+
+
+
+
+
+  
+  
+<script src="/js/valine.js"></script>
+
+
+<script>
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link'.split(',').filter(function (item) {
+    return GUEST_INFO.indexOf(item) > -1
+  });
+  var REQUIRED_FIELDS = ['nick', 'mail', 'link'];
+  var requiredFields = 'nick,mail'.split(',').filter(function (item) {
+    return REQUIRED_FIELDS.indexOf(item) > -1
+  });
+
+  function emoji(path, idx, ext) {
+    return path + "/" + path + "-" + idx + "." + ext;
+  }
+
+  var emojiMaps = {};
+  for (var i = 1; i <= 54; i++) {
+    emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+  }
+  for (var i = 1; i <= 101; i++) {
+    emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+  }
+  for (var i = 1; i <= 116; i++) {
+    emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+  }
+  for (var i = 1; i <= 125; i++) {
+    emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+  }
+  for (var i = 1; i <= 4; i++) {
+    emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+  }
+
+  function pjax_valine() {
+    if(!document.querySelectorAll("#valine_container")[0])return;
+
+    let pagePlaceholder = $.trim($('#pjax-comment-placeholder').text()) || "快来评论吧~";
+
+    let path = $.trim($('#pjax-comment-path').text());
+    if (path.length == 0) {
+      let defaultPath = '';
+      path = defaultPath || decodeURI(window.location.pathname);
+    }
+
+    var valine = new Valine();
+    valine.init({
+      el: '#valine_container',
+      meta: meta,
+      placeholder: pagePlaceholder,
+      path: path,
+      appId: "9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI",
+      appKey: "tIyMmSe8wzMgEJRCoUgzKV1B",
+      pageSize: '10',
+      avatar: 'robohash',
+      lang: 'zh-cn',
+      visitor: 'true',
+      highlight: 'true',
+      mathJax: 'false',
+      enableQQ: 'true',
+      requiredFields: requiredFields,
+      emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+      emojiMaps: emojiMaps
+    })
+  }
+
+  $(function () {
+    pjax_valine();
+  });
+</script>
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+
+  
+    
+<script src="/js/search.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script defer>
+
+  const LCCounter = {
+    app_id: '9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI',
+    app_key: 'tIyMmSe8wzMgEJRCoUgzKV1B',
+    custom_api_server: '',
+
+    // 查询存储的记录
+    getRecord(Counter, url, title) {
+      return new Promise(function (resolve, reject) {
+        Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({url})))
+          .then(resp => resp.json())
+          .then(({results, code, error}) => {
+            if (code === 401) {
+              throw error;
+            }
+            if (results && results.length > 0) {
+              var record = results[0];
+              resolve(record);
+            } else {
+              Counter('post', '/classes/Counter', {url, title: title, times: 0})
+                .then(resp => resp.json())
+                .then((record, error) => {
+                  if (error) {
+                    throw error;
+                  }
+                  resolve(record);
+                }).catch(error => {
+                console.error('Failed to create', error);
+                reject(error);
+              });
+            }
+          }).catch((error) => {
+          console.error('LeanCloud Counter Error:', error);
+          reject(error);
+        });
+      })
+    },
+
+    // 发起自增请求
+    increment(Counter, incrArr) {
+      return new Promise(function (resolve, reject) {
+        Counter('post', '/batch', {
+          "requests": incrArr
+        }).then((res) => {
+          res = res.json();
+          if (res.error) {
+            throw res.error;
+          }
+          resolve(res);
+        }).catch((error) => {
+          console.error('Failed to save visitor count', error);
+          reject(error);
+        });
+      });
+    },
+
+    // 构建自增请求体
+    buildIncrement(objectId) {
+      return {
+        "method": "PUT",
+        "path": `/1.1/classes/Counter/${ objectId }`,
+        "body": {
+          "times": {
+            '__op': 'Increment',
+            'amount': 1
+          }
+        }
+      }
+    },
+
+    // 校验是否为有效的 UV
+    validUV() {
+      var key = 'LeanCloudUVTimestamp';
+      var flag = localStorage.getItem(key);
+      if (flag) {
+        // 距离标记小于 24 小时则不计为 UV
+        if (new Date().getTime() - parseInt(flag) <= 86400000) {
+          return false;
+        }
+      }
+      localStorage.setItem(key, new Date().getTime().toString());
+      return true;
+    },
+
+    addCount(Counter) {
+      var enableIncr = '' === 'true' && window.location.hostname !== 'localhost';
+      enableIncr = true;
+      var getterArr = [];
+      var incrArr = [];
+      // 请求 PV 并自增
+      var pvCtn = document.querySelector('#lc-sv');
+      if (pvCtn || enableIncr) {
+        var pvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-sv', 'Visits').then((record) => {
+          incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-sv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + 1;
+              if (pvCtn) {
+                pvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(pvGetter);
+      }
+
+      // 请求 UV 并自增
+      var uvCtn = document.querySelector('#lc-uv');
+      if (uvCtn || enableIncr) {
+        var uvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-uv', 'Visitors').then((record) => {
+          var vuv = this.validUV();
+          vuv && incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-uv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + (vuv ? 1 : 0);
+              if (uvCtn) {
+                uvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(uvGetter);
+      }
+
+      // 请求文章的浏览数，如果是当前页面就自增
+      var allPV = document.querySelectorAll('#lc-pv');
+      if (allPV.length > 0 || enableIncr) {
+        for (i = 0; i < allPV.length; i++) {
+          let pv = allPV[i];
+          let title = pv.getAttribute('data-title');
+          var url = 'https://blog.jonyfang.com' + pv.getAttribute('data-path');
+          if (url) {
+            var viewGetter = this.getRecord(Counter, url, title).then((record) => {
+              // 是当前页面就自增
+              if (pv.getAttribute('data-path') == window.location.pathname) {
+                incrArr.push(this.buildIncrement(record.objectId));
+              }
+              if (pv) {
+                var ele = pv.querySelector('#lc-pv #number');
+                if (ele) {
+                  if (pv.getAttribute('data-path') == window.location.pathname) {
+                    ele.innerText = (record.times || 0) + 1;
+                  } else {
+                    ele.innerText = record.times || 0;
+                  }
+                  pv.style.display = 'inline';
+                }
+              }
+            });
+            getterArr.push(viewGetter);
+          }
+        }
+      }
+
+      // 如果启动计数自增，批量发起自增请求
+      if (enableIncr) {
+        Promise.all(getterArr).then(() => {
+          incrArr.length > 0 && this.increment(Counter, incrArr);
+        })
+      }
+
+    },
+
+
+    fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${ api_server }/1.1${ url }`, {
+          method,
+          headers: {
+            'X-LC-Id': this.app_id,
+            'X-LC-Key': this.app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      this.addCount(Counter);
+    },
+
+    refreshCounter() {
+      var api_server = this.app_id.slice(-9) !== '-MdYXbMMI' ? this.custom_api_server : `https://${ this.app_id.slice(0, 8).toLowerCase() }.api.lncldglobal.com`;
+      if (api_server) {
+        this.fetchData(api_server);
+      } else {
+        fetch('https://app-router.leancloud.cn/2/route?appId=' + this.app_id)
+          .then(resp => resp.json())
+          .then(({api_server}) => {
+            this.fetchData('https://' + api_server);
+          });
+      }
+    }
+
+  };
+
+  LCCounter.refreshCounter();
+
+  document.addEventListener('pjax:complete', function () {
+    LCCounter.refreshCounter();
+  });
+</script>
+
+
+
+<!-- more -->
+
+
+    
+      
+
+
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+
+<!-- 样式位于：source/css/_third-party/pjaxanimate.styl -->
+
+<div class="pjax-animate">
+  
+    <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+    <div id="loading-bar-wrapper"><script>NProgress.configure({parent:"#loading-bar-wrapper",trickleSpeed: 100})</script></div>
+    <script>
+      window.ShowLoading = function() {
+        NProgress.start();
+      };
+      window.HideLoading = function() {
+        NProgress.done();
+      }
+    </script>
+  
+</div>
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox])',
+        selectors: [
+          "title",
+          "#pjax-container",
+          "#pjax-header-nav-list"
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      window.subData = null; // 移除标题（用于一二级导航栏切换处）
+      $.fancybox.close();    // 关闭弹窗
+      $('.l_header .switcher .s-search').removeClass('active'); // 关闭移动端激活的搜索框
+      $('.l_header').removeClass('z_search-open'); // 关闭移动端激活的搜索框
+      $('.wrapper').removeClass('sub'); // 跳转页面时关闭二级导航
+
+      // 解绑事件 避免重复监听
+      $('.s-top').unbind('click');
+      $('.menu a').unbind('click');
+      $(window).unbind('resize');
+      $(window).unbind('scroll');
+      $(document).unbind('scroll');
+      $(document).unbind('click');
+      $('body').unbind('click');
+      window.ShowLoading();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 关于百度统计对 SPA 页面的处理：
+      // 方案一：百度统计>管理>单页应用设置中，打开开启按钮即可对SPA进行统计。 https://tongji.baidu.com/web/help/article?id=324
+      // 方案二：取消注释下列代码。 https://tongji.baidu.com/web/help/article?id=235
+      // 
+
+      // 关于谷歌统计对 SPA 页面的处理：
+      // 当应用以动态方式加载内容并更新地址栏中的网址时，也应该更新通过 gtag.js 存储的网页网址。
+      // https://developers.google.cn/analytics/devguides/collection/gtagjs/single-page-applications?hl=zh-cn
+      
+
+      $('.nav-main').find('.list-v').not('.menu-phone').removeAttr("style",""); // 移除小尾巴的移除
+      $('.menu-phone.list-v').removeAttr("style",""); // 移除小尾巴的移除
+      $('script[data-pjax], .pjax-reload script').each(function () {
+        $(this).parent().append($(this).remove());
+      });
+      try{
+        pjax_fancybox();
+        
+        
+        
+        
+        
+          pjax_valine();
+        
+        
+        
+        
+        
+      } catch (e) {
+        console.log(e);
+      }
+      window.HideLoading();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      window.HideLoading();
+      window.location.href = e.triggerElement.href;
+    });
+</script>
+
+    
+  </div>
+</body>
+</html>

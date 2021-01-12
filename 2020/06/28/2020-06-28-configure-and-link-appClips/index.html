@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/tree/4.0.0-rc.2'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+  <title>WWDC20 10146 - App Clips 的配置及链接处理 - JonyFang</title>
+  
+    <meta name="keywords" content="iOS,WWDC,App Clips">
+  
+
+  
+    <meta name="description" content="
+视频链接: WWDC 2020 - Configure and link your app clips。
+
+本篇介绍了 App Clips 链接处理所需要知道的所有内容。 App Clips通过最简化的方式，为你的用户提供了一个体验应用程序的入口。当你的用户需要 App 的具体功能来处理某项操作时，App Cl...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+    
+      <meta name='theme-color' content='#FFFFFF'>
+    
+      <meta name='msapplication-TileColor' content='#1BC3FB'>
+    
+      <meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>
+    
+  
+
+  <!-- link -->
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/css/all.min.css">
+
+  
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  
+
+  <!-- import link -->
+  
+  
+  <link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>
+  <link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>
+  <link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>
+  <link rel='mask-icon' color='#1BC3FB' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/safari-pinned-tab.svg'>
+  <link rel='manifest' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/site.webmanifest'>
+  
+
+  
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+</head>
+
+<body>
+  <header class="l_header auto shadow blur" style='opacity: 0' >
+  <div class='container'>
+  <div class='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a class="s-comment fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fas fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li>
+          <a class="s-menu fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+		</div>
+	</div>
+  </div>
+</header>
+
+  <div class="l_body">
+    <div class="l_cover">
+
+  
+  
+      <div class='cover-wrapper post dock' style="display: none;">
+        
+          <div class='cover-bg lazyload placeholder' data-bg="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/05174de636d75be2f17c.jpg/lbzFIp65ZiQETn8.jpg"></div>
+        
+        <div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Jony's Blog</p>
+    
+    
+      <p class="subtitle">牢记梦想，自然生长</p>
+    
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/"
+              
+              
+              id="home">
+              <i class='fas fa-rss fa-fw'></i><p>博文</p>
+            </a>
+          
+            <a href="/categories/"
+              
+              
+              id="categories">
+              <i class='fas fa-folder-open fa-fw'></i><p>分类</p>
+            </a>
+          
+            <a href="/archives/"
+              
+              
+              id="archives">
+              <i class='fas fa-archive fa-fw'></i><p>归档</p>
+            </a>
+          
+            <a href="/about/"
+              
+              
+              id="about">
+              <i class='fas fa-info-circle fa-fw'></i><p>关于</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div class="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+  
+
+</div>
+
+    <div class='safearea'>
+      <div class='body-wrapper' id="pjax-container">
+        
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+
+
+<div id="pjax-data" style="display: none">
+  <div id="pjax-ispage">true</div>
+  <div id="pjax-pageTitle">WWDC20 10146 - App Clips 的配置及链接处理</div>
+  <div id="pjax-enable-cover">true</div>
+  <div id="pjax-comment-path"></div>
+  <div id="pjax-comment-placeholder"></div>
+</div>
+
+
+<script>
+  // 处理封面 此时 jquery 还没加载
+  if ("none" == "none") { // 移除封面
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "none";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.add("show");
+  } else {
+    if ("none" == "half") { // 半屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'half');
+      document.getElementsByClassName('scroll-down')[0].style.display = "none";
+    } else if ("none" == "full") { // 全屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'full');
+      document.getElementsByClassName('scroll-down')[0].style.display = "";
+    }
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.remove("show");
+  }
+</script>
+
+
+        
+        
+
+<div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+      <a title='WWDC20 10146 - App Clips 的配置及链接处理' href='/2020/06/28/2020-06-28-configure-and-link-appClips/'>
+        
+          
+            <img class='thumbnail lazyload' src='https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/02977c0d832ad871772d.png/EWVxhFsOtIikRLv.png'>
+          
+        
+      </a>
+    
+    
+      <h1 class="title">
+        WWDC20 10146 - App Clips 的配置及链接处理
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/a764dcce0b25a615c8ac.jpg/PgrSQHZ6fBidbRF.jpg">
+    <p>JonyFang</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/WWDC/">WWDC</a><span class="sep"></span><a class="category-link" href="/categories/iOS/">iOS</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2020年6月28日</p>
+  </a>
+</div>
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <blockquote>
+<p>视频链接: <a href="https://developer.apple.com/videos/play/wwdc2020/10146/" target="_blank" rel="noopener">WWDC 2020 - Configure and link your app clips</a>。</p>
+</blockquote>
+<p>本篇介绍了 <code>App Clips</code> 链接处理所需要知道的所有内容。 <code>App Clips</code>通过最简化的方式，为你的用户提供了一个体验应用程序的入口。当你的用户需要 App 的具体功能来处理某项操作时，<code>App Clips</code> 会通过 <code>deep-linked</code> 的方式无缝将 App 的具体模块呈现给用户。本篇会介绍 <code>App Clip</code> 内链接的处理和配置链接所需的操作。</p>
+<a id="more"></a>
+
+<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h2><p>本篇内容结构：<br><img src="https://images.xiaozhuanlan.com/photo/2020/975ffdd236dffaf2177a32dd3ee982c3.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/975ffdd236dffaf2177a32dd3ee982c3.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<p>首先，让我们通过一个示例，来看下如何通过一个 <code>App Clip</code> 来完成一个具体的功能处理。</p>
+<h2 id="2-App-Clip-应用示例-订购冰沙🍧"><a href="#2-App-Clip-应用示例-订购冰沙🍧" class="headerlink" title="2.App Clip 应用示例 - 订购冰沙🍧"></a>2.App Clip 应用示例 - 订购冰沙🍧</h2><p>[00:49]<br><img src="https://images.xiaozhuanlan.com/photo/2020/1ac178171456fc4dd673da8fb72929fe.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/1ac178171456fc4dd673da8fb72929fe.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="">￼<br>想象着你现在在经过一个冰沙摊。你想要来一份冷冰沙。这时，你发现了一个带有标语的 <code>NFC</code> 标签，上面写着“贴近此处订购”。你按照提示将手机贴近了 <code>NFC</code> 标签，之后在你的 iPhone 屏幕的底部会弹出一个卡片，上面写着购买沙冰的一些简短说明，而这个卡片即是我们要介绍的 <code>App Clip</code>。当你按照卡片的提示，点击了上面的“打开”按钮后，将在手机上启动 <code>App Clip</code> 的订购处理，这个处理会将你直接带到冰沙的订购页面。之后，你通过 Apple Pay 完成支付，成功买到了冰沙。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/b4002385b34f7fd66286bb75d14c6b97.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/b4002385b34f7fd66286bb75d14c6b97.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>上述购买冰沙的这一过程，即发生了购买的关联处理。 我们从程序的角度来看下这一过程是怎样的。NFC标签实际上是一个编码的 <code>URL</code>，对应注册了一个 <code>App Clip</code> 体验，关于如何注册将在后面部分进行详细展开。<code>NFC</code> 触发弹出 <code>App Clip</code>，当你点击 <code>App Clip</code> 上的“打开”按钮后，<code>App Clip</code> 将启动带有通过 <code>NSUserActivity</code> 传递的URL，之后 <code>App Clip</code> 将你直接带到订购页面。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/d8df3036e23df847f422195e47b1fca6.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/d8df3036e23df847f422195e47b1fca6.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<p>除了 <code>NFC</code>，活动链接也可以出现在其他地方。你的 <code>URL</code>，可以编码在物理标签中；也可以与地图上的实际位置相关联。下面，让我们逐一介绍这些链接的处理方法。</p>
+<h2 id="3-链接方式"><a href="#3-链接方式" class="headerlink" title="3. 链接方式"></a>3. 链接方式</h2><p>[02:03]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/7865000791ede1dcbaa508b15b36c68a.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/7865000791ede1dcbaa508b15b36c68a.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>正如在前面的示例中提到的那样，<code>NFC</code> 标签可以编码入一个 <code>App Clip URL</code>，用户可以通过手机放到 <code>NFC</code> 上来打开 <code>App Clip</code>。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/05da30dda931d78b9af6bb8cda85904c.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/05da30dda931d78b9af6bb8cda85904c.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br><code>App Clip URL</code> 也可以编码入一个二维码中，人们可以通过扫描二维码来触发 <code>App Clip</code>。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/f047608a83859953345412dbca680899.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/f047608a83859953345412dbca680899.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br><img src="https://images.xiaozhuanlan.com/photo/2020/e823d9a130595e5d7db728b94b240fea.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/e823d9a130595e5d7db728b94b240fea.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br><code>App Clip</code>可以显示在已注册商家的地图位置卡上，也可以显示在 <code>Siri</code> 附近建议中。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/0bc3d18ede6dfd4b7712b8aae3e9a8f1.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/0bc3d18ede6dfd4b7712b8aae3e9a8f1.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>如果你的网页配置了 <code>App Clip</code> 对应的智能应用横幅，则你也可以从 Safari 打开 <code>App Clip</code>。用户可以通过点击该横幅中的打开按钮以打开 <code>App Clip</code>。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/549b4d655f39f233862fcc5d61d92d42.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/549b4d655f39f233862fcc5d61d92d42.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>当用户在 <code>Messages app</code> 中发送该站点的 <code>URL</code> 时，它会以特殊的 <code>App Clip</code> 链接气泡显示，该气泡让用​​户可以选择在 <code>App Clip</code> 或在 Safari 中打开链接。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/2ef221227c0b2d1e6e8203a3533d8db4.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/2ef221227c0b2d1e6e8203a3533d8db4.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>此外，为了给大家带来更好的体验，苹果将于今年晚些时候发布新的 <code>App Clip</code> 码，这是让你的用户发现你的 <code>App Clip</code> 的最佳方式。它在视觉上是美观而独特的，因此当用户看到它时，便知道有一个 <code>App Clip</code> 在等待他们去使用。每个 <code>App Clip</code> 码都对应编码了一个 <code>URL</code>。苹果将​​于今年晚些时候发布可以创建这些独特 <code>App Clip</code> 码的工具。</p>
+<p>现在我们已经知道了可以让用户进入到你的 <code>App Clip</code> 的不同方法。接下来，让我们逐步了解 <code>App Clip</code> 开发人员在设置链接体验过程中所需要做的步骤。</p>
+<h2 id="4-链接到你的-App-Clip"><a href="#4-链接到你的-App-Clip" class="headerlink" title="4. 链接到你的 App Clip"></a>4. 链接到你的 App Clip</h2><p>[03:38]<br><img src="https://images.xiaozhuanlan.com/photo/2020/d54f65449e68143aee00bb35ec0496b2.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/d54f65449e68143aee00bb35ec0496b2.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>首先，你必须对 <code>Web 服务器</code>和 <code>App Clip 项目</code>进行更改。以让这些链接可以由 <code>App Clip</code> 处理。接下来，你必须配置 <code>App Clip</code> 卡片，该卡片用于向用户介绍 <code>App Clip</code> 的信息，也是 <code>App Clip</code> 体验的一部分。你可以在 App Store Connect 上设置默认和高级 <code>App Clip</code> 体验。下面，让我们配置一个智能应用横幅，以在网页上显示你的 <code>App Clip</code>。如果你可以通过更好和更简化的 <code>App Clip</code> 体验来交付网页内容，可以考虑添加此标语，以此来为你的用户提供一种可以从该网页访问 <code>App Clip</code> 的方法。首先，让我们开始配置 <code>Web服务器</code> 和 <code>App  Clip</code> 以进行链接处理。</p>
+<h3 id="4-1-配置Web服务器和-App-Clip-以进行链接处理"><a href="#4-1-配置Web服务器和-App-Clip-以进行链接处理" class="headerlink" title="4.1 配置Web服务器和 App Clip 以进行链接处理"></a>4.1 配置Web服务器和 App Clip 以进行链接处理</h3><p>[04:28]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/2300c85c4ee85c70b959e4fe521021e8.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/2300c85c4ee85c70b959e4fe521021e8.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>你的网站和你的 <code>App Clip</code> 之间的关联必须经过验证，以便 <code>App Clip</code> 能够显示内容来代替网站的 <code>URL</code>。为了将你的 <code>App Clip</code> 与服务器安全地关联，你将需要 Web 服务器上的 <code>apple-app-site-association</code> 文件，以及 <code>App Clip</code> 上适当的关联域权限。之后，你必须更新 <code>App Clip</code> 中的代码以处理传入 <code>NSUserActivity</code> 的链接。首先，让我们更新 Web 服务器上的 <code>apple-app-site-association</code> 文件。</p>
+<h4 id="4-1-1-更新-apple-app-site-association-文件"><a href="#4-1-1-更新-apple-app-site-association-文件" class="headerlink" title="4.1.1 更新 apple-app-site-association 文件"></a>4.1.1 更新 apple-app-site-association 文件</h4><p>[05:06]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/8c73058bcf00f33456a357544e7a68d2.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/8c73058bcf00f33456a357544e7a68d2.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>该文件位于服务器的根文件夹中的 <code>./well-known</code> 的子目录中。如果你之前已经为应用程序设置了<code>通用链接（Universal Links）</code>，则可能已经在服务器上设置了该文件。根字典已经具有其他条目，例如 Web 凭据和应用程序链接。要在此文件中声明新的 <code>App Clip</code> 关联，请在根字典中添加另一个项，其键为 <code>“appclips”</code> ，并且该值包含一个字典，该字典包含单个 <code>apps</code> 键，该键设置为包含 <code>App Clip</code> 的应用标识符的数组。</p>
+<h4 id="4-1-2-添加关联的域权限"><a href="#4-1-2-添加关联的域权限" class="headerlink" title="4.1.2 添加关联的域权限"></a>4.1.2 添加关联的域权限</h4><p>[05:45]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/a0b2421f7505c719759b69b712f45d1b.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/a0b2421f7505c719759b69b712f45d1b.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>接下来，让我们更新 <code>App Clip</code> 项目以添加关联的域权利。在 Xcode 中，进入你的项目设置并添加 <code>Associated Domains</code> 功能。在 <code>Domains</code> 下，添加一个新的字符串 <code>appclips:</code>。现在，你的网站和 <code>App Clip</code> 均已设置了相关的域，让我们添加代码来处理 <code>NSUserActivity</code>，其中包含传递到你的 <code>App Clip</code>中的 URL。</p>
+<h4 id="4-1-3-处理-NSUserActivity"><a href="#4-1-3-处理-NSUserActivity" class="headerlink" title="4.1.3 处理 NSUserActivity"></a>4.1.3 处理 NSUserActivity</h4><p>[06:15]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/db0a08bea2ecd894f6a085b8a22fde54.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/db0a08bea2ecd894f6a085b8a22fde54.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>如果你的 <code>App Clip</code> 采用了新的 <code>SwiftUI</code> 应用程序生命周期，则可以通过上图中的方法为网络浏览用户活动添加处理程序。在该方法中，你可以从 <code>NSUserActivity</code> 获取 <code>webpageURL</code> 属性。然后，你可以解析该 URL 并将用户定向到链接的内容。请记住，当用户升级或下载了主 App 以后，<code>App Clip</code> 会直接打开主 App。因此，请确保你的应用程序也具有类似的代码来处理<code>通用链接（Universal Links）</code>的网址。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/b1692df0d3952c3f2575b275d8ec1063.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/b1692df0d3952c3f2575b275d8ec1063.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>如果你的 <code>App Clip</code> 使用 <code>UIKit SceneDelegate</code> 生命周期，则上图是一些类似的处理代码，用于处理 <code>UIScene</code> 委托中传入的用户活动。要了解有关如何设置关联域和处理 <code>NSUserActivities</code> 的信息，请参阅会话：<a href="https://developer.apple.com/videos/play/wwdc2020/10098" target="_blank" rel="noopener">What’s New in Universal Link</a>。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/a72153f06b33e72b892ac3ff3c4529f2.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/a72153f06b33e72b892ac3ff3c4529f2.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>如果你需要在 Xcode 中调试 <code>App Clip</code> 中 URL 处理相关的代码，可以指定要传递到 <code>App Clip</code> 的测试 URL。在 Xcode 中打开 <code>Scheme</code> 编辑器。选择 <code>Arguments</code> 选项卡。在 <code>Environment Variables</code> 下，指定 <code>_XCAppClipURL</code> 变量。现在，当你从 Xcode 运行你的 <code>App Clip</code> 时，它将使用此 URL 启动。现在，我们已经完成了 Web 服务器和 <code>App Clip</code> 的配置，接下来，我们来配置 <code>App Clip</code> 体验。</p>
+<h3 id="4-2-在-App-Store-Connect-上配置-App-Clip-体验"><a href="#4-2-在-App-Store-Connect-上配置-App-Clip-体验" class="headerlink" title="4.2 在 App Store Connect 上配置 App Clip 体验"></a>4.2 在 App Store Connect 上配置 App Clip 体验</h3><p>[07:51]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/7dd3b58d209c31a74110da1030a52c8f.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/7dd3b58d209c31a74110da1030a52c8f.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>每次 <code>App Clip</code> 体验都是从用户触发看到的 <code>App Clip</code> 卡片（App Clip 链接）开始的。它展示了有关 <code>App Clip</code> 的信息，并征得用户的同意以打开它。</p>
+<h4 id="4-2-1-App-Clip-设计规则"><a href="#4-2-1-App-Clip-设计规则" class="headerlink" title="4.2.1 App Clip 设计规则"></a>4.2.1 App Clip 设计规则</h4><p>[08:04]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/4b70355c3b33b8df3899305dcd2eab08.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/4b70355c3b33b8df3899305dcd2eab08.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>当你在提交用于配置 <code>App Clip</code> 卡的元数据时，请遵循标题和副标题长度上的这些要求，以实现卡片的最佳布局。为了满足所有设备上的最佳用户体验，还有图片大小，宽高比和格式上的要求。你所选择的图片需要遵循此 <code>App Clip</code> 操作所提供的准则。现在，让我们在 App Store Connect 上设置 <code>App Clip</code> 卡片。</p>
+<h4 id="4-2-2-在-App-Store-Connect-上设置-App-Clip-卡片"><a href="#4-2-2-在-App-Store-Connect-上设置-App-Clip-卡片" class="headerlink" title="4.2.2 在 App Store Connect 上设置 App Clip 卡片"></a>4.2.2 在 App Store Connect 上设置 App Clip 卡片</h4><p>[08:34]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/fc27237382cf79f88f95b8b852d727c0.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/fc27237382cf79f88f95b8b852d727c0.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>在将包含你的应用程序和你的 <code>App Clip</code> 的构建交付给 App Store Connect 之后，<code>App Clip</code> 会在 App Store Connect 上进行显示，会看到一个新的<code>“App Clip配置”</code>模块。你可以在此处开始设置默认和高级的 <code>App Clip</code> 体验。默认的 <code>App Clip</code> 体验的元数据包括活动卡的宣传图，文案介绍和相关的交互操作。你可以从中选择预定义的操作列表。此元数据将在 Safari 中的智能应用横幅中、“消息”中的 App Clip 链接气泡中以及在显示的 App Clip 卡片中进行使用。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/0f281c9df07418bce39d4dcd17953f26.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/0f281c9df07418bce39d4dcd17953f26.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>如果你希望不仅可以从 Safari 和消息中访问 <code>App Clip</code>，你可以通过单击此处的“开始”按钮来进行高级 <code>App Clip</code> 体验的设置。每种高级 <code>App Clip</code> 体验均绑定到可以在物理标签（例如 NFC 标签或二维码）中编码的 URL，因此可以从这些物理调用方法中启动 <code>App Clip</code>。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/14c48130e492dbe27f6c842b0f96e24d.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/14c48130e492dbe27f6c842b0f96e24d.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>确认进行高级设置后，你将到达此页面，你可以在其中指定高级 <code>App Clip</code> 体验的 URL。对于同一个 <code>App Clip</code>，你可以设置多个高级 <code>App Clip</code> 体验，每种体验都有不同的 URL。后面会介绍一些有关<code>多个 Clip 体验</code>的示例。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/ca1d8c6778cf8fd896859ab77e6d9218.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/ca1d8c6778cf8fd896859ab77e6d9218.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>进入下一页后，你可以设置图片，标题，副标题，并为 <code>App Clip</code> 卡选择一个触发事件来获得这种体验。你也可以选择将此 <code>App Clip</code> 体验与实际位置相关联。现在，让我们看一下高级 <code>App Clip</code> 体验的一些用例以及为这些体验注册 URL 的最佳实践。</p>
+<h4 id="4-2-3-多种-App-Clip-的体验"><a href="#4-2-3-多种-App-Clip-的体验" class="headerlink" title="4.2.3 多种 App Clip 的体验"></a>4.2.3 多种 App Clip 的体验</h4><p>[10:28]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/79c80faf77406686f1b279b234188fac.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/79c80faf77406686f1b279b234188fac.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br><code>单个 Clip</code> 可以处理不同类型的任务，因此可以为<code>同一个 Clip</code> 自定义不同的 <code>App Clip</code> 体验。例如，这家餐厅的 <code>App Clip</code> 为客户提供两种类型的体验。一种是美食订购体验，用户可以通过 <code>Clip</code> 前往查看菜单并下单；另一种是餐桌预订体验，客人可以通过 <code>Clip</code> 前往预定餐桌。在这种情况下，可以通过设置两个高级 <code>App Clip</code> 体验来满足需求。一个用于 <code>melamela.example/order</code>，其中图片和副标题可以分别是餐厅的菜单图片和菜单描述，方便菜单查看和下单；另一个用于 <code>melamela.example/reservation</code>，其中图片和副标题可以分别是对应餐桌的图片和文字描述，方便餐桌预定。</p>
+<h4 id="4-2-4-最佳实践"><a href="#4-2-4-最佳实践" class="headerlink" title="4.2.4 最佳实践"></a>4.2.4 最佳实践</h4><h5 id="4-2-4-1-指定-App-Clip-的体验-URL"><a href="#4-2-4-1-指定-App-Clip-的体验-URL" class="headerlink" title="4.2.4.1 指定 App Clip 的体验 URL"></a>4.2.4.1 指定 App Clip 的体验 URL</h5><p>[11:23]</p>
+<p>关于 URL 映射到 <code>App Clip</code> 的方式要记住的一件事是，它是基于最特定的前缀与已注册的 <code>App Clip</code> 体验 URL 的匹配。这意味着你无需为企业注册每个可能的 <code>App Clip URL</code>。但是请记住，即使你注册的体验 URL 仅用作前缀，你的 <code>App Clip</code> 也必须能够处理使用确切的注册 URL 启动的情况。在通过“Siri附近的建议”和“地图”调用你的 <code>App Clip</code> 时，可能会发生这种情况。</p>
+<h5 id="4-2-4-2-示例-自行车租赁"><a href="#4-2-4-2-示例-自行车租赁" class="headerlink" title="4.2.4.2 示例-自行车租赁"></a>4.2.4.2 示例-自行车租赁</h5><p>[12:00]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/6b65754ee3adadac41208ad57d254558.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/6b65754ee3adadac41208ad57d254558.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="">￼<br><img src="https://images.xiaozhuanlan.com/photo/2020/fcb1b3019740906051c6e683e122518a.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/fcb1b3019740906051c6e683e122518a.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>这个示例，我们将介绍如何通过注册一个 <code>App Clip 体验 URL</code> 来与多个调用 URL 一起使用。自行车商店有在线自行车租赁系统。它有成百上千的自行车出租，由 ID 编号标识。预订这些自行车的 URL 将在查询字符串参数中指定该 ID。幸运的是，由于这些 URL 是基于前缀匹配进行匹配的，因此该自行车商店无需为每​​个 URL 预先注册 <code>App Clip</code> 体验。只需注册一个 <code>App Clip 体验 URL</code>：<code>https://bikesrental.example/rent</code> 。这足以为所有具有该前缀和不同查询字符串参数的所有自行车 URL 提供 <code>App Clip 体验</code>。</p>
+<h5 id="4-2-4-3-示例-咖啡店"><a href="#4-2-4-3-示例-咖啡店" class="headerlink" title="4.2.4.3 示例-咖啡店"></a>4.2.4.3 示例-咖啡店</h5><p>[12:50]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/930e2fc4114d8251fdf9745dcd453e75.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/930e2fc4114d8251fdf9745dcd453e75.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br><img src="https://images.xiaozhuanlan.com/photo/2020/5f0c02274737b552c2246a89fda8b5ec.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/5f0c02274737b552c2246a89fda8b5ec.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br><img src="https://images.xiaozhuanlan.com/photo/2020/228e1ebccd91c6224af9626b5be9a95a.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/228e1ebccd91c6224af9626b5be9a95a.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br><img src="https://images.xiaozhuanlan.com/photo/2020/4ac7b286e6b7447da57fd200aa4dcd47.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/4ac7b286e6b7447da57fd200aa4dcd47.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>这是另一个示例，用于说明选择 URL 进行注册以获取高级 <code>App Clip</code> 的策略。在这个示例中，咖啡馆是一个大型连锁店，拥有多个地点，每个地点基本上都为其客户提供相似的体验。由于所有位置的 URL 格式都统一，且均以 <code>https://brighteggcafe.example/store/</code> 开头，因此我们只需为该 URL 前缀注册 App Clip 体验即可。当客户点击指向其任何商店的链接时，他们将获得相同的 <code>App Clip</code> 卡片。但是，假设咖啡店希望为其<code>库比蒂诺（Cupertino）</code>旗舰店提供更特别的 <code>App Clip</code> 体验。要解决此问题，你还可以使用不同的宣传图和描述文本为特定的 <code>App Clip 体验</code>注册 Cupertino 商店 URL。这里的主要要点是，你可以注册一个更短，更通用的 URL 前缀，以覆盖大多数情况，并仅在需要提供不同的 <code>App Clip 体验</code>时才注册一个更特定的 URL。</p>
+<p>有关在 App Store Connect 上设置默认和高级 <code>App Clip 体验</code>的详细信息，请参阅会话： <a href="https://developer.apple.com/videos/play/wwdc2020/10651/" target="_blank" rel="noopener">What’s New in App Store Connect</a> 。有关 <code>App Clip 卡片</code>设计的最佳实践，请参阅会话：<a href="https://developer.apple.com/videos/play/wwdc2020/10172" target="_blank" rel="noopener">Design Great App Clips</a> 。</p>
+<h3 id="4-3-配置智能应用横幅以打开-App-Clip"><a href="#4-3-配置智能应用横幅以打开-App-Clip" class="headerlink" title="4.3 配置智能应用横幅以打开 App Clip"></a>4.3 配置智能应用横幅以打开 App Clip</h3><p>[14:17]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/df37ff98b54a4fb58e47c475aee464a6.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/df37ff98b54a4fb58e47c475aee464a6.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>现在到了最后一步，通过处理链接来触发你的 <code>App Clip</code>。可以通过设置智能应用横幅，以打开你的 <code>App Clip</code>。当发送出配置了此标语的网页 URL 时，接收人可以通过智能应用横幅从 Safari 或“消息”中的网页打开 <code>App Clip</code>。如果你之前已经为应用设置了智能应用横幅，应该已经熟悉了添加到网页 HTML 中的 <code>apple-itunes-app</code> 的元标记，是用来指定应用的唯一标识符。要为你的 <code>App Clip</code> 配置此横幅，请将 <code>app-clip-bundle-id</code> 内容属性设置为 <code>App Clip</code> 的捆绑包标识符。你还应该继续设置 <code>app-id</code> 属性，这样对于使用 iOS 14 之前系统的用户，将保持之前的网页形式。Safari 在显示以下内容之前，将验证网站和 <code>App Clip</code> 之间的域关联情况。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/4931abeea062fe744868952da5fa5dc4.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/4931abeea062fe744868952da5fa5dc4.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>默认情况下，当用户点击智能应用横幅的“打开”按钮时。他们将看到为此 <code>App Clip</code> 配置的默认 <code>App Clip 卡片</code>。但是，如果使用高级 <code>App Clip 体验</code>注册此URL，则可以自定义体验的元数据，以便用户可以在横幅中看到更具描述性的标题，并获得针对该 <code>App Clip</code> 执行的任务量身定制的 <code>App Clip卡片</code>。</p>
+<p>为了演示我们上述内容所谈论到的 <code>App Clip</code> 的链接时涉及的内容，你可以通过下方的视频链接快进到 <strong><code>15分48秒</code></strong> 查看完整的演示视频。</p>
+<p>视频链接：<a href="https://developer.apple.com/videos/play/wwdc2020/10146/" target="_blank" rel="noopener">https://developer.apple.com/videos/play/wwdc2020/10146/</a></p>
+<h2 id="5-在-TestFlight-中为你的-App-Clip-添加测试调用点"><a href="#5-在-TestFlight-中为你的-App-Clip-添加测试调用点" class="headerlink" title="5. 在 TestFlight 中为你的 App Clip 添加测试调用点"></a>5. 在 TestFlight 中为你的 App Clip 添加测试调用点</h2><p>[21:22]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/a953d1f94901d1094bc8fdfee5275d5b.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/a953d1f94901d1094bc8fdfee5275d5b.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>此外，还需要简要介绍下如何对 <code>App Clip</code> 进行 beta 测试。在你将包含应用程序和 <code>App Clip</code> 的构建交付给 App Store Connect之后，你可以在 TestFlight 中找到一个新的 <code>App Clip 模块</code>，该模块可以用于为你的 <code>App Clip</code> 添加测试调用点，以便 Beta 测试人员可以测试待开放的不同 <code>App Clip 体验</code>的 URL。<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/8a2c348d025213e731e0918baac68fe3.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/8a2c348d025213e731e0918baac68fe3.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>单击 <code>Add App Clip Invocation</code>（添加App Clip调用），然后设置你希望 Beta 测试人员试用的 <code>App Clip 体验</code>的标题和 URL。有关在 App Store Connect 中测试和提交 <code>App Clip</code> 的更多信息，请参阅会话：<a href="https://developer.apple.com/videos/play/wwdc2020/10651/" target="_blank" rel="noopener">What’s New in App Store Connect</a>。</p>
+<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. 总结</h2><p>[22:05]<br>￼<img src="https://images.xiaozhuanlan.com/photo/2020/9c664627b6da57d20b6f16ca62b37dbb.png" class="lazyload" data-srcset="https://images.xiaozhuanlan.com/photo/2020/9c664627b6da57d20b6f16ca62b37dbb.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""><br>在本篇的内容里，我们已经向你展示了以下内容：</p>
+<ol>
+<li>如何通过为新的 <code>App Clip</code> 服务类型设置关联的域并在 <code>App Clip</code> 中处理网络浏览 <code>NSUserActivity</code> 来处理到你的 <code>App Clip</code> 中的链接。</li>
+<li>如何在 App Store Connect 上配置默认和高级 <code>App Clip 体验</code>，包括有关注册 <code>App Clip 体验</code>时使用哪些 URL 的最佳实践；</li>
+<li>如何设置智能应用横幅，以在网页上打开 <code>App Clip</code>；</li>
+<li>最后是如何在 TestFlight 中测试 <code>App Clip</code> 的新功能。</li>
+</ol>
+<p>感谢您的阅读，也期待您带来精彩的 App Clip~</p>
+<blockquote>
+<p>相关内容：</p>
+<ul>
+<li><a href="https://developer.apple.com/videos/play/wwdc2020/10118" target="_blank" rel="noopener">WWDC 2020 - Create app clips for other businesses</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2020/10172" target="_blank" rel="noopener">WWDC 2020 - Design great app clips</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2020/10174" target="_blank" rel="noopener">WWDC 2020 - Explore app clips</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2020/10120" target="_blank" rel="noopener">WWDC 2020 - Streamline your app clip</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2020/10651" target="_blank" rel="noopener">WWDC 2020 - What’s new in App Store Connect</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2020/10098" target="_blank" rel="noopener">WWDC 2020 - What’s new in Universal Links</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2019/717" target="_blank" rel="noopener">WWDC 2019 - What’s New in Universal Links</a></li>
+</ul>
+</blockquote>
+
+  
+    
+    <div class='footer'>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=https://blog.jonyfang.com/2020/06/28/2020-06-28-configure-and-link-appClips/>https://blog.jonyfang.com/2020/06/28/2020-06-28-configure-and-link-appClips/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/iOS/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>iOS</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/WWDC/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>WWDC</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/App-Clips/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>App Clips</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.jonyfang.com/2020/06/28/2020-06-28-configure-and-link-appClips/&title=WWDC20 10146 - App Clips 的配置及链接处理 - JonyFang&pics=https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/02977c0d832ad871772d.png/EWVxhFsOtIikRLv.png&summary=
+视频链接: WWDC 2020 - Configure and link your app clips。
+
+本篇介绍了 App Clips 链接处理所需要知道的所有内容。 App Clips通过最简化的方式，为你的用户提供了一个体验应用程序的入口。当你的用户需要 App 的具体功能来处理某项操作时，App Clips 会通过 deep-linked 的方式无缝将 App 的具体模块呈现给用户。本篇会介绍 App Clip 内链接的处理和配置链接所需的操作。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://blog.jonyfang.com/2020/06/28/2020-06-28-configure-and-link-appClips/&title=WWDC20 10146 - App Clips 的配置及链接处理 - JonyFang&pics=https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/02977c0d832ad871772d.png/EWVxhFsOtIikRLv.png&summary=
+视频链接: WWDC 2020 - Configure and link your app clips。
+
+本篇介绍了 App Clips 链接处理所需要知道的所有内容。 App Clips通过最简化的方式，为你的用户提供了一个体验应用程序的入口。当你的用户需要 App 的具体功能来处理某项操作时，App Clips 会通过 deep-linked 的方式无缝将 App 的具体模块呈现给用户。本篇会介绍 App Clip 内链接的处理和配置链接所需的操作。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://blog.jonyfang.com/2020/06/28/2020-06-28-configure-and-link-appClips/&title=WWDC20 10146 - App Clips 的配置及链接处理 - JonyFang&pics=https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/02977c0d832ad871772d.png/EWVxhFsOtIikRLv.png&summary=
+视频链接: WWDC 2020 - Configure and link your app clips。
+
+本篇介绍了 App Clips 链接处理所需要知道的所有内容。 App Clips通过最简化的方式，为你的用户提供了一个体验应用程序的入口。当你的用户需要 App 的具体功能来处理某项操作时，App Clips 会通过 deep-linked 的方式无缝将 App 的具体模块呈现给用户。本篇会介绍 App Clip 内链接的处理和配置链接所需的操作。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-telegram" title="" rel="external nofollow noopener noreferrer"
+          
+            href="https://t.me/share/url?url=https://blog.jonyfang.com/2020/06/28/2020-06-28-configure-and-link-appClips/&text=WWDC20 10146 - App Clips 的配置及链接处理 - JonyFang"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+      
+        <a class='next' href='/2020/04/08/2020-04-08-about-ram/'>
+          <p class='title'>iOS 内存相关梳理<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>iOS 的内核是 XNU，XNU 是 Darwin 的一部分，而 Darwin 又是基于 FreeBSD 和 NetBSD 开发，集成了 Mach 微内核，BSD 是基于 UNIX。虽然 Lin...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+  
+
+  <article class="post white-box reveal shadow" id="comments">
+    <p ct><i class='fas fa-comments'></i> 评论</p>
+    
+    <div id="valine_container" class="valine_thread">
+  <i class="fas fa-cog fa-spin fa-fw fa-2x"></i>
+</div>
+
+  </article>
+
+
+
+
+
+
+</div>
+<aside class='l_side'>
+  
+  
+    
+    
+
+
+
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-前言"><span class="toc-text">1.前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-App-Clip-应用示例-订购冰沙🍧"><span class="toc-text">2.App Clip 应用示例 - 订购冰沙🍧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-链接方式"><span class="toc-text">3. 链接方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-链接到你的-App-Clip"><span class="toc-text">4. 链接到你的 App Clip</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-配置Web服务器和-App-Clip-以进行链接处理"><span class="toc-text">4.1 配置Web服务器和 App Clip 以进行链接处理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-1-更新-apple-app-site-association-文件"><span class="toc-text">4.1.1 更新 apple-app-site-association 文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-2-添加关联的域权限"><span class="toc-text">4.1.2 添加关联的域权限</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-3-处理-NSUserActivity"><span class="toc-text">4.1.3 处理 NSUserActivity</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-在-App-Store-Connect-上配置-App-Clip-体验"><span class="toc-text">4.2 在 App Store Connect 上配置 App Clip 体验</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-App-Clip-设计规则"><span class="toc-text">4.2.1 App Clip 设计规则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-在-App-Store-Connect-上设置-App-Clip-卡片"><span class="toc-text">4.2.2 在 App Store Connect 上设置 App Clip 卡片</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-多种-App-Clip-的体验"><span class="toc-text">4.2.3 多种 App Clip 的体验</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-4-最佳实践"><span class="toc-text">4.2.4 最佳实践</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-4-1-指定-App-Clip-的体验-URL"><span class="toc-text">4.2.4.1 指定 App Clip 的体验 URL</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-4-2-示例-自行车租赁"><span class="toc-text">4.2.4.2 示例-自行车租赁</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-4-3-示例-咖啡店"><span class="toc-text">4.2.4.3 示例-咖啡店</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-配置智能应用横幅以打开-App-Clip"><span class="toc-text">4.3 配置智能应用横幅以打开 App Clip</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-在-TestFlight-中为你的-App-Clip-添加测试调用点"><span class="toc-text">5. 在 TestFlight 中为你的 App Clip 添加测试调用点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-总结"><span class="toc-text">6. 总结</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+
+      </div>
+      
+  
+  <footer class="footer clearfix">
+    <br><br>
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="mailto:jony.chunfang@gmaill.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://github.com/JonyFang"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=1063555"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © 2015-2020 JonyFang</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+
+      <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+  </div>
+  <div>
+    <!-- required -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5/dist/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  function pjax_fancybox() {
+    $(".md").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+      var element = document.createElement("a"); // a 标签
+      $(element).attr("class", "fancybox");
+      $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+      $(element).attr("href", $(this).attr("src"));
+      if ($(this).attr("data-original")) {
+        $(element).attr("href", $(this).attr("data-original"));
+      }
+      $(element).attr("data-fancybox", "images");
+      var caption = "";   // 描述信息
+      if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+        $(element).attr('data-caption', $(this).attr('alt'));
+        caption = $(this).attr('alt');
+      }
+      var div = document.createElement("div");
+      $(div).addClass("fancybox");
+      $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+      var span = document.createElement("span");
+      $(span).addClass("image-caption");
+      $(span).text(caption); // 加描述
+      $(this).after(span);  // 再套一层描述
+      // 背景层
+      var bgDiv = document.createElement("div");
+      $(bgDiv).addClass("bg");
+      if ($(this).attr('bg')) {
+        $(bgDiv).css('background', $(this).attr('bg'));
+      }
+      $(this).wrap(bgDiv); // 背景层
+      $(this).wrap(element);  // 最后套 a 标签
+    })
+    $(".md").find("img").fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+      closeClick: true,
+      helpers: {
+        overlay: {closeClick: true}
+      },
+      buttons: [
+        "zoom",
+        "close"
+      ]
+    });
+  };
+  $(function () {
+    pjax_fancybox();
+  });
+</script>
+
+
+<!-- internal -->
+
+
+
+
+<!-- optional -->
+
+  <script>
+  
+  var SEARCH_SERVICE = "hexo" || "hexo";
+  var ROOT = "/" || "/";
+  if (!ROOT.endsWith('/')) ROOT += '/';
+</script>
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.0/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+  
+    <script>
+      window.FPConfig = {
+        delay: 0,
+        ignoreKeywords: [],
+        maxRPS: 5,
+        hoverDelay: 25
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script>
+  
+
+
+
+
+
+
+
+
+  <script>
+  let APlayerController = new Object();
+  APlayerController.id = '1063555';  // 设定全局音乐播放ID
+  APlayerController.volume = '0.7';
+</script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js"></script>
+
+
+
+
+
+
+
+
+  
+  
+<script src="/js/valine.js"></script>
+
+
+<script>
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link'.split(',').filter(function (item) {
+    return GUEST_INFO.indexOf(item) > -1
+  });
+  var REQUIRED_FIELDS = ['nick', 'mail', 'link'];
+  var requiredFields = 'nick,mail'.split(',').filter(function (item) {
+    return REQUIRED_FIELDS.indexOf(item) > -1
+  });
+
+  function emoji(path, idx, ext) {
+    return path + "/" + path + "-" + idx + "." + ext;
+  }
+
+  var emojiMaps = {};
+  for (var i = 1; i <= 54; i++) {
+    emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+  }
+  for (var i = 1; i <= 101; i++) {
+    emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+  }
+  for (var i = 1; i <= 116; i++) {
+    emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+  }
+  for (var i = 1; i <= 125; i++) {
+    emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+  }
+  for (var i = 1; i <= 4; i++) {
+    emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+  }
+
+  function pjax_valine() {
+    if(!document.querySelectorAll("#valine_container")[0])return;
+
+    let pagePlaceholder = $.trim($('#pjax-comment-placeholder').text()) || "快来评论吧~";
+
+    let path = $.trim($('#pjax-comment-path').text());
+    if (path.length == 0) {
+      let defaultPath = '';
+      path = defaultPath || decodeURI(window.location.pathname);
+    }
+
+    var valine = new Valine();
+    valine.init({
+      el: '#valine_container',
+      meta: meta,
+      placeholder: pagePlaceholder,
+      path: path,
+      appId: "9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI",
+      appKey: "tIyMmSe8wzMgEJRCoUgzKV1B",
+      pageSize: '10',
+      avatar: 'robohash',
+      lang: 'zh-cn',
+      visitor: 'true',
+      highlight: 'true',
+      mathJax: 'false',
+      enableQQ: 'true',
+      requiredFields: requiredFields,
+      emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+      emojiMaps: emojiMaps
+    })
+  }
+
+  $(function () {
+    pjax_valine();
+  });
+</script>
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+
+  
+    
+<script src="/js/search.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script defer>
+
+  const LCCounter = {
+    app_id: '9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI',
+    app_key: 'tIyMmSe8wzMgEJRCoUgzKV1B',
+    custom_api_server: '',
+
+    // 查询存储的记录
+    getRecord(Counter, url, title) {
+      return new Promise(function (resolve, reject) {
+        Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({url})))
+          .then(resp => resp.json())
+          .then(({results, code, error}) => {
+            if (code === 401) {
+              throw error;
+            }
+            if (results && results.length > 0) {
+              var record = results[0];
+              resolve(record);
+            } else {
+              Counter('post', '/classes/Counter', {url, title: title, times: 0})
+                .then(resp => resp.json())
+                .then((record, error) => {
+                  if (error) {
+                    throw error;
+                  }
+                  resolve(record);
+                }).catch(error => {
+                console.error('Failed to create', error);
+                reject(error);
+              });
+            }
+          }).catch((error) => {
+          console.error('LeanCloud Counter Error:', error);
+          reject(error);
+        });
+      })
+    },
+
+    // 发起自增请求
+    increment(Counter, incrArr) {
+      return new Promise(function (resolve, reject) {
+        Counter('post', '/batch', {
+          "requests": incrArr
+        }).then((res) => {
+          res = res.json();
+          if (res.error) {
+            throw res.error;
+          }
+          resolve(res);
+        }).catch((error) => {
+          console.error('Failed to save visitor count', error);
+          reject(error);
+        });
+      });
+    },
+
+    // 构建自增请求体
+    buildIncrement(objectId) {
+      return {
+        "method": "PUT",
+        "path": `/1.1/classes/Counter/${ objectId }`,
+        "body": {
+          "times": {
+            '__op': 'Increment',
+            'amount': 1
+          }
+        }
+      }
+    },
+
+    // 校验是否为有效的 UV
+    validUV() {
+      var key = 'LeanCloudUVTimestamp';
+      var flag = localStorage.getItem(key);
+      if (flag) {
+        // 距离标记小于 24 小时则不计为 UV
+        if (new Date().getTime() - parseInt(flag) <= 86400000) {
+          return false;
+        }
+      }
+      localStorage.setItem(key, new Date().getTime().toString());
+      return true;
+    },
+
+    addCount(Counter) {
+      var enableIncr = '' === 'true' && window.location.hostname !== 'localhost';
+      enableIncr = true;
+      var getterArr = [];
+      var incrArr = [];
+      // 请求 PV 并自增
+      var pvCtn = document.querySelector('#lc-sv');
+      if (pvCtn || enableIncr) {
+        var pvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-sv', 'Visits').then((record) => {
+          incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-sv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + 1;
+              if (pvCtn) {
+                pvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(pvGetter);
+      }
+
+      // 请求 UV 并自增
+      var uvCtn = document.querySelector('#lc-uv');
+      if (uvCtn || enableIncr) {
+        var uvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-uv', 'Visitors').then((record) => {
+          var vuv = this.validUV();
+          vuv && incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-uv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + (vuv ? 1 : 0);
+              if (uvCtn) {
+                uvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(uvGetter);
+      }
+
+      // 请求文章的浏览数，如果是当前页面就自增
+      var allPV = document.querySelectorAll('#lc-pv');
+      if (allPV.length > 0 || enableIncr) {
+        for (i = 0; i < allPV.length; i++) {
+          let pv = allPV[i];
+          let title = pv.getAttribute('data-title');
+          var url = 'https://blog.jonyfang.com' + pv.getAttribute('data-path');
+          if (url) {
+            var viewGetter = this.getRecord(Counter, url, title).then((record) => {
+              // 是当前页面就自增
+              if (pv.getAttribute('data-path') == window.location.pathname) {
+                incrArr.push(this.buildIncrement(record.objectId));
+              }
+              if (pv) {
+                var ele = pv.querySelector('#lc-pv #number');
+                if (ele) {
+                  if (pv.getAttribute('data-path') == window.location.pathname) {
+                    ele.innerText = (record.times || 0) + 1;
+                  } else {
+                    ele.innerText = record.times || 0;
+                  }
+                  pv.style.display = 'inline';
+                }
+              }
+            });
+            getterArr.push(viewGetter);
+          }
+        }
+      }
+
+      // 如果启动计数自增，批量发起自增请求
+      if (enableIncr) {
+        Promise.all(getterArr).then(() => {
+          incrArr.length > 0 && this.increment(Counter, incrArr);
+        })
+      }
+
+    },
+
+
+    fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${ api_server }/1.1${ url }`, {
+          method,
+          headers: {
+            'X-LC-Id': this.app_id,
+            'X-LC-Key': this.app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      this.addCount(Counter);
+    },
+
+    refreshCounter() {
+      var api_server = this.app_id.slice(-9) !== '-MdYXbMMI' ? this.custom_api_server : `https://${ this.app_id.slice(0, 8).toLowerCase() }.api.lncldglobal.com`;
+      if (api_server) {
+        this.fetchData(api_server);
+      } else {
+        fetch('https://app-router.leancloud.cn/2/route?appId=' + this.app_id)
+          .then(resp => resp.json())
+          .then(({api_server}) => {
+            this.fetchData('https://' + api_server);
+          });
+      }
+    }
+
+  };
+
+  LCCounter.refreshCounter();
+
+  document.addEventListener('pjax:complete', function () {
+    LCCounter.refreshCounter();
+  });
+</script>
+
+
+
+<!-- more -->
+
+
+    
+      
+
+
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+
+<!-- 样式位于：source/css/_third-party/pjaxanimate.styl -->
+
+<div class="pjax-animate">
+  
+    <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+    <div id="loading-bar-wrapper"><script>NProgress.configure({parent:"#loading-bar-wrapper",trickleSpeed: 100})</script></div>
+    <script>
+      window.ShowLoading = function() {
+        NProgress.start();
+      };
+      window.HideLoading = function() {
+        NProgress.done();
+      }
+    </script>
+  
+</div>
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox])',
+        selectors: [
+          "title",
+          "#pjax-container",
+          "#pjax-header-nav-list"
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      window.subData = null; // 移除标题（用于一二级导航栏切换处）
+      $.fancybox.close();    // 关闭弹窗
+      $('.l_header .switcher .s-search').removeClass('active'); // 关闭移动端激活的搜索框
+      $('.l_header').removeClass('z_search-open'); // 关闭移动端激活的搜索框
+      $('.wrapper').removeClass('sub'); // 跳转页面时关闭二级导航
+
+      // 解绑事件 避免重复监听
+      $('.s-top').unbind('click');
+      $('.menu a').unbind('click');
+      $(window).unbind('resize');
+      $(window).unbind('scroll');
+      $(document).unbind('scroll');
+      $(document).unbind('click');
+      $('body').unbind('click');
+      window.ShowLoading();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 关于百度统计对 SPA 页面的处理：
+      // 方案一：百度统计>管理>单页应用设置中，打开开启按钮即可对SPA进行统计。 https://tongji.baidu.com/web/help/article?id=324
+      // 方案二：取消注释下列代码。 https://tongji.baidu.com/web/help/article?id=235
+      // 
+
+      // 关于谷歌统计对 SPA 页面的处理：
+      // 当应用以动态方式加载内容并更新地址栏中的网址时，也应该更新通过 gtag.js 存储的网页网址。
+      // https://developers.google.cn/analytics/devguides/collection/gtagjs/single-page-applications?hl=zh-cn
+      
+
+      $('.nav-main').find('.list-v').not('.menu-phone').removeAttr("style",""); // 移除小尾巴的移除
+      $('.menu-phone.list-v').removeAttr("style",""); // 移除小尾巴的移除
+      $('script[data-pjax], .pjax-reload script').each(function () {
+        $(this).parent().append($(this).remove());
+      });
+      try{
+        pjax_fancybox();
+        
+        
+        
+        
+        
+          pjax_valine();
+        
+        
+        
+        
+        
+      } catch (e) {
+        console.log(e);
+      }
+      window.HideLoading();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      window.HideLoading();
+      window.location.href = e.triggerElement.href;
+    });
+</script>
+
+    
+  </div>
+</body>
+</html>

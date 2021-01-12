@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/tree/4.0.0-rc.2'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+  <title>iOS 编译过程梳理 - JonyFang</title>
+  
+    <meta name="keywords" content="iOS,编译原理">
+  
+
+  
+    <meta name="description" content="iOS 开发常用的语言是 Objective-C 和 Swift，两者都是编译语言。编译语言在执行的时候，必须先通过编译器生成机器码，机器码可以直接在 CPU 上执行，所以执行效率很高。本篇主要用于梳理 Objective-C 的编译过程。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+    
+      <meta name='theme-color' content='#FFFFFF'>
+    
+      <meta name='msapplication-TileColor' content='#1BC3FB'>
+    
+      <meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>
+    
+  
+
+  <!-- link -->
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/css/all.min.css">
+
+  
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  
+
+  <!-- import link -->
+  
+  
+  <link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>
+  <link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>
+  <link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>
+  <link rel='mask-icon' color='#1BC3FB' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/safari-pinned-tab.svg'>
+  <link rel='manifest' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/site.webmanifest'>
+  
+
+  
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+</head>
+
+<body>
+  <header class="l_header auto shadow blur" style='opacity: 0' >
+  <div class='container'>
+  <div class='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a class="s-comment fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fas fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li>
+          <a class="s-menu fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+		</div>
+	</div>
+  </div>
+</header>
+
+  <div class="l_body">
+    <div class="l_cover">
+
+  
+  
+      <div class='cover-wrapper post dock' style="display: none;">
+        
+          <div class='cover-bg lazyload placeholder' data-bg="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/05174de636d75be2f17c.jpg/lbzFIp65ZiQETn8.jpg"></div>
+        
+        <div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Jony's Blog</p>
+    
+    
+      <p class="subtitle">牢记梦想，自然生长</p>
+    
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/"
+              
+              
+              id="home">
+              <i class='fas fa-rss fa-fw'></i><p>博文</p>
+            </a>
+          
+            <a href="/categories/"
+              
+              
+              id="categories">
+              <i class='fas fa-folder-open fa-fw'></i><p>分类</p>
+            </a>
+          
+            <a href="/archives/"
+              
+              
+              id="archives">
+              <i class='fas fa-archive fa-fw'></i><p>归档</p>
+            </a>
+          
+            <a href="/about/"
+              
+              
+              id="about">
+              <i class='fas fa-info-circle fa-fw'></i><p>关于</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div class="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+  
+
+</div>
+
+    <div class='safearea'>
+      <div class='body-wrapper' id="pjax-container">
+        
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+
+
+<div id="pjax-data" style="display: none">
+  <div id="pjax-ispage">true</div>
+  <div id="pjax-pageTitle">iOS 编译过程梳理</div>
+  <div id="pjax-enable-cover">true</div>
+  <div id="pjax-comment-path"></div>
+  <div id="pjax-comment-placeholder"></div>
+</div>
+
+
+<script>
+  // 处理封面 此时 jquery 还没加载
+  if ("none" == "none") { // 移除封面
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "none";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.add("show");
+  } else {
+    if ("none" == "half") { // 半屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'half');
+      document.getElementsByClassName('scroll-down')[0].style.display = "none";
+    } else if ("none" == "full") { // 全屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'full');
+      document.getElementsByClassName('scroll-down')[0].style.display = "";
+    }
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.remove("show");
+  }
+</script>
+
+
+        
+        
+
+<div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title">
+        iOS 编译过程梳理
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/a764dcce0b25a615c8ac.jpg/PgrSQHZ6fBidbRF.jpg">
+    <p>JonyFang</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/iOS/">iOS</a><span class="sep"></span><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><span class="sep"></span><a class="category-link" href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2019年9月14日</p>
+  </a>
+</div>
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <p>iOS 开发常用的语言是 Objective-C 和 Swift，两者都是编译语言。编译语言在执行的时候，必须先通过编译器生成机器码，机器码可以直接在 CPU 上执行，所以执行效率很高。本篇主要用于梳理 Objective-C 的编译过程。</p>
+<a id="more"></a>
+
+<h2 id="编译器的概述"><a href="#编译器的概述" class="headerlink" title="编译器的概述"></a>编译器的概述</h2><p>编译器的作用是把我们的高级语言转换成机器可以识别的机器码，经典的设计结构如下：</p>
+<p><img src="https://i.loli.net/2020/09/18/ayW6iNYAZ7FCqDz.png" class="lazyload" data-srcset="https://i.loli.net/2020/09/18/ayW6iNYAZ7FCqDz.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<ul>
+<li>前端（Frontend）：语法分析，语义分析和生成中间代码。在这个过程中，也会对代码进行检查，如果发现出错的或需要警告的会标注出来。</li>
+<li>优化器（Optimizer）：会进行 BitCode 的生成，链接期优化等工作。</li>
+<li>后端（Backend）：针对不同的架构，生成对应的机器码。</li>
+</ul>
+<h2 id="Clang-LLVM-的编译过程"><a href="#Clang-LLVM-的编译过程" class="headerlink" title="Clang + LLVM 的编译过程"></a>Clang + LLVM 的编译过程</h2><p>接着通过如下一个实际的例子来看下编译的过程。</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">int</span> main (<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span></span><br><span class="line">    &#123;   </span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"Hello, Obj"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>命令行执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">clang -ccc-print-phases -framework Foundation main.m -o main</span><br></pre></td></tr></table></figure>
+
+<p>可以看到编译源文件需要的几个阶段为：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$  Desktop clang -ccc-print-phases -framework Foundation main.m -o main</span><br><span class="line"></span><br><span class="line">0: input, <span class="string">"Foundation"</span>, object</span><br><span class="line">1: input, <span class="string">"main.m"</span>, objective-c</span><br><span class="line">2: preprocessor, &#123;1&#125;, objective-c-cpp-output</span><br><span class="line">3: compiler, &#123;2&#125;, ir</span><br><span class="line">4: backend, &#123;3&#125;, assembler</span><br><span class="line">5: assembler, &#123;4&#125;, object</span><br><span class="line">6: linker, &#123;0, 5&#125;, image</span><br><span class="line">7: <span class="built_in">bind</span>-arch, <span class="string">"x86_64"</span>, &#123;6&#125;, image</span><br></pre></td></tr></table></figure>
+
+<p>注释：</p>
+<ul>
+<li><code>2: preprocessor, {1}, objective-c-cpp-output</code>：预处理，编译器前端</li>
+<li><code>3: compiler, {2}, ir</code>：编译生成中间码 ir</li>
+<li><code>4: backend, {3}, assembler</code>：LLVM 后端生成汇编</li>
+<li><code>5: assembler, {4}, object</code>：生成机器码</li>
+<li><code>6: linker, {0, 5}, image</code>：链接器</li>
+<li><code>7: bind-arch, &quot;x86_64&quot;, {6}, image</code>：生成可执行的二进制文件（image）</li>
+</ul>
+<p>梳理下流程：</p>
+<ol>
+<li><strong>预处理阶段</strong>：import 头文件替换；macro 宏展开；处理预编译指令</li>
+<li><strong>词法分析</strong>：预处理完成后进入词法分析，将输入的代码转化为一系列符合特定语言的词法单元（token 流）。样式如下： <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ xcrun -sdk iphonesimulator clang -fmodules -fsyntax-only -Xclang -dump-tokens main.m</span><br><span class="line">   </span><br><span class="line">annot_module_include <span class="string">'#import &lt;Foundation/Foundation.h&gt;'</span>		Loc=&lt;main.m:1:1&gt;</span><br><span class="line">int <span class="string">'int'</span>	 [StartOfLine]	Loc=&lt;main.m:3:1&gt;</span><br><span class="line">identifier <span class="string">'main'</span>	 [LeadingSpace]	Loc=&lt;main.m:3:5&gt;</span><br><span class="line">l_paren <span class="string">'('</span>	 [LeadingSpace]	Loc=&lt;main.m:3:10&gt;</span><br><span class="line">int <span class="string">'int'</span>		Loc=&lt;main.m:3:11&gt;</span><br><span class="line">identifier <span class="string">'argc'</span>	 [LeadingSpace]	Loc=&lt;main.m:3:15&gt;</span><br><span class="line">comma <span class="string">','</span>		Loc=&lt;main.m:3:19&gt;</span><br><span class="line">const <span class="string">'const'</span>	 [LeadingSpace]	Loc=&lt;main.m:3:21&gt;</span><br><span class="line">char <span class="string">'char'</span>	 [LeadingSpace]	Loc=&lt;main.m:3:27&gt;</span><br><span class="line">star <span class="string">'*'</span>	 [LeadingSpace]	Loc=&lt;main.m:3:32&gt;</span><br><span class="line">identifier <span class="string">'argv'</span>	 [LeadingSpace]	Loc=&lt;main.m:3:34&gt;</span><br><span class="line">l_square <span class="string">'['</span>		Loc=&lt;main.m:3:38&gt;</span><br><span class="line">r_square <span class="string">']'</span>		Loc=&lt;main.m:3:39&gt;</span><br><span class="line">r_paren <span class="string">')'</span>		Loc=&lt;main.m:3:40&gt;</span><br><span class="line">l_brace <span class="string">'&#123;'</span>	 [StartOfLine]	Loc=&lt;main.m:4:1&gt;</span><br><span class="line">at <span class="string">'@'</span>	 [StartOfLine] [LeadingSpace]	Loc=&lt;main.m:5:5&gt;</span><br><span class="line">identifier <span class="string">'autoreleasepool'</span>		Loc=&lt;main.m:5:6&gt;</span><br><span class="line">l_brace <span class="string">'&#123;'</span>	 [StartOfLine] [LeadingSpace]	Loc=&lt;main.m:6:5&gt;</span><br><span class="line">identifier <span class="string">'NSLog'</span>	 [StartOfLine] [LeadingSpace]	Loc=&lt;main.m:7:9&gt;</span><br><span class="line">l_paren <span class="string">'('</span>		Loc=&lt;main.m:7:14&gt;</span><br><span class="line">at <span class="string">'@'</span>		Loc=&lt;main.m:7:15&gt;</span><br><span class="line">string_literal <span class="string">'"Hello, Obj"'</span>		Loc=&lt;main.m:7:16&gt;</span><br><span class="line">r_paren <span class="string">')'</span>		Loc=&lt;main.m:7:28&gt;</span><br><span class="line">semi <span class="string">';'</span>		Loc=&lt;main.m:7:29&gt;</span><br><span class="line">r_brace <span class="string">'&#125;'</span>	 [StartOfLine] [LeadingSpace]	Loc=&lt;main.m:8:5&gt;</span><br><span class="line"><span class="built_in">return</span> <span class="string">'return'</span>	 [StartOfLine] [LeadingSpace]	Loc=&lt;main.m:9:5&gt;</span><br><span class="line">numeric_constant <span class="string">'0'</span>	 [LeadingSpace]	Loc=&lt;main.m:9:12&gt;</span><br><span class="line">semi <span class="string">';'</span>		Loc=&lt;main.m:9:13&gt;</span><br><span class="line">r_brace <span class="string">'&#125;'</span>	 [StartOfLine]	Loc=&lt;main.m:10:1&gt;</span><br><span class="line">eof <span class="string">''</span>		Loc=&lt;main.m:10:2&gt;</span><br></pre></td></tr></table></figure></li>
+<li><strong>语法分析</strong>：将词法分析得到的 token 流进行语法静态分析（Static Analysis），输出<strong>抽象语法树（AST）</strong>，过程中会校验语法是否错误。 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ xcrun -sdk iphonesimulator clang -fmodules -fsyntax-only -Xclang -ast-dump main.m</span><br><span class="line"></span><br><span class="line">TranslationUnitDecl 0x7fbdd301ba08 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; &lt;undeserialized declarations&gt;</span><br><span class="line">|-TypedefDecl 0x7fbdd301c2a0 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit __int128_t <span class="string">'__int128'</span></span><br><span class="line">| `-BuiltinType 0x7fbdd301bfa0 <span class="string">'__int128'</span></span><br><span class="line">|-TypedefDecl 0x7fbdd301c310 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit __uint128_t <span class="string">'unsigned __int128'</span></span><br><span class="line">| `-BuiltinType 0x7fbdd301bfc0 <span class="string">'unsigned __int128'</span></span><br><span class="line">|-TypedefDecl 0x7fbdd301c3b0 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit SEL <span class="string">'SEL *'</span></span><br><span class="line">| `-PointerType 0x7fbdd301c370 <span class="string">'SEL *'</span> imported</span><br><span class="line">|   `-BuiltinType 0x7fbdd301c200 <span class="string">'SEL'</span></span><br><span class="line">|-TypedefDecl 0x7fbdd301c498 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit id <span class="string">'id'</span></span><br><span class="line">| `-ObjCObjectPointerType 0x7fbdd301c440 <span class="string">'id'</span> imported</span><br><span class="line">|   `-ObjCObjectType 0x7fbdd301c410 <span class="string">'id'</span> imported</span><br><span class="line">|-TypedefDecl 0x7fbdd301c578 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit Class <span class="string">'Class'</span></span><br><span class="line">| `-ObjCObjectPointerType 0x7fbdd301c520 <span class="string">'Class'</span> imported</span><br><span class="line">|   `-ObjCObjectType 0x7fbdd301c4f0 <span class="string">'Class'</span> imported</span><br><span class="line">|-ObjCInterfaceDecl 0x7fbdd301c5d0 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit Protocol</span><br><span class="line">|-TypedefDecl 0x7fbdd301c948 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit __NSConstantString <span class="string">'struct __NSConstantString_tag'</span></span><br><span class="line">| `-RecordType 0x7fbdd301c740 <span class="string">'struct __NSConstantString_tag'</span></span><br><span class="line">|   `-Record 0x7fbdd301c6a0 <span class="string">'__NSConstantString_tag'</span></span><br><span class="line">|-TypedefDecl 0x7fbdd3059000 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit __builtin_ms_va_list <span class="string">'char *'</span></span><br><span class="line">| `-PointerType 0x7fbdd301c9a0 <span class="string">'char *'</span></span><br><span class="line">|   `-BuiltinType 0x7fbdd301baa0 <span class="string">'char'</span></span><br><span class="line">|-TypedefDecl 0x7fbdd30592e8 &lt;&lt;invalid sloc&gt;&gt; &lt;invalid sloc&gt; implicit __builtin_va_list <span class="string">'struct __va_list_tag [1]'</span></span><br><span class="line">| `-ConstantArrayType 0x7fbdd3059290 <span class="string">'struct __va_list_tag [1]'</span> 1</span><br><span class="line">|   `-RecordType 0x7fbdd30590f0 <span class="string">'struct __va_list_tag'</span></span><br><span class="line">|     `-Record 0x7fbdd3059058 <span class="string">'__va_list_tag'</span></span><br><span class="line">|-ImportDecl 0x7fbdd30b4218 &lt;main.m:1:1&gt; col:1 implicit Foundation</span><br><span class="line">`-FunctionDecl 0x7fbdd30b44e0 &lt;line:3:1, line:10:1&gt; line:3:5 main <span class="string">'int (int, const char **)'</span></span><br><span class="line">  |-ParmVarDecl 0x7fbdd30b4270 &lt;col:11, col:15&gt; col:15 argc <span class="string">'int'</span></span><br><span class="line">  |-ParmVarDecl 0x7fbdd30b4390 &lt;col:21, col:39&gt; col:34 argv <span class="string">'const char **'</span>:<span class="string">'const char **'</span></span><br><span class="line">  `-CompoundStmt 0x7fbdd30c9190 &lt;line:4:1, line:10:1&gt;</span><br><span class="line">    |-ObjCAutoreleasePoolStmt 0x7fbdd30c9148 &lt;line:5:5, line:8:5&gt;</span><br><span class="line">    | `-CompoundStmt 0x7fbdd30c9130 &lt;line:6:5, line:8:5&gt;</span><br><span class="line">    |   `-CallExpr 0x7fbdd30c90f0 &lt;line:7:9, col:28&gt; <span class="string">'void'</span></span><br><span class="line">    |     |-ImplicitCastExpr 0x7fbdd30c90d8 &lt;col:9&gt; <span class="string">'void (*)(id, ...)'</span> &lt;FunctionToPointerDecay&gt;</span><br><span class="line">    |     | `-DeclRefExpr 0x7fbdd30c8fb0 &lt;col:9&gt; <span class="string">'void (id, ...)'</span> Function 0x7fbdd30b4620 <span class="string">'NSLog'</span> <span class="string">'void (id, ...)'</span></span><br><span class="line">    |     `-ImplicitCastExpr 0x7fbdd30c9118 &lt;col:15, col:16&gt; <span class="string">'id'</span>:<span class="string">'id'</span> &lt;BitCast&gt;</span><br><span class="line">    |       `-ObjCStringLiteral 0x7fbdd30c9060 &lt;col:15, col:16&gt; <span class="string">'NSString *'</span></span><br><span class="line">    |         `-StringLiteral 0x7fbdd30c9038 &lt;col:16&gt; <span class="string">'char [11]'</span> lvalue <span class="string">"Hello, Obj"</span></span><br><span class="line">    `-ReturnStmt 0x7fbdd30c9180 &lt;line:9:5, col:12&gt;</span><br><span class="line">      `-IntegerLiteral 0x7fbdd30c9160 &lt;col:12&gt; <span class="string">'int'</span> 0</span><br></pre></td></tr></table></figure></li>
+<li><strong>CodeGen 生成 IR 中间代码</strong>：CodeGen 负责将语法树自顶向下遍历翻译成 <code>LLVM IR</code>，<code>IR</code> 是编译过程中前端的输出后端的输入。</li>
+<li><strong>Optimize 优化 IR</strong>：到这里 LLVM 会做一些优化工作，在 Xcode 的编译设置里可以设置优化级别 -01, -03, -0s，也可以写自己的 Pass，Pass 是 LLVM 优化工作的一个节点，一个节点做些事，一起加起来就构成了 LLVM 完整的优化和转化。附件：<a href="http://llvm.org/docs/WritingAnLLVMPass.html" target="_blank" rel="noopener">官方 Pass 教程</a>。</li>
+<li><strong>LLVM Bitcode 生成字节码</strong>：如果开启了 bitcode，苹果会做进一步优化。若有新的后端架构，依旧可以用这份优化过的 bitcode 去生成。</li>
+<li><strong>生成汇编</strong></li>
+<li><strong>生成目标文件</strong></li>
+<li><strong>生成可执行文件</strong></li>
+</ol>
+<p>我们通过一个命令行操作来复现上述的编译过程：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 词法分析</span></span><br><span class="line">xcrun -sdk iphonesimulator clang -fmodules -fsyntax-only -Xclang -dump-tokens main.m</span><br><span class="line"><span class="comment"># 语法分析</span></span><br><span class="line">xcrun -sdk iphonesimulator clang -fmodules -fsyntax-only -Xclang -ast-dump main.m</span><br><span class="line"><span class="comment"># CodeGen 生成 IR</span></span><br><span class="line">xcrun -sdk iphonesimulator clang -S -fobjc-arc -emit-llvm main.m -o main.ll</span><br><span class="line"><span class="comment"># Optimize 优化 IR</span></span><br><span class="line">xcrun -sdk iphonesimulator clang -O3 -S -fobjc-arc -emit-llvm main.m -o main.ll</span><br><span class="line"><span class="comment"># LLVM Bitcode</span></span><br><span class="line">xcrun -sdk iphonesimulator clang -emit-llvm -c main.m -o main.bc</span><br><span class="line"><span class="comment"># 生成汇编</span></span><br><span class="line">xcrun -sdk iphonesimulator clang -S -fobjc-arc main.m -o main.s</span><br><span class="line"><span class="comment"># 生成目标文件</span></span><br><span class="line">xcrun -sdk iphonesimulator clang -fmodules -c main.m -o main.o</span><br><span class="line"><span class="comment"># 生成可执行文件</span></span><br><span class="line">xcrun -sdk iphonesimulator clang main.o -o main</span><br><span class="line"><span class="comment"># 至此，即生成了可供 iphonesimulator 执行的 `可执行文件`</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Xcode-Build-的流程"><a href="#Xcode-Build-的流程" class="headerlink" title="Xcode Build 的流程"></a>Xcode Build 的流程</h2><p>我们在 Xcode 中使用 <strong>Command + B</strong> 或 <strong>Command + R</strong> 时，即完成了一次编译，我们来看下这个过程做了哪些事情。</p>
+<p>编译过程分为四个步骤：</p>
+<ul>
+<li>预编译（Pre-process）：宏替换、删除注释、展开头文件，产生 .i 文件。</li>
+<li>编译（Compliling）：把前面生成的 .i 文件转化为汇编语言，产生 .s 文件。</li>
+<li>汇编（Asembly）：把汇编语言 .s 文件转化为机器码文件，产生 .0 文件。</li>
+<li>链接（Link）：对 .o 文件中的对于其他库的引用的地方进行引用，生成最后的可执行文件。也包括多个 .o 文件进行 link。</li>
+</ul>
+<p>通过解析 Xcode 编译 log，可以发现 Xcode 是根据 Target 进行编译的。我们可以通过 Xcode 中的 Build Phases、Build Settings 及 Build Rules 来控制编译过程。</p>
+<ul>
+<li>Build Settings：这一栏下是对编译的细节进行设定，包含 build 过程的每个阶段的设置选项（包含编译、链接、代码签名、打包）。</li>
+<li>Build Phases：用于控制从源文件到可执行文件的整个过程，如编译哪些文件，编译过程中执行哪些自定义脚本。例如 CocoaPods 在这里会进行相关配置。</li>
+<li>Build Rules：指定了不同的文件类型该如何编译。一般我们不需要修改这里的内容。如果需要对特定类型的文件添加处理方法，可以在这里添加规则。</li>
+</ul>
+<p>每个 Target 的具体编译过程也可以通过 log 日志获得。大致过程为：</p>
+<ul>
+<li>编译信息写入辅助文件（如Entitlements.plist），创建编译后的文件架构</li>
+<li>写入辅助信息（.hmap 文件）。将项目的文件结构对应表、将要执行的脚本、项目依赖库的文件结构对应表写成文件。</li>
+<li>运行预设的脚本。如 Cocoapods 会在 Build Phases 中预设一些脚本（CheckPods Manifest.lock）。</li>
+<li>编译 .m 文件，生成可执行文件 Mach-O。每次进行了 LLVM 的完整流程：前端（词法分析 - 语法分析 - 生成 IR）、优化器（优化 IR）、后端（生成汇编 - 生成目标文件 - 生成可执行文件）。使用 <code>CompileC</code> 和 <code>clang</code> 命令。<br>  CompileC 是 xcodebuild 内部函数的日志记录表示形式，它是 build.log 文件中有关编译的基本信息来源。</li>
+<li>链接需要的库。如 Foundation.framework，AFNetworking.framework…</li>
+<li>拷贝资源文件到目标包</li>
+<li>编译 storyboard 文件</li>
+<li>链接 storyboard 文件</li>
+<li>编译 Asset 文件。如果使用 Asset.xcassets 来管理图片，这些图片会被编译为机器码，除了 icon 和 launchIamge。</li>
+<li>处理 infoplist</li>
+<li>执行 CocoaPods 脚本，将在编译项目前已编译好的依赖库和相关资源拷贝到包中。</li>
+<li>拷贝 Swift 标准库</li>
+<li>创建 .app 文件并对其签名</li>
+</ul>
+<h2 id="dSYM-文件"><a href="#dSYM-文件" class="headerlink" title="dSYM 文件"></a>dSYM 文件</h2><p>在每次编译完成之后，都会生成一个 dsym 文件。dsym 文件中，存储了 16 进制的函数地址映射。</p>
+<p>当 App 执行打包后的二进制文件时，实际是通过地址来调用方法的。我们可能会用三方的统计工具，例如 Fabric 在 App Crash 时会帮我们抓到 crash 时的调用栈，这些调用栈里会包含 crash 地址的调用信息。这时可以通过 dSYM 文件由地址映射到具体的函数位置。</p>
+<h2 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h2><p>预处理，即在编译前的处理。预处理能够让我们定义编译器变量，实现条件编译。比如我们常会用到下面这样的判断：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> DEBUG</span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>比如我们常会有这样的场景：测版版本使用测试服务器数据，正式版本使用生产服务器数据。我们可以分别为 debug 和 release 设置相关的预处理宏。假设名为 <code>DEVSERVER</code>。</p>
+<p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/060bca21863b7582fdd6.jpg/nVfbQ6pHdCGz15u.jpg" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/060bca21863b7582fdd6.jpg/nVfbQ6pHdCGz15u.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<p>再通过如下代码，就实现了服务器地址的按需切换：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> DEVSERVER</span></span><br><span class="line"><span class="comment">// 测试服务器</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="comment">// 生产服务器</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="插入脚本"><a href="#插入脚本" class="headerlink" title="插入脚本"></a>插入脚本</h2><p>如果我们的项目中使用了 CocoaPods，在 Build Phase 里会看到 <code>[CP]</code> 开头的脚本。这些是 CocoaPods 插入的脚本。</p>
+<p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/efcdf611a0096daf661f.jpg/8mYkXBCc6wnGLfx.jpg" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/efcdf611a0096daf661f.jpg/8mYkXBCc6wnGLfx.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<ul>
+<li><strong>Check Pods Manifest.lock</strong>：检查 cocoapod 管理的三方库是否需要更新</li>
+<li><strong>Embed Pods Framework</strong>：运行脚本来链接三方库的静态/动态库</li>
+</ul>
+<p>这些配置信息都存在 <code>.xcodeproj</code> 文件里。CocoaPods 通过修改 <code>.xcodeproj</code>，配置编译期的脚本，以保证三方库正确的编译链接。</p>
+<p>这里也有个比较常用的脚本操作。例如，每当我们 Archive 时，通常情况下都需要手动修改 target 的 build 版本，我们可以让这一步实现自动化。</p>
+<p>添加方式：</p>
+<ul>
+<li>Xcode -&gt; Target -&gt; Build Phase -&gt; New Run Script Phase</li>
+<li>写入如下脚本代码</li>
+<li>勾选 <strong>Run script only when installing</strong></li>
+<li>重命名脚本为 <strong>[ProjectName]Increase build number</strong></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 脚本信息</span></span><br><span class="line">buildNumber=$(/usr/libexec/PlistBuddy -c <span class="string">"Print CFBundleVersion"</span> <span class="string">"<span class="variable">$&#123;PROJECT_DIR&#125;</span>/<span class="variable">$&#123;INFOPLIST_FILE&#125;</span>"</span>)</span><br><span class="line">buildNumber=$((<span class="variable">$buildNumber</span> + 1))</span><br><span class="line">/usr/libexec/PlistBuddy -c <span class="string">"Set :CFBundleVersion <span class="variable">$buildNumber</span>"</span> <span class="string">"<span class="variable">$&#123;PROJECT_DIR&#125;</span>/<span class="variable">$&#123;INFOPLIST_FILE&#125;</span>"</span></span><br></pre></td></tr></table></figure>
+
+<p>这段脚本实现的是：读取当前 plist 的 build 版本号，在其基础上 +1，再写入 plist 文件中。</p>
+<h2 id="脚本编译打包"><a href="#脚本编译打包" class="headerlink" title="脚本编译打包"></a>脚本编译打包</h2><p>对于 CI 来说，脚本编译打包十分有用，一个自动打包的配置可做参考：</p>
+<ul>
+<li><a href="https://github.com/monetking/AutoPacking-iOS" target="_blank" rel="noopener">monetking/AutoPacking-iOS</a></li>
+</ul>
+<h2 id="提高项目-Build-速度"><a href="#提高项目-Build-速度" class="headerlink" title="提高项目 Build 速度"></a>提高项目 Build 速度</h2><p>随着项目的迭代，源代码及三方库的引入都在持续增加，很明显会发现编译速度变慢。基于之前对编译过程的了解，可以一定程度上优化编译速度。</p>
+<h3 id="指标建立"><a href="#指标建立" class="headerlink" title="指标建立"></a>指标建立</h3><p>首先，编译的快慢我们需要确定一个度量，最直观的表现是<strong>编译时间</strong>。我们通过在终端输入如下指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ defaults write com.apple.dt.Xcode ShowBuildOperationDuration YES</span><br></pre></td></tr></table></figure>
+
+<p>完成后重启 Xcode，进行一次编译，编译完成后在顶栏即可看到对应的编译时间。</p>
+<h3 id="代码层面的优化"><a href="#代码层面的优化" class="headerlink" title="代码层面的优化"></a>代码层面的优化</h3><h4 id="前向声明（Forward-Declaration）"><a href="#前向声明（Forward-Declaration）" class="headerlink" title="前向声明（Forward Declaration）"></a>前向声明（Forward Declaration）</h4><p>Objective-C 中 <code>#import</code> 和 <code>@class</code> 都可以引入一个类。他们区别是：</p>
+<ul>
+<li><code>#import</code> 会包含这个类的所有信息，包括<strong>实体变量</strong>和<strong>方法</strong>；而 <code>@class</code> 只是告诉编译器，其后面声明的名称是<strong>类的名称</strong>，至于这些类是如何定义的，暂不考虑。</li>
+<li>在头文件中，一般只需要知道被引用的类的名称就可以。 不需要知道其内部的实体变量和方法，所以在头文件中一般使用 <code>@class</code> 来声明这个名称是类的名称。 而在实现类里面使用 <code>#import</code> 来包含这个被引用类的头文件，因为会用到这个引用类的内部的<strong>实体变量</strong>和<strong>方法</strong>。</li>
+<li>在编译效率方面考虑，如果你有 100 个头文件都 <code>#import</code> 了同一个头文件，或者这些文件是依次引用的，如 A–&gt;B, B–&gt;C, C–&gt;D 这样的引用关系。当最开始的那个头文件有变化时，后面所有引用它的类都需要重新编译，如果类有很多，这将耗费大量的时间。而是用 <code>@class</code> 不会。</li>
+<li>如果有循环依赖关系，如：A–&gt;B, B–&gt;A 这样的相互依赖关系，如果使用 <code>#import</code> 来相互包含，那么就会出现编译错误，如果使用 <code>@class</code> 在两个类的头文件中相互声明，则不会有编译错误出现。</li>
+</ul>
+<p>所以，一般 <code>@class</code> 是放在 <strong>interface</strong> 中的，只是为了在 <strong>interface</strong> 中引用这个类，把这个类作为一个类型来用的。在实现这个接口的实现类中，如果需要引用这个类的实体变量或者方法之类的，还是需要 <strong>import</strong> 在 <strong>@class</strong> 中声明的类进来。使用 <code>@class</code>，只能用来定义变量，不能继承，也不能调用该类的方法和变量。使用 <code>#import</code> 则可以进行。</p>
+<p>简而言之，是为了编译器能大大提高 <strong>#import</strong> 的替换速度。</p>
+<h4 id="对常用工具类进行打包（Framework-a）"><a href="#对常用工具类进行打包（Framework-a）" class="headerlink" title="对常用工具类进行打包（Framework/.a）"></a>对常用工具类进行打包（Framework/.a）</h4><p>常用的工具类一般不会有改动，我们可以提前将这部分模块打包成 Framework 或静态库。这样编译时这部分代码不需要重新进行编译了。</p>
+<h4 id="常用头文件放到预编译文件里"><a href="#常用头文件放到预编译文件里" class="headerlink" title="常用头文件放到预编译文件里"></a>常用头文件放到预编译文件里</h4><p>Xcode 中 <code>.pch</code> 文件是预编译文件。这里的内容在执行 Xcode Build 之前就已经被预编译，并引入到每一个 .m 文件中。</p>
+<h3 id="编译器选项的优化"><a href="#编译器选项的优化" class="headerlink" title="编译器选项的优化"></a>编译器选项的优化</h3><h4 id="控制-dSYM-文件的生成"><a href="#控制-dSYM-文件的生成" class="headerlink" title="控制 dSYM 文件的生成"></a>控制 dSYM 文件的生成</h4><p>Debug 模式下，不生成 dSYM 文件。dSYM 文件内存储的是调试信息，在 Debug 模式下，我们可以借助 Xcode 和 LLDB 完成调试，不需要生成额外的 dSYM 文件。这样可以提高一部分的编译速度。</p>
+<h3 id="编译器优化"><a href="#编译器优化" class="headerlink" title="编译器优化"></a>编译器优化</h3><p>Debug 模式下，关闭编译器优化。</p>
+<p><img src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/6e6e0da2149efef12e17.jpg/qwybdhIQkl8tumF.jpg" class="lazyload" data-srcset="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/6e6e0da2149efef12e17.jpg/qwybdhIQkl8tumF.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt=""></p>
+<p>Xcode 11 中已默认关闭。</p>
+<blockquote>
+<p>参考内容：</p>
+<ul>
+<li><a href="https://objccn.io/issue-6-1/" target="_blank" rel="noopener">Build Rules</a></li>
+<li><a href="https://github.com/LeoMobileDeveloper/Blogs/blob/master/iOS/iOS%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E5%BA%94%E7%94%A8.md" target="_blank" rel="noopener">iOS 编译过程的原理和应用</a></li>
+<li><a href="https://ming1016.github.io/2017/03/01/deeply-analyse-llvm/" target="_blank" rel="noopener">深入剖析 iOS 编译 Clang / LLVM</a></li>
+</ul>
+</blockquote>
+
+  
+    
+    <div class='footer'>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=https://blog.jonyfang.com/2019/09/14/2019-09-14-ios-analyse-llvm/>https://blog.jonyfang.com/2019/09/14/2019-09-14-ios-analyse-llvm/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/iOS/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>iOS</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>编译原理</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.jonyfang.com/2019/09/14/2019-09-14-ios-analyse-llvm/&title=iOS 编译过程梳理 - JonyFang&summary=iOS 开发常用的语言是 Objective-C 和 Swift，两者都是编译语言。编译语言在执行的时候，必须先通过编译器生成机器码，机器码可以直接在 CPU 上执行，所以执行效率很高。本篇主要用于梳理 Objective-C 的编译过程。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://blog.jonyfang.com/2019/09/14/2019-09-14-ios-analyse-llvm/&title=iOS 编译过程梳理 - JonyFang&summary=iOS 开发常用的语言是 Objective-C 和 Swift，两者都是编译语言。编译语言在执行的时候，必须先通过编译器生成机器码，机器码可以直接在 CPU 上执行，所以执行效率很高。本篇主要用于梳理 Objective-C 的编译过程。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://blog.jonyfang.com/2019/09/14/2019-09-14-ios-analyse-llvm/&title=iOS 编译过程梳理 - JonyFang&summary=iOS 开发常用的语言是 Objective-C 和 Swift，两者都是编译语言。编译语言在执行的时候，必须先通过编译器生成机器码，机器码可以直接在 CPU 上执行，所以执行效率很高。本篇主要用于梳理 Objective-C 的编译过程。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-telegram" title="" rel="external nofollow noopener noreferrer"
+          
+            href="https://t.me/share/url?url=https://blog.jonyfang.com/2019/09/14/2019-09-14-ios-analyse-llvm/&text=iOS 编译过程梳理 - JonyFang"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2019/11/07/2019-11-07-yytext/'>
+          <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>YYText 中的 CoreText</p>
+          <p class='content'>富文本框架里YYText在性能方面的表现很出色，它基于 CoreText 做了大量基础处理并实现了两个上层视图组件：YYLabel 和 YYTextView。在了解富文本处理之前，我们还需要对 ...</p>
+        </a>
+      
+      
+        <a class='next' href='/2019/07/01/2019-07-01-ios-js-native/'>
+          <p class='title'>iOS 中 JS 与原生交互<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>本篇用于梳理 WKWebView 中 JS 与原生的交互，及 JavaScriptCore 框架在交互过程中起的作用。
+
+
+WKWebView 中 JS 调用 OC核心方法：
+// 添加 scr...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+  
+
+  <article class="post white-box reveal shadow" id="comments">
+    <p ct><i class='fas fa-comments'></i> 评论</p>
+    
+    <div id="valine_container" class="valine_thread">
+  <i class="fas fa-cog fa-spin fa-fw fa-2x"></i>
+</div>
+
+  </article>
+
+
+
+
+
+
+</div>
+<aside class='l_side'>
+  
+  
+    
+    
+
+
+
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#编译器的概述"><span class="toc-text">编译器的概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Clang-LLVM-的编译过程"><span class="toc-text">Clang + LLVM 的编译过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Xcode-Build-的流程"><span class="toc-text">Xcode Build 的流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dSYM-文件"><span class="toc-text">dSYM 文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#预处理"><span class="toc-text">预处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#插入脚本"><span class="toc-text">插入脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#脚本编译打包"><span class="toc-text">脚本编译打包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#提高项目-Build-速度"><span class="toc-text">提高项目 Build 速度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#指标建立"><span class="toc-text">指标建立</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码层面的优化"><span class="toc-text">代码层面的优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#前向声明（Forward-Declaration）"><span class="toc-text">前向声明（Forward Declaration）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对常用工具类进行打包（Framework-a）"><span class="toc-text">对常用工具类进行打包（Framework&#x2F;.a）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#常用头文件放到预编译文件里"><span class="toc-text">常用头文件放到预编译文件里</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编译器选项的优化"><span class="toc-text">编译器选项的优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#控制-dSYM-文件的生成"><span class="toc-text">控制 dSYM 文件的生成</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编译器优化"><span class="toc-text">编译器优化</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+
+      </div>
+      
+  
+  <footer class="footer clearfix">
+    <br><br>
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="mailto:jony.chunfang@gmaill.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://github.com/JonyFang"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=1063555"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © 2015-2020 JonyFang</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+
+      <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+  </div>
+  <div>
+    <!-- required -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5/dist/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  function pjax_fancybox() {
+    $(".md").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+      var element = document.createElement("a"); // a 标签
+      $(element).attr("class", "fancybox");
+      $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+      $(element).attr("href", $(this).attr("src"));
+      if ($(this).attr("data-original")) {
+        $(element).attr("href", $(this).attr("data-original"));
+      }
+      $(element).attr("data-fancybox", "images");
+      var caption = "";   // 描述信息
+      if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+        $(element).attr('data-caption', $(this).attr('alt'));
+        caption = $(this).attr('alt');
+      }
+      var div = document.createElement("div");
+      $(div).addClass("fancybox");
+      $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+      var span = document.createElement("span");
+      $(span).addClass("image-caption");
+      $(span).text(caption); // 加描述
+      $(this).after(span);  // 再套一层描述
+      // 背景层
+      var bgDiv = document.createElement("div");
+      $(bgDiv).addClass("bg");
+      if ($(this).attr('bg')) {
+        $(bgDiv).css('background', $(this).attr('bg'));
+      }
+      $(this).wrap(bgDiv); // 背景层
+      $(this).wrap(element);  // 最后套 a 标签
+    })
+    $(".md").find("img").fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+      closeClick: true,
+      helpers: {
+        overlay: {closeClick: true}
+      },
+      buttons: [
+        "zoom",
+        "close"
+      ]
+    });
+  };
+  $(function () {
+    pjax_fancybox();
+  });
+</script>
+
+
+<!-- internal -->
+
+
+
+
+<!-- optional -->
+
+  <script>
+  
+  var SEARCH_SERVICE = "hexo" || "hexo";
+  var ROOT = "/" || "/";
+  if (!ROOT.endsWith('/')) ROOT += '/';
+</script>
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.0/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+  
+    <script>
+      window.FPConfig = {
+        delay: 0,
+        ignoreKeywords: [],
+        maxRPS: 5,
+        hoverDelay: 25
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script>
+  
+
+
+
+
+
+
+
+
+  <script>
+  let APlayerController = new Object();
+  APlayerController.id = '1063555';  // 设定全局音乐播放ID
+  APlayerController.volume = '0.7';
+</script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js"></script>
+
+
+
+
+
+
+
+
+  
+  
+<script src="/js/valine.js"></script>
+
+
+<script>
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link'.split(',').filter(function (item) {
+    return GUEST_INFO.indexOf(item) > -1
+  });
+  var REQUIRED_FIELDS = ['nick', 'mail', 'link'];
+  var requiredFields = 'nick,mail'.split(',').filter(function (item) {
+    return REQUIRED_FIELDS.indexOf(item) > -1
+  });
+
+  function emoji(path, idx, ext) {
+    return path + "/" + path + "-" + idx + "." + ext;
+  }
+
+  var emojiMaps = {};
+  for (var i = 1; i <= 54; i++) {
+    emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+  }
+  for (var i = 1; i <= 101; i++) {
+    emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+  }
+  for (var i = 1; i <= 116; i++) {
+    emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+  }
+  for (var i = 1; i <= 125; i++) {
+    emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+  }
+  for (var i = 1; i <= 4; i++) {
+    emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+  }
+
+  function pjax_valine() {
+    if(!document.querySelectorAll("#valine_container")[0])return;
+
+    let pagePlaceholder = $.trim($('#pjax-comment-placeholder').text()) || "快来评论吧~";
+
+    let path = $.trim($('#pjax-comment-path').text());
+    if (path.length == 0) {
+      let defaultPath = '';
+      path = defaultPath || decodeURI(window.location.pathname);
+    }
+
+    var valine = new Valine();
+    valine.init({
+      el: '#valine_container',
+      meta: meta,
+      placeholder: pagePlaceholder,
+      path: path,
+      appId: "9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI",
+      appKey: "tIyMmSe8wzMgEJRCoUgzKV1B",
+      pageSize: '10',
+      avatar: 'robohash',
+      lang: 'zh-cn',
+      visitor: 'true',
+      highlight: 'true',
+      mathJax: 'false',
+      enableQQ: 'true',
+      requiredFields: requiredFields,
+      emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+      emojiMaps: emojiMaps
+    })
+  }
+
+  $(function () {
+    pjax_valine();
+  });
+</script>
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+
+  
+    
+<script src="/js/search.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script defer>
+
+  const LCCounter = {
+    app_id: '9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI',
+    app_key: 'tIyMmSe8wzMgEJRCoUgzKV1B',
+    custom_api_server: '',
+
+    // 查询存储的记录
+    getRecord(Counter, url, title) {
+      return new Promise(function (resolve, reject) {
+        Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({url})))
+          .then(resp => resp.json())
+          .then(({results, code, error}) => {
+            if (code === 401) {
+              throw error;
+            }
+            if (results && results.length > 0) {
+              var record = results[0];
+              resolve(record);
+            } else {
+              Counter('post', '/classes/Counter', {url, title: title, times: 0})
+                .then(resp => resp.json())
+                .then((record, error) => {
+                  if (error) {
+                    throw error;
+                  }
+                  resolve(record);
+                }).catch(error => {
+                console.error('Failed to create', error);
+                reject(error);
+              });
+            }
+          }).catch((error) => {
+          console.error('LeanCloud Counter Error:', error);
+          reject(error);
+        });
+      })
+    },
+
+    // 发起自增请求
+    increment(Counter, incrArr) {
+      return new Promise(function (resolve, reject) {
+        Counter('post', '/batch', {
+          "requests": incrArr
+        }).then((res) => {
+          res = res.json();
+          if (res.error) {
+            throw res.error;
+          }
+          resolve(res);
+        }).catch((error) => {
+          console.error('Failed to save visitor count', error);
+          reject(error);
+        });
+      });
+    },
+
+    // 构建自增请求体
+    buildIncrement(objectId) {
+      return {
+        "method": "PUT",
+        "path": `/1.1/classes/Counter/${ objectId }`,
+        "body": {
+          "times": {
+            '__op': 'Increment',
+            'amount': 1
+          }
+        }
+      }
+    },
+
+    // 校验是否为有效的 UV
+    validUV() {
+      var key = 'LeanCloudUVTimestamp';
+      var flag = localStorage.getItem(key);
+      if (flag) {
+        // 距离标记小于 24 小时则不计为 UV
+        if (new Date().getTime() - parseInt(flag) <= 86400000) {
+          return false;
+        }
+      }
+      localStorage.setItem(key, new Date().getTime().toString());
+      return true;
+    },
+
+    addCount(Counter) {
+      var enableIncr = '' === 'true' && window.location.hostname !== 'localhost';
+      enableIncr = true;
+      var getterArr = [];
+      var incrArr = [];
+      // 请求 PV 并自增
+      var pvCtn = document.querySelector('#lc-sv');
+      if (pvCtn || enableIncr) {
+        var pvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-sv', 'Visits').then((record) => {
+          incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-sv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + 1;
+              if (pvCtn) {
+                pvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(pvGetter);
+      }
+
+      // 请求 UV 并自增
+      var uvCtn = document.querySelector('#lc-uv');
+      if (uvCtn || enableIncr) {
+        var uvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-uv', 'Visitors').then((record) => {
+          var vuv = this.validUV();
+          vuv && incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-uv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + (vuv ? 1 : 0);
+              if (uvCtn) {
+                uvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(uvGetter);
+      }
+
+      // 请求文章的浏览数，如果是当前页面就自增
+      var allPV = document.querySelectorAll('#lc-pv');
+      if (allPV.length > 0 || enableIncr) {
+        for (i = 0; i < allPV.length; i++) {
+          let pv = allPV[i];
+          let title = pv.getAttribute('data-title');
+          var url = 'https://blog.jonyfang.com' + pv.getAttribute('data-path');
+          if (url) {
+            var viewGetter = this.getRecord(Counter, url, title).then((record) => {
+              // 是当前页面就自增
+              if (pv.getAttribute('data-path') == window.location.pathname) {
+                incrArr.push(this.buildIncrement(record.objectId));
+              }
+              if (pv) {
+                var ele = pv.querySelector('#lc-pv #number');
+                if (ele) {
+                  if (pv.getAttribute('data-path') == window.location.pathname) {
+                    ele.innerText = (record.times || 0) + 1;
+                  } else {
+                    ele.innerText = record.times || 0;
+                  }
+                  pv.style.display = 'inline';
+                }
+              }
+            });
+            getterArr.push(viewGetter);
+          }
+        }
+      }
+
+      // 如果启动计数自增，批量发起自增请求
+      if (enableIncr) {
+        Promise.all(getterArr).then(() => {
+          incrArr.length > 0 && this.increment(Counter, incrArr);
+        })
+      }
+
+    },
+
+
+    fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${ api_server }/1.1${ url }`, {
+          method,
+          headers: {
+            'X-LC-Id': this.app_id,
+            'X-LC-Key': this.app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      this.addCount(Counter);
+    },
+
+    refreshCounter() {
+      var api_server = this.app_id.slice(-9) !== '-MdYXbMMI' ? this.custom_api_server : `https://${ this.app_id.slice(0, 8).toLowerCase() }.api.lncldglobal.com`;
+      if (api_server) {
+        this.fetchData(api_server);
+      } else {
+        fetch('https://app-router.leancloud.cn/2/route?appId=' + this.app_id)
+          .then(resp => resp.json())
+          .then(({api_server}) => {
+            this.fetchData('https://' + api_server);
+          });
+      }
+    }
+
+  };
+
+  LCCounter.refreshCounter();
+
+  document.addEventListener('pjax:complete', function () {
+    LCCounter.refreshCounter();
+  });
+</script>
+
+
+
+<!-- more -->
+
+
+    
+      
+
+
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+
+<!-- 样式位于：source/css/_third-party/pjaxanimate.styl -->
+
+<div class="pjax-animate">
+  
+    <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+    <div id="loading-bar-wrapper"><script>NProgress.configure({parent:"#loading-bar-wrapper",trickleSpeed: 100})</script></div>
+    <script>
+      window.ShowLoading = function() {
+        NProgress.start();
+      };
+      window.HideLoading = function() {
+        NProgress.done();
+      }
+    </script>
+  
+</div>
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox])',
+        selectors: [
+          "title",
+          "#pjax-container",
+          "#pjax-header-nav-list"
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      window.subData = null; // 移除标题（用于一二级导航栏切换处）
+      $.fancybox.close();    // 关闭弹窗
+      $('.l_header .switcher .s-search').removeClass('active'); // 关闭移动端激活的搜索框
+      $('.l_header').removeClass('z_search-open'); // 关闭移动端激活的搜索框
+      $('.wrapper').removeClass('sub'); // 跳转页面时关闭二级导航
+
+      // 解绑事件 避免重复监听
+      $('.s-top').unbind('click');
+      $('.menu a').unbind('click');
+      $(window).unbind('resize');
+      $(window).unbind('scroll');
+      $(document).unbind('scroll');
+      $(document).unbind('click');
+      $('body').unbind('click');
+      window.ShowLoading();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 关于百度统计对 SPA 页面的处理：
+      // 方案一：百度统计>管理>单页应用设置中，打开开启按钮即可对SPA进行统计。 https://tongji.baidu.com/web/help/article?id=324
+      // 方案二：取消注释下列代码。 https://tongji.baidu.com/web/help/article?id=235
+      // 
+
+      // 关于谷歌统计对 SPA 页面的处理：
+      // 当应用以动态方式加载内容并更新地址栏中的网址时，也应该更新通过 gtag.js 存储的网页网址。
+      // https://developers.google.cn/analytics/devguides/collection/gtagjs/single-page-applications?hl=zh-cn
+      
+
+      $('.nav-main').find('.list-v').not('.menu-phone').removeAttr("style",""); // 移除小尾巴的移除
+      $('.menu-phone.list-v').removeAttr("style",""); // 移除小尾巴的移除
+      $('script[data-pjax], .pjax-reload script').each(function () {
+        $(this).parent().append($(this).remove());
+      });
+      try{
+        pjax_fancybox();
+        
+        
+        
+        
+        
+          pjax_valine();
+        
+        
+        
+        
+        
+      } catch (e) {
+        console.log(e);
+      }
+      window.HideLoading();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      window.HideLoading();
+      window.location.href = e.triggerElement.href;
+    });
+</script>
+
+    
+  </div>
+</body>
+</html>

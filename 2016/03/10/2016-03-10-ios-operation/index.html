@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/tree/4.0.0-rc.2'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+  <title>iOS 多线程 - NSOperation - JonyFang</title>
+  
+    <meta name="keywords" content="iOS,多线程">
+  
+
+  
+    <meta name="description" content="iOS 日常开发过程中，涉及到多线程处理的需求，绝大多数可以通过 GCD 来完成。但如果想要给 task 添加依赖、取消、暂停、恢复的需求，GCD 的实现就会变得很复杂。这时就引申除了 NSOperation，NSOperation 是基于 GCD 的封装，提供面向对象的形式。我们可以借助 NSOperation...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+    
+      <meta name='theme-color' content='#FFFFFF'>
+    
+      <meta name='msapplication-TileColor' content='#1BC3FB'>
+    
+      <meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>
+    
+  
+
+  <!-- link -->
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/css/all.min.css">
+
+  
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  
+
+  <!-- import link -->
+  
+  
+  <link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>
+  <link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>
+  <link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>
+  <link rel='mask-icon' color='#1BC3FB' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/safari-pinned-tab.svg'>
+  <link rel='manifest' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/site.webmanifest'>
+  
+
+  
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+</head>
+
+<body>
+  <header class="l_header auto shadow blur" style='opacity: 0' >
+  <div class='container'>
+  <div class='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a class="s-comment fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fas fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li>
+          <a class="s-menu fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+		</div>
+	</div>
+  </div>
+</header>
+
+  <div class="l_body">
+    <div class="l_cover">
+
+  
+  
+      <div class='cover-wrapper post dock' style="display: none;">
+        
+          <div class='cover-bg lazyload placeholder' data-bg="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/05174de636d75be2f17c.jpg/lbzFIp65ZiQETn8.jpg"></div>
+        
+        <div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Jony's Blog</p>
+    
+    
+      <p class="subtitle">牢记梦想，自然生长</p>
+    
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/"
+              
+              
+              id="home">
+              <i class='fas fa-rss fa-fw'></i><p>博文</p>
+            </a>
+          
+            <a href="/categories/"
+              
+              
+              id="categories">
+              <i class='fas fa-folder-open fa-fw'></i><p>分类</p>
+            </a>
+          
+            <a href="/archives/"
+              
+              
+              id="archives">
+              <i class='fas fa-archive fa-fw'></i><p>归档</p>
+            </a>
+          
+            <a href="/about/"
+              
+              
+              id="about">
+              <i class='fas fa-info-circle fa-fw'></i><p>关于</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div class="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+  
+
+</div>
+
+    <div class='safearea'>
+      <div class='body-wrapper' id="pjax-container">
+        
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+
+
+<div id="pjax-data" style="display: none">
+  <div id="pjax-ispage">true</div>
+  <div id="pjax-pageTitle">iOS 多线程 - NSOperation</div>
+  <div id="pjax-enable-cover">true</div>
+  <div id="pjax-comment-path"></div>
+  <div id="pjax-comment-placeholder"></div>
+</div>
+
+
+<script>
+  // 处理封面 此时 jquery 还没加载
+  if ("none" == "none") { // 移除封面
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "none";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.add("show");
+  } else {
+    if ("none" == "half") { // 半屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'half');
+      document.getElementsByClassName('scroll-down')[0].style.display = "none";
+    } else if ("none" == "full") { // 全屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'full');
+      document.getElementsByClassName('scroll-down')[0].style.display = "";
+    }
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.remove("show");
+  }
+</script>
+
+
+        
+        
+
+<div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title">
+        iOS 多线程 - NSOperation
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/a764dcce0b25a615c8ac.jpg/PgrSQHZ6fBidbRF.jpg">
+    <p>JonyFang</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/iOS/">iOS</a><span class="sep"></span><a class="category-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2016年3月10日</p>
+  </a>
+</div>
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <p>iOS 日常开发过程中，涉及到多线程处理的需求，绝大多数可以通过 GCD 来完成。但如果想要给 task 添加依赖、取消、暂停、恢复的需求，GCD 的实现就会变得很复杂。这时就引申除了 NSOperation，NSOperation 是基于 GCD 的封装，提供面向对象的形式。我们可以借助 NSOperation 将每个 task 封装为一个个对象再进行操作，这也使得线程处理的代码逻辑更为清晰易懂。</p>
+<a id="more"></a>
+
+<p>简而言之，NSOperation 相对的优势有：</p>
+<ul>
+<li>可以添加操作间的依赖关系</li>
+<li>可以设定操作执行的优先级</li>
+<li>可以很方便的取消一个操作的执行</li>
+<li>可以通过 KVO 观察操作执行的状态：<ul>
+<li>isExecuting</li>
+<li>isFinished</li>
+<li>isCancelled</li>
+</ul>
+</li>
+</ul>
+<h2 id="NSOperation-用法"><a href="#NSOperation-用法" class="headerlink" title="NSOperation 用法"></a>NSOperation 用法</h2><p>NSOperation 需要配合 NSOperationQueue 来实现多线程异步执行。默认情况下，NSOperation 单独使用时，系统在当前线程中同步执行操作。NSOperation 是个抽象类，不能用来封装操作。我们可以通过它的子类来封装操作。封装方式有三种：</p>
+<ul>
+<li>使用子类 NSInvocationOperation</li>
+<li>使用子类 NSBlockOperation</li>
+<li>使用自定义继承自 NSOperation 的子类</li>
+</ul>
+<p>先在不使用 NSOperationQueue 的情况下单独使用 NSOperation（系统同步执行），看下三种创建方式。</p>
+<h3 id="NSInvocationOperation"><a href="#NSInvocationOperation" class="headerlink" title="NSInvocationOperation"></a>NSInvocationOperation</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)useInvocationOperation &#123;</span><br><span class="line">    <span class="comment">// 1.创建 NSInvocationOperation 对象</span></span><br><span class="line">    <span class="built_in">NSInvocationOperation</span> *op = [[<span class="built_in">NSInvocationOperation</span> alloc] initWithTarget:<span class="keyword">self</span> selector:<span class="keyword">@selector</span>(task1) object:<span class="literal">nil</span>];</span><br><span class="line">    <span class="comment">// 2.调用 start 方法开始执行操作</span></span><br><span class="line">    [op start];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">void</span>)task1 &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">        [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"thread---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印日志</span></span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">04</span>:<span class="number">09.848818</span>+<span class="number">0800</span> Demo[<span class="number">985</span>:<span class="number">5832682</span>] thread---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600002f54140</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">04</span>:<span class="number">11.849534</span>+<span class="number">0800</span> Demo[<span class="number">985</span>:<span class="number">5832682</span>] thread---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600002f54140</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看到默认在当前线程中执行操作。因为代码是在主线程中调用的，所以打印结果为主线程。如果在其他线程中执行操作，则打印结果为其他线程。</p>
+<h3 id="NSBlockOperation"><a href="#NSBlockOperation" class="headerlink" title="NSBlockOperation"></a>NSBlockOperation</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)useBlockOperation &#123;</span><br><span class="line">    <span class="comment">// 1.创建 NSBlockOperation 对象</span></span><br><span class="line">    <span class="built_in">NSBlockOperation</span> *op = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    <span class="comment">// 2.调用 start 方法开始执行操作</span></span><br><span class="line">    [op start];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印日志</span></span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">32</span>:<span class="number">58.166336</span>+<span class="number">0800</span> BuildDemo[<span class="number">1309</span>:<span class="number">5851093</span>] thread---&lt;<span class="built_in">NSThread</span>: <span class="number">0x6000022e0dc0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">33</span>:<span class="number">00.167871</span>+<span class="number">0800</span> BuildDemo[<span class="number">1309</span>:<span class="number">5851093</span>] thread---&lt;<span class="built_in">NSThread</span>: <span class="number">0x6000022e0dc0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样默认在当前线程执行操作。但 <code>blockOperationWithBlock:</code> 如果通过 <code>addExecutionBlock:</code> 添加多个操作时，操作有可能会在其他线程（非当前线程）中执行。</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)useBlockOperationAddExecutionBlock &#123;</span><br><span class="line">    <span class="comment">// 1.创建 NSBlockOperation 对象</span></span><br><span class="line">    <span class="built_in">NSBlockOperation</span> *op = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    <span class="comment">// 2.添加额外的操作</span></span><br><span class="line">    [op addExecutionBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"2---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    [op addExecutionBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"3---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    [op addExecutionBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"4---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    [op addExecutionBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"5---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    [op addExecutionBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"6---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    [op addExecutionBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"7---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    [op addExecutionBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"8---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    <span class="comment">// 3.调用 start 方法开始执行操作</span></span><br><span class="line">    [op start];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印日志ß</span></span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">06.732530</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855507</span>] <span class="number">4</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000203500</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">06.732562</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855387</span>] <span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000026c500</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">06.732563</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855506</span>] <span class="number">3</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000227e80</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">06.732600</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855510</span>] <span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000220a40</span>&gt;&#123;number = <span class="number">3</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">08.733836</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855507</span>] <span class="number">4</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000203500</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">08.733836</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855387</span>] <span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000026c500</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">08.733886</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855510</span>] <span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000220a40</span>&gt;&#123;number = <span class="number">3</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">08.733890</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855506</span>] <span class="number">3</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000227e80</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">10.735331</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855510</span>] <span class="number">7</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000220a40</span>&gt;&#123;number = <span class="number">3</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">10.735331</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855506</span>] <span class="number">8</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000227e80</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">10.735333</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855387</span>] <span class="number">5</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000026c500</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">10.735332</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855507</span>] <span class="number">6</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000203500</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">12.735989</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855506</span>] <span class="number">8</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000227e80</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">12.735989</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855510</span>] <span class="number">7</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000220a40</span>&gt;&#123;number = <span class="number">3</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">12.736083</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855387</span>] <span class="number">5</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000026c500</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-10</span> <span class="number">22</span>:<span class="number">41</span>:<span class="number">12.736083</span>+<span class="number">0800</span> BuildDemo[<span class="number">1355</span>:<span class="number">5855507</span>] <span class="number">6</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600000203500</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据打印结果，我们看到线程是有变化的。NSBlockOperation 是否开启新线程，取决于操作的个数。如果添加的操作的个数多，就会自动开启新线程。当然开启的线程数是由系统来决定的。</p>
+<h3 id="自定义继承自-NSOperation-的子类"><a href="#自定义继承自-NSOperation-的子类" class="headerlink" title="自定义继承自 NSOperation 的子类"></a>自定义继承自 NSOperation 的子类</h3><p>如果如上两种无法满足需求，我们可以自己自定义继承自 NSOperation 的子类。通过重写 <code>main</code> 或 <code>start</code> 方法来自定义 NSOperation 对象。</p>
+<p>先看下重写 <code>main</code> 的方式：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// FFOperation.h 文件</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">FFOperation</span> : <span class="title">NSOperation</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// FFOperation.m 文件</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"FFOperation.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">FFOperation</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)main &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">self</span>.isCancelled) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>];</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>使用：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)useCustomOperation &#123;</span><br><span class="line">    FFOperation *op = [[FFOperation alloc] init];</span><br><span class="line">    [op start];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在没有使用 NSOperationQueue 时，在当前线程执行，不开启新线程。</p>
+<h2 id="NSOperationQueue"><a href="#NSOperationQueue" class="headerlink" title="NSOperationQueue"></a>NSOperationQueue</h2><h3 id="配置-maxConcurrentOperationCount"><a href="#配置-maxConcurrentOperationCount" class="headerlink" title="配置 maxConcurrentOperationCount"></a>配置 maxConcurrentOperationCount</h3><p>NSOperationQueue 有两种队列：</p>
+<ul>
+<li>主队列</li>
+<li>自定义队列<ul>
+<li>串行</li>
+<li>并发</li>
+</ul>
+</li>
+</ul>
+<p>其中自定义队列是串行或并发，由最大并发数控制。示例代码：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.创建队列</span></span><br><span class="line"><span class="built_in">NSOperationQueue</span> *queue = [[<span class="built_in">NSOperationQueue</span> alloc] init];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2.设置最大并发操作数</span></span><br><span class="line">queue.maxConcurrentOperationCount = <span class="number">1</span>; <span class="comment">// 串行队列</span></span><br><span class="line">queue.maxConcurrentOperationCount = <span class="number">2</span>; <span class="comment">// 并发队列</span></span><br><span class="line">queue.maxConcurrentOperationCount = <span class="number">8</span>; <span class="comment">// 并发队列</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="配置依赖"><a href="#配置依赖" class="headerlink" title="配置依赖"></a>配置依赖</h3><p>NSOperation 能添加操作之间的依赖关系。NSOperation 提供了 3 中接口供管理和查看依赖：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 添加依赖</span></span><br><span class="line">- (<span class="keyword">void</span>)addDependency:(<span class="built_in">NSOperation</span> *)op;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 移除依赖</span></span><br><span class="line">- (<span class="keyword">void</span>)removeDependency:(<span class="built_in">NSOperation</span> *)op;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 可用于查看依赖</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">readonly</span>, <span class="keyword">copy</span>) <span class="built_in">NSArray</span>&lt;<span class="built_in">NSOperation</span> *&gt; *dependencies;</span><br></pre></td></tr></table></figure>
+
+<p>以操作 op2 依赖于操作 op1 为例：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)addDependency &#123;</span><br><span class="line">    <span class="comment">// 1.创建队列</span></span><br><span class="line">    <span class="built_in">NSOperationQueue</span> *queue = [[<span class="built_in">NSOperationQueue</span> alloc] init];</span><br><span class="line">    <span class="comment">// 2.创建操作</span></span><br><span class="line">    <span class="built_in">NSBlockOperation</span> *op1 = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    <span class="built_in">NSBlockOperation</span> *op2 = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"2---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    <span class="comment">// 3.添加依赖</span></span><br><span class="line">    <span class="comment">// 让 op2 依赖于 op1，则先执行 op1，再执行 op2</span></span><br><span class="line">    [op2 addDependency:op1];</span><br><span class="line">    <span class="comment">// 4.添加操作到队列中</span></span><br><span class="line">    [queue addOperation:op1];</span><br><span class="line">    [queue addOperation:op2];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印日志</span></span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">10</span>:<span class="number">57</span>:<span class="number">13.394399</span>+<span class="number">0800</span> Demo[<span class="number">5104</span>:<span class="number">6020710</span>] <span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600001df2a00</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">10</span>:<span class="number">57</span>:<span class="number">15.397272</span>+<span class="number">0800</span> Demo[<span class="number">5104</span>:<span class="number">6020710</span>] <span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600001df2a00</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">10</span>:<span class="number">57</span>:<span class="number">17.401159</span>+<span class="number">0800</span> Demo[<span class="number">5104</span>:<span class="number">6020710</span>] <span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600001df2a00</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">10</span>:<span class="number">57</span>:<span class="number">19.406361</span>+<span class="number">0800</span> Demo[<span class="number">5104</span>:<span class="number">6020710</span>] <span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600001df2a00</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据打印日志，可以看到无论运行几次，结果都是 op1 先执行，op2 后执行。</p>
+<h3 id="配置优先级"><a href="#配置优先级" class="headerlink" title="配置优先级"></a>配置优先级</h3><p>NSOperation 提供了 <code>queuePriority</code>（优先级） 属性，可以用于同一队列中的操作。默认新创建的操作对象的优先级都为 <strong>NSOperationQueuePriorityNormal</strong>。我们可以通过 <strong><code>setQueuePriority:</code></strong> 方法来改变当前操作在同一队列中的执行优先级。优先级有：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 优先级的取值</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="built_in">NS_ENUM</span>(<span class="built_in">NSInteger</span>, <span class="built_in">NSOperationQueuePriority</span>) &#123;</span><br><span class="line">    <span class="built_in">NSOperationQueuePriorityVeryLow</span> = <span class="number">-8</span>L,</span><br><span class="line">    <span class="built_in">NSOperationQueuePriorityLow</span> = <span class="number">-4</span>L,</span><br><span class="line">    <span class="built_in">NSOperationQueuePriorityNormal</span> = <span class="number">0</span>,</span><br><span class="line">    <span class="built_in">NSOperationQueuePriorityHigh</span> = <span class="number">4</span>,</span><br><span class="line">    <span class="built_in">NSOperationQueuePriorityVeryHigh</span> = <span class="number">8</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>对于添加到队列中的操作，先根据依赖关系进入就绪状态，再根据相对的优先级开始执行操作。</p>
+<p>什么样的操作才能进入就绪状态？</p>
+<ul>
+<li>当一个操作的所有依赖都已经完成时，该操作对象通常会进入就绪状态，等待执行。</li>
+</ul>
+<p><strong>queuePriority</strong> 属性的作用对象：</p>
+<ul>
+<li><code>queuePriority</code> 属性可以决定进入就绪状态的操作之间的开始执行顺序。优先级不能取代依赖。</li>
+<li>若一个队列中同时包含高优先级操作和低优先级操作，且两个操作都进入了就绪状态，则队列先执行高优先级操作。</li>
+<li>若一个队列同时包含了就绪和未就绪的操作，且未就绪的操作的优先级比就绪操作的优先级高。会先执行已经就绪的相对低优先级的操作。优先级不能取代依赖关系。如果要控制操作间的开始执行顺序，需要通过依赖关系处理。</li>
+</ul>
+<h2 id="线程间的通信"><a href="#线程间的通信" class="headerlink" title="线程间的通信"></a>线程间的通信</h2><p>通常我们会把耗时操作（图片下载、文件上传等）放到其他线程操作，当这些耗时操作完成时，需要到主线程中对应作出回调处理。这是比较常遇到的一个线程间通信的场景，示例代码：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)communication &#123;</span><br><span class="line">    <span class="comment">// 1.创建队列</span></span><br><span class="line">    <span class="built_in">NSOperationQueue</span> *queue = [[<span class="built_in">NSOperationQueue</span> alloc]init];</span><br><span class="line">    <span class="comment">// 2.添加操作</span></span><br><span class="line">    [queue addOperationWithBlock:^&#123;</span><br><span class="line">        <span class="comment">// 异步进行耗时操作</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 回到主线程</span></span><br><span class="line">        [[<span class="built_in">NSOperationQueue</span> mainQueue] addOperationWithBlock:^&#123;</span><br><span class="line">            <span class="comment">// 进行一些 UI 刷新等操作</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++) &#123;</span><br><span class="line">                [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; <span class="comment">// 模拟耗时操作</span></span><br><span class="line">                <span class="built_in">NSLog</span>(<span class="string">@"2---%@"</span>, [<span class="built_in">NSThread</span> currentThread]); <span class="comment">// 打印当前线程</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印日志</span></span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">03</span>:<span class="number">55.281088</span>+<span class="number">0800</span> Demo[<span class="number">5557</span>:<span class="number">6061169</span>] <span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x6000022768c0</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">03</span>:<span class="number">57.281512</span>+<span class="number">0800</span> Demo[<span class="number">5557</span>:<span class="number">6061169</span>] <span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x6000022768c0</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">03</span>:<span class="number">59.282192</span>+<span class="number">0800</span> Demo[<span class="number">5557</span>:<span class="number">6061041</span>] <span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000223cbc0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">04</span>:<span class="number">01.283569</span>+<span class="number">0800</span> Demo[<span class="number">5557</span>:<span class="number">6061041</span>] <span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000223cbc0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过 log 可以看到线程的切换，达到了线程间通信的目的。</p>
+<h2 id="线程同步和线程安全"><a href="#线程同步和线程安全" class="headerlink" title="线程同步和线程安全"></a>线程同步和线程安全</h2><p><strong>线程安全的概念</strong>：当进程中有多个线程同时对某个操作进行操作，如果多线程运行结果和单线程运行结果一致，就表示是线程安全的。一般多线程如果只进行读操作，是线程安全的；若多线程同时有读写操作，需要考虑线程同步，保证线程的安全。</p>
+<p><strong>线程同步的概念</strong>：自己理解为，现在同时有线程 A 和 B，A 执行到一定程度后需要依赖 B 的处理结果，这是 A 就需要停下来等待 B 给到处理结果后，再进行下面的操作。</p>
+<p>举一个需要线程安全的例子：现有两个不同售票窗口，共有 10 张票，两个同时售票，卖完为止。</p>
+<p>这里使用 NSLock 来保证线程同步，实例代码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)initTicketStatusSave &#123;</span><br><span class="line">    <span class="comment">// 打印当前线程</span></span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"currentThread---%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">self</span>.ticketCount = <span class="number">10</span>;</span><br><span class="line">    <span class="comment">// 初始化 NSLock 对象</span></span><br><span class="line">    <span class="keyword">self</span>.lock = [[<span class="built_in">NSLock</span> alloc] init];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1.创建 queue1, queue1 代表 A 售票窗口</span></span><br><span class="line">    <span class="built_in">NSOperationQueue</span> *queue1 = [[<span class="built_in">NSOperationQueue</span> alloc] init];</span><br><span class="line">    queue1.maxConcurrentOperationCount = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2.创建 queue2, queue2 代表 B 票票窗口</span></span><br><span class="line">    <span class="built_in">NSOperationQueue</span> *queue2 = [[<span class="built_in">NSOperationQueue</span> alloc] init];</span><br><span class="line">    queue2.maxConcurrentOperationCount = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3.创建卖票操作 op1</span></span><br><span class="line">    __<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">    <span class="built_in">NSBlockOperation</span> *op1 = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line">        [weakSelf saleTicketSafe];</span><br><span class="line">    &#125;];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4.创建卖票操作 op2</span></span><br><span class="line">    <span class="built_in">NSBlockOperation</span> *op2 = [<span class="built_in">NSBlockOperation</span> blockOperationWithBlock:^&#123;</span><br><span class="line">        [weakSelf saleTicketSafe];</span><br><span class="line">    &#125;];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 5.添加操作，开始卖票</span></span><br><span class="line">    [queue1 addOperation:op1];</span><br><span class="line">    [queue2 addOperation:op2];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)saleTicketSafe &#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 加锁</span></span><br><span class="line">        [<span class="keyword">self</span>.lock lock];</span><br><span class="line">        <span class="comment">// 如果还有票，继续售卖</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">self</span>.ticketCount &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">self</span>.ticketCount--;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"剩余票数:%ld 窗口:%@"</span>, (<span class="keyword">long</span>)<span class="keyword">self</span>.ticketCount, [<span class="built_in">NSThread</span> currentThread]]);</span><br><span class="line">            [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">0.2</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 解锁</span></span><br><span class="line">        [<span class="keyword">self</span>.lock unlock];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">self</span>.ticketCount &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"票已售完"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印日志</span></span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">47.155040</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075398</span>] currentThread---&lt;<span class="built_in">NSThread</span>: <span class="number">0x600003118c00</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">47.156066</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075448</span>] 剩余票数:<span class="number">9</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x600003152600</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">47.357156</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075448</span>] 剩余票数:<span class="number">8</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x600003152600</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">47.560797</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075448</span>] 剩余票数:<span class="number">7</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x600003152600</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">47.773323</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075448</span>] 剩余票数:<span class="number">6</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x600003152600</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">47.973762</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075448</span>] 剩余票数:<span class="number">5</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x600003152600</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">48.248293</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075449</span>] 剩余票数:<span class="number">4</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000312bb00</span>&gt;&#123;number = <span class="number">4</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">48.510233</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075448</span>] 剩余票数:<span class="number">3</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x600003152600</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">49.111171</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075449</span>] 剩余票数:<span class="number">2</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000312bb00</span>&gt;&#123;number = <span class="number">4</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">49.507041</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075449</span>] 剩余票数:<span class="number">1</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000312bb00</span>&gt;&#123;number = <span class="number">4</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">49.848690</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075449</span>] 剩余票数:<span class="number">0</span> 窗口:&lt;<span class="built_in">NSThread</span>: <span class="number">0x60000312bb00</span>&gt;&#123;number = <span class="number">4</span>, name = (null)&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">50.053556</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075449</span>] 票已售完</span><br><span class="line"><span class="number">2016</span><span class="number">-03</span><span class="number">-11</span> <span class="number">12</span>:<span class="number">28</span>:<span class="number">50.053589</span>+<span class="number">0800</span> Demo[<span class="number">5814</span>:<span class="number">6075448</span>] 票已售完</span><br></pre></td></tr></table></figure>
+
+<p>通过 NSLock 加锁解锁，得到的票数是正确的，这也解决了多线程同步的问题。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>汇总下 NSOperation 和 NSOperationQueue 的常用属性和方法。</p>
+<h3 id="NSOperation"><a href="#NSOperation" class="headerlink" title="NSOperation"></a>NSOperation</h3><ol>
+<li><p>取消操作：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 取消操作，实质是标记 isCancelled 状态</span></span><br><span class="line">- (<span class="keyword">void</span>)cancel;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>判断操作的状态：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 判断操作是否结束</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)isFinished;</span><br><span class="line"><span class="comment">// 判断操作是否已标记为取消</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)isCancelled;</span><br><span class="line"><span class="comment">// 判断操作是否正在运行 </span></span><br><span class="line">- (<span class="built_in">BOOL</span>)isExecuting;</span><br><span class="line"><span class="comment">// 判断操作是否已进入就绪状态（就绪状态与依赖关系有关）</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)isReady;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>操作同步</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 阻塞当前线程，知道对应操作结束。用于线程同步。</span></span><br><span class="line">- (<span class="keyword">void</span>)waitUntilFinished;</span><br><span class="line"><span class="comment">// 当操作处理完成，block 回调</span></span><br><span class="line">- (<span class="keyword">void</span>)setCompletionBlock:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block;</span><br><span class="line"><span class="comment">// 添加依赖（让当前操作依赖 op）</span></span><br><span class="line">- (<span class="keyword">void</span>)addDependency:(<span class="built_in">NSOperation</span> *)op;</span><br><span class="line"><span class="comment">// 移除依赖（取消当前操作的依赖）</span></span><br><span class="line">- (<span class="keyword">void</span>)removeDependency:(<span class="built_in">NSOperation</span> *)op;</span><br><span class="line"><span class="comment">// 当前操作所依赖的所有操作对象</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">readonly</span>, <span class="keyword">copy</span>) <span class="built_in">NSArray</span>&lt;<span class="built_in">NSOperation</span> *&gt; *dependencies;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="NSOperationQueue-1"><a href="#NSOperationQueue-1" class="headerlink" title="NSOperationQueue"></a>NSOperationQueue</h3><ol>
+<li><p>取消、暂停、恢复操作：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 取消 queue 的所有操作</span></span><br><span class="line">- (<span class="keyword">void</span>)cancelAllOperations;</span><br><span class="line"><span class="comment">// 判断队列是否在暂停状态</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)isSuspended;</span><br><span class="line"><span class="comment">// 暂停或恢复当前队列中的操作（YES 暂停，NO 恢复）</span></span><br><span class="line">- (<span class="keyword">void</span>)setSuspended:(<span class="built_in">BOOL</span>)b;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>操作同步</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 阻塞当前线程，知道队列中所有的操作完成</span></span><br><span class="line">- (<span class="keyword">void</span>)waitUntilAllOperationsAreFinished;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加、获取操作：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 向队列添加操作对象</span></span><br><span class="line">- (<span class="keyword">void</span>)addOperationWithBlock:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block;</span><br><span class="line"><span class="comment">// 向队列添加多个操作对象，wait 表示是否阻塞当前线程知道队列中所有操作完成</span></span><br><span class="line">- (<span class="keyword">void</span>)addOperations:(<span class="built_in">NSArray</span> *)ops waitUntilFinished:(<span class="built_in">BOOL</span>)wait;</span><br><span class="line"><span class="comment">// 获取当前队列中所有的操作对象（一个操作结束后，会从该数组移除）</span></span><br><span class="line">- (<span class="built_in">NSArray</span> *)operations;</span><br><span class="line"><span class="comment">// 当前队列中的操作数</span></span><br><span class="line">- (<span class="built_in">NSUInteger</span>)operationCount;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取队列：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取当前队列</span></span><br><span class="line">+ (<span class="keyword">id</span>)currentQueue;</span><br><span class="line"><span class="comment">// 获取主队列</span></span><br><span class="line">+ (<span class="keyword">id</span>)mainQueue;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>关于取消和恢复：</p>
+<ul>
+<li>可以通过 <strong><code>-setSuspended:</code></strong> 暂停或恢复当前 queue 的操作</li>
+<li>Operation Queue 的取消和暂停，指当当前在执行的 Operation 执行完毕后，不再执行新的 Operation。暂停的操作可以恢复，但如果操作被取消，该操作会被清空，无法再恢复执行。</li>
+</ul>
+<blockquote>
+<p>参考内容：</p>
+<ul>
+<li><a href="https://objccn.io/issue-2-1/" target="_blank" rel="noopener">并发编程：API 及挑战</a></li>
+<li><a href="https://developer.apple.com/documentation/foundation/nsoperation?language=occ" target="_blank" rel="noopener">NSOperation</a></li>
+</ul>
+</blockquote>
+
+  
+    
+    <div class='footer'>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=https://blog.jonyfang.com/2016/03/10/2016-03-10-ios-operation/>https://blog.jonyfang.com/2016/03/10/2016-03-10-ios-operation/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/iOS/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>iOS</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>多线程</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.jonyfang.com/2016/03/10/2016-03-10-ios-operation/&title=iOS 多线程 - NSOperation - JonyFang&summary=iOS 日常开发过程中，涉及到多线程处理的需求，绝大多数可以通过 GCD 来完成。但如果想要给 task 添加依赖、取消、暂停、恢复的需求，GCD 的实现就会变得很复杂。这时就引申除了 NSOperation，NSOperation 是基于 GCD 的封装，提供面向对象的形式。我们可以借助 NSOperation 将每个 task 封装为一个个对象再进行操作，这也使得线程处理的代码逻辑更为清晰易懂。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://blog.jonyfang.com/2016/03/10/2016-03-10-ios-operation/&title=iOS 多线程 - NSOperation - JonyFang&summary=iOS 日常开发过程中，涉及到多线程处理的需求，绝大多数可以通过 GCD 来完成。但如果想要给 task 添加依赖、取消、暂停、恢复的需求，GCD 的实现就会变得很复杂。这时就引申除了 NSOperation，NSOperation 是基于 GCD 的封装，提供面向对象的形式。我们可以借助 NSOperation 将每个 task 封装为一个个对象再进行操作，这也使得线程处理的代码逻辑更为清晰易懂。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://blog.jonyfang.com/2016/03/10/2016-03-10-ios-operation/&title=iOS 多线程 - NSOperation - JonyFang&summary=iOS 日常开发过程中，涉及到多线程处理的需求，绝大多数可以通过 GCD 来完成。但如果想要给 task 添加依赖、取消、暂停、恢复的需求，GCD 的实现就会变得很复杂。这时就引申除了 NSOperation，NSOperation 是基于 GCD 的封装，提供面向对象的形式。我们可以借助 NSOperation 将每个 task 封装为一个个对象再进行操作，这也使得线程处理的代码逻辑更为清晰易懂。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-telegram" title="" rel="external nofollow noopener noreferrer"
+          
+            href="https://t.me/share/url?url=https://blog.jonyfang.com/2016/03/10/2016-03-10-ios-operation/&text=iOS 多线程 - NSOperation - JonyFang"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2016/03/11/2016-03-11-ios-lock/'>
+          <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>iOS 中的锁</p>
+          <p class='content'>我们在使用多线程访问同一块资源时，常会面临数据安全的问题。为了能够保证每次只有一个线程在访问同一块资源，我们需要借助锁。本篇归类记录 iOS 常见的八种锁是什么及怎么样。
+
+
+自旋锁 &amp;...</p>
+        </a>
+      
+      
+        <a class='next' href='/2016/03/09/2016-03-09-ios-gcd/'>
+          <p class='title'>iOS 多线程 - GCD<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>GCD（Grand Central Dispatch）是苹果提出的一套多线程解决方案，它拥有系统级的线程管理机制，开发者不需要关注线程的生命周期管理，只需要关注要执行的任务。GCD 可用于多核的...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+  
+
+  <article class="post white-box reveal shadow" id="comments">
+    <p ct><i class='fas fa-comments'></i> 评论</p>
+    
+    <div id="valine_container" class="valine_thread">
+  <i class="fas fa-cog fa-spin fa-fw fa-2x"></i>
+</div>
+
+  </article>
+
+
+
+
+
+
+</div>
+<aside class='l_side'>
+  
+  
+    
+    
+
+
+
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#NSOperation-用法"><span class="toc-text">NSOperation 用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSInvocationOperation"><span class="toc-text">NSInvocationOperation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSBlockOperation"><span class="toc-text">NSBlockOperation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义继承自-NSOperation-的子类"><span class="toc-text">自定义继承自 NSOperation 的子类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NSOperationQueue"><span class="toc-text">NSOperationQueue</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置-maxConcurrentOperationCount"><span class="toc-text">配置 maxConcurrentOperationCount</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置依赖"><span class="toc-text">配置依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置优先级"><span class="toc-text">配置优先级</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程间的通信"><span class="toc-text">线程间的通信</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程同步和线程安全"><span class="toc-text">线程同步和线程安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOperation"><span class="toc-text">NSOperation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NSOperationQueue-1"><span class="toc-text">NSOperationQueue</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他"><span class="toc-text">其他</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+
+      </div>
+      
+  
+  <footer class="footer clearfix">
+    <br><br>
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="mailto:jony.chunfang@gmaill.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://github.com/JonyFang"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=1063555"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © 2015-2020 JonyFang</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+
+      <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+  </div>
+  <div>
+    <!-- required -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5/dist/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  function pjax_fancybox() {
+    $(".md").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+      var element = document.createElement("a"); // a 标签
+      $(element).attr("class", "fancybox");
+      $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+      $(element).attr("href", $(this).attr("src"));
+      if ($(this).attr("data-original")) {
+        $(element).attr("href", $(this).attr("data-original"));
+      }
+      $(element).attr("data-fancybox", "images");
+      var caption = "";   // 描述信息
+      if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+        $(element).attr('data-caption', $(this).attr('alt'));
+        caption = $(this).attr('alt');
+      }
+      var div = document.createElement("div");
+      $(div).addClass("fancybox");
+      $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+      var span = document.createElement("span");
+      $(span).addClass("image-caption");
+      $(span).text(caption); // 加描述
+      $(this).after(span);  // 再套一层描述
+      // 背景层
+      var bgDiv = document.createElement("div");
+      $(bgDiv).addClass("bg");
+      if ($(this).attr('bg')) {
+        $(bgDiv).css('background', $(this).attr('bg'));
+      }
+      $(this).wrap(bgDiv); // 背景层
+      $(this).wrap(element);  // 最后套 a 标签
+    })
+    $(".md").find("img").fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+      closeClick: true,
+      helpers: {
+        overlay: {closeClick: true}
+      },
+      buttons: [
+        "zoom",
+        "close"
+      ]
+    });
+  };
+  $(function () {
+    pjax_fancybox();
+  });
+</script>
+
+
+<!-- internal -->
+
+
+
+
+<!-- optional -->
+
+  <script>
+  
+  var SEARCH_SERVICE = "hexo" || "hexo";
+  var ROOT = "/" || "/";
+  if (!ROOT.endsWith('/')) ROOT += '/';
+</script>
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.0/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+  
+    <script>
+      window.FPConfig = {
+        delay: 0,
+        ignoreKeywords: [],
+        maxRPS: 5,
+        hoverDelay: 25
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script>
+  
+
+
+
+
+
+
+
+
+  <script>
+  let APlayerController = new Object();
+  APlayerController.id = '1063555';  // 设定全局音乐播放ID
+  APlayerController.volume = '0.7';
+</script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js"></script>
+
+
+
+
+
+
+
+
+  
+  
+<script src="/js/valine.js"></script>
+
+
+<script>
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link'.split(',').filter(function (item) {
+    return GUEST_INFO.indexOf(item) > -1
+  });
+  var REQUIRED_FIELDS = ['nick', 'mail', 'link'];
+  var requiredFields = 'nick,mail'.split(',').filter(function (item) {
+    return REQUIRED_FIELDS.indexOf(item) > -1
+  });
+
+  function emoji(path, idx, ext) {
+    return path + "/" + path + "-" + idx + "." + ext;
+  }
+
+  var emojiMaps = {};
+  for (var i = 1; i <= 54; i++) {
+    emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+  }
+  for (var i = 1; i <= 101; i++) {
+    emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+  }
+  for (var i = 1; i <= 116; i++) {
+    emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+  }
+  for (var i = 1; i <= 125; i++) {
+    emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+  }
+  for (var i = 1; i <= 4; i++) {
+    emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+  }
+
+  function pjax_valine() {
+    if(!document.querySelectorAll("#valine_container")[0])return;
+
+    let pagePlaceholder = $.trim($('#pjax-comment-placeholder').text()) || "快来评论吧~";
+
+    let path = $.trim($('#pjax-comment-path').text());
+    if (path.length == 0) {
+      let defaultPath = '';
+      path = defaultPath || decodeURI(window.location.pathname);
+    }
+
+    var valine = new Valine();
+    valine.init({
+      el: '#valine_container',
+      meta: meta,
+      placeholder: pagePlaceholder,
+      path: path,
+      appId: "9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI",
+      appKey: "tIyMmSe8wzMgEJRCoUgzKV1B",
+      pageSize: '10',
+      avatar: 'robohash',
+      lang: 'zh-cn',
+      visitor: 'true',
+      highlight: 'true',
+      mathJax: 'false',
+      enableQQ: 'true',
+      requiredFields: requiredFields,
+      emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+      emojiMaps: emojiMaps
+    })
+  }
+
+  $(function () {
+    pjax_valine();
+  });
+</script>
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+
+  
+    
+<script src="/js/search.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script defer>
+
+  const LCCounter = {
+    app_id: '9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI',
+    app_key: 'tIyMmSe8wzMgEJRCoUgzKV1B',
+    custom_api_server: '',
+
+    // 查询存储的记录
+    getRecord(Counter, url, title) {
+      return new Promise(function (resolve, reject) {
+        Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({url})))
+          .then(resp => resp.json())
+          .then(({results, code, error}) => {
+            if (code === 401) {
+              throw error;
+            }
+            if (results && results.length > 0) {
+              var record = results[0];
+              resolve(record);
+            } else {
+              Counter('post', '/classes/Counter', {url, title: title, times: 0})
+                .then(resp => resp.json())
+                .then((record, error) => {
+                  if (error) {
+                    throw error;
+                  }
+                  resolve(record);
+                }).catch(error => {
+                console.error('Failed to create', error);
+                reject(error);
+              });
+            }
+          }).catch((error) => {
+          console.error('LeanCloud Counter Error:', error);
+          reject(error);
+        });
+      })
+    },
+
+    // 发起自增请求
+    increment(Counter, incrArr) {
+      return new Promise(function (resolve, reject) {
+        Counter('post', '/batch', {
+          "requests": incrArr
+        }).then((res) => {
+          res = res.json();
+          if (res.error) {
+            throw res.error;
+          }
+          resolve(res);
+        }).catch((error) => {
+          console.error('Failed to save visitor count', error);
+          reject(error);
+        });
+      });
+    },
+
+    // 构建自增请求体
+    buildIncrement(objectId) {
+      return {
+        "method": "PUT",
+        "path": `/1.1/classes/Counter/${ objectId }`,
+        "body": {
+          "times": {
+            '__op': 'Increment',
+            'amount': 1
+          }
+        }
+      }
+    },
+
+    // 校验是否为有效的 UV
+    validUV() {
+      var key = 'LeanCloudUVTimestamp';
+      var flag = localStorage.getItem(key);
+      if (flag) {
+        // 距离标记小于 24 小时则不计为 UV
+        if (new Date().getTime() - parseInt(flag) <= 86400000) {
+          return false;
+        }
+      }
+      localStorage.setItem(key, new Date().getTime().toString());
+      return true;
+    },
+
+    addCount(Counter) {
+      var enableIncr = '' === 'true' && window.location.hostname !== 'localhost';
+      enableIncr = true;
+      var getterArr = [];
+      var incrArr = [];
+      // 请求 PV 并自增
+      var pvCtn = document.querySelector('#lc-sv');
+      if (pvCtn || enableIncr) {
+        var pvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-sv', 'Visits').then((record) => {
+          incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-sv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + 1;
+              if (pvCtn) {
+                pvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(pvGetter);
+      }
+
+      // 请求 UV 并自增
+      var uvCtn = document.querySelector('#lc-uv');
+      if (uvCtn || enableIncr) {
+        var uvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-uv', 'Visitors').then((record) => {
+          var vuv = this.validUV();
+          vuv && incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-uv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + (vuv ? 1 : 0);
+              if (uvCtn) {
+                uvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(uvGetter);
+      }
+
+      // 请求文章的浏览数，如果是当前页面就自增
+      var allPV = document.querySelectorAll('#lc-pv');
+      if (allPV.length > 0 || enableIncr) {
+        for (i = 0; i < allPV.length; i++) {
+          let pv = allPV[i];
+          let title = pv.getAttribute('data-title');
+          var url = 'https://blog.jonyfang.com' + pv.getAttribute('data-path');
+          if (url) {
+            var viewGetter = this.getRecord(Counter, url, title).then((record) => {
+              // 是当前页面就自增
+              if (pv.getAttribute('data-path') == window.location.pathname) {
+                incrArr.push(this.buildIncrement(record.objectId));
+              }
+              if (pv) {
+                var ele = pv.querySelector('#lc-pv #number');
+                if (ele) {
+                  if (pv.getAttribute('data-path') == window.location.pathname) {
+                    ele.innerText = (record.times || 0) + 1;
+                  } else {
+                    ele.innerText = record.times || 0;
+                  }
+                  pv.style.display = 'inline';
+                }
+              }
+            });
+            getterArr.push(viewGetter);
+          }
+        }
+      }
+
+      // 如果启动计数自增，批量发起自增请求
+      if (enableIncr) {
+        Promise.all(getterArr).then(() => {
+          incrArr.length > 0 && this.increment(Counter, incrArr);
+        })
+      }
+
+    },
+
+
+    fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${ api_server }/1.1${ url }`, {
+          method,
+          headers: {
+            'X-LC-Id': this.app_id,
+            'X-LC-Key': this.app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      this.addCount(Counter);
+    },
+
+    refreshCounter() {
+      var api_server = this.app_id.slice(-9) !== '-MdYXbMMI' ? this.custom_api_server : `https://${ this.app_id.slice(0, 8).toLowerCase() }.api.lncldglobal.com`;
+      if (api_server) {
+        this.fetchData(api_server);
+      } else {
+        fetch('https://app-router.leancloud.cn/2/route?appId=' + this.app_id)
+          .then(resp => resp.json())
+          .then(({api_server}) => {
+            this.fetchData('https://' + api_server);
+          });
+      }
+    }
+
+  };
+
+  LCCounter.refreshCounter();
+
+  document.addEventListener('pjax:complete', function () {
+    LCCounter.refreshCounter();
+  });
+</script>
+
+
+
+<!-- more -->
+
+
+    
+      
+
+
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+
+<!-- 样式位于：source/css/_third-party/pjaxanimate.styl -->
+
+<div class="pjax-animate">
+  
+    <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+    <div id="loading-bar-wrapper"><script>NProgress.configure({parent:"#loading-bar-wrapper",trickleSpeed: 100})</script></div>
+    <script>
+      window.ShowLoading = function() {
+        NProgress.start();
+      };
+      window.HideLoading = function() {
+        NProgress.done();
+      }
+    </script>
+  
+</div>
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox])',
+        selectors: [
+          "title",
+          "#pjax-container",
+          "#pjax-header-nav-list"
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      window.subData = null; // 移除标题（用于一二级导航栏切换处）
+      $.fancybox.close();    // 关闭弹窗
+      $('.l_header .switcher .s-search').removeClass('active'); // 关闭移动端激活的搜索框
+      $('.l_header').removeClass('z_search-open'); // 关闭移动端激活的搜索框
+      $('.wrapper').removeClass('sub'); // 跳转页面时关闭二级导航
+
+      // 解绑事件 避免重复监听
+      $('.s-top').unbind('click');
+      $('.menu a').unbind('click');
+      $(window).unbind('resize');
+      $(window).unbind('scroll');
+      $(document).unbind('scroll');
+      $(document).unbind('click');
+      $('body').unbind('click');
+      window.ShowLoading();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 关于百度统计对 SPA 页面的处理：
+      // 方案一：百度统计>管理>单页应用设置中，打开开启按钮即可对SPA进行统计。 https://tongji.baidu.com/web/help/article?id=324
+      // 方案二：取消注释下列代码。 https://tongji.baidu.com/web/help/article?id=235
+      // 
+
+      // 关于谷歌统计对 SPA 页面的处理：
+      // 当应用以动态方式加载内容并更新地址栏中的网址时，也应该更新通过 gtag.js 存储的网页网址。
+      // https://developers.google.cn/analytics/devguides/collection/gtagjs/single-page-applications?hl=zh-cn
+      
+
+      $('.nav-main').find('.list-v').not('.menu-phone').removeAttr("style",""); // 移除小尾巴的移除
+      $('.menu-phone.list-v').removeAttr("style",""); // 移除小尾巴的移除
+      $('script[data-pjax], .pjax-reload script').each(function () {
+        $(this).parent().append($(this).remove());
+      });
+      try{
+        pjax_fancybox();
+        
+        
+        
+        
+        
+          pjax_valine();
+        
+        
+        
+        
+        
+      } catch (e) {
+        console.log(e);
+      }
+      window.HideLoading();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      window.HideLoading();
+      window.location.href = e.triggerElement.href;
+    });
+</script>
+
+    
+  </div>
+</body>
+</html>

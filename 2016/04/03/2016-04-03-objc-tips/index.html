@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/tree/4.0.0-rc.2'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+  <title>Objc Tips - JonyFang</title>
+  
+    <meta name="keywords" content="iOS,Objective-C">
+  
+
+  
+    <meta name="description" content="总结记录 Objective-C 使用过程中一些 Tips。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+    
+      <meta name='theme-color' content='#FFFFFF'>
+    
+      <meta name='msapplication-TileColor' content='#1BC3FB'>
+    
+      <meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>
+    
+  
+
+  <!-- link -->
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/css/all.min.css">
+
+  
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  
+
+  <!-- import link -->
+  
+  
+  <link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>
+  <link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>
+  <link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>
+  <link rel='mask-icon' color='#1BC3FB' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/safari-pinned-tab.svg'>
+  <link rel='manifest' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/site.webmanifest'>
+  
+
+  
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+</head>
+
+<body>
+  <header class="l_header auto shadow blur" style='opacity: 0' >
+  <div class='container'>
+  <div class='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a class="s-comment fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fas fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li>
+          <a class="s-menu fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博文
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  <i class='fas fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" 
+                  
+                  
+                  >
+                  <i class='fas fa-fan fa-spin fa-fw'></i>项目
+                </a>
+                
+                  <ul class="list-v">
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-book fa-fw'></i>GitHub 开源库
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://github.com/JonyFang/FFPopup
+                  
+                  
+                  
+                    id="https:githubcomJonyFangFFPopup"
+                  >
+                  FFPopup
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <hr>
+            
+          
+                    
+                      
+            
+              <li class='header'>
+                <i class='fas fa-fire fa-fw'></i>独立 iOS 应用
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1347998487?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1347998487?mt=8"
+                  >
+                  TIME 时间卡
+                </a>
+                
+              </li>
+            
+          
+                    
+                      
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=https://itunes.apple.com/cn/app/id1208128428?mt=8
+                  
+                  
+                  
+                    id="https:itunesapplecomcnappid1208128428?mt=8"
+                  >
+                  Shots 壁纸
+                </a>
+                
+              </li>
+            
+          
+                    
+                  </ul>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/about/
+                  
+                  
+                  
+                    id="about"
+                  >
+                  <i class='fas fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+		</div>
+	</div>
+  </div>
+</header>
+
+  <div class="l_body">
+    <div class="l_cover">
+
+  
+  
+      <div class='cover-wrapper post dock' style="display: none;">
+        
+          <div class='cover-bg lazyload placeholder' data-bg="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/05174de636d75be2f17c.jpg/lbzFIp65ZiQETn8.jpg"></div>
+        
+        <div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Jony's Blog</p>
+    
+    
+      <p class="subtitle">牢记梦想，自然生长</p>
+    
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/"
+              
+              
+              id="home">
+              <i class='fas fa-rss fa-fw'></i><p>博文</p>
+            </a>
+          
+            <a href="/categories/"
+              
+              
+              id="categories">
+              <i class='fas fa-folder-open fa-fw'></i><p>分类</p>
+            </a>
+          
+            <a href="/archives/"
+              
+              
+              id="archives">
+              <i class='fas fa-archive fa-fw'></i><p>归档</p>
+            </a>
+          
+            <a href="/about/"
+              
+              
+              id="about">
+              <i class='fas fa-info-circle fa-fw'></i><p>关于</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div class="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+  
+
+</div>
+
+    <div class='safearea'>
+      <div class='body-wrapper' id="pjax-container">
+        
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+
+
+<div id="pjax-data" style="display: none">
+  <div id="pjax-ispage">true</div>
+  <div id="pjax-pageTitle">Objc Tips</div>
+  <div id="pjax-enable-cover">true</div>
+  <div id="pjax-comment-path"></div>
+  <div id="pjax-comment-placeholder"></div>
+</div>
+
+
+<script>
+  // 处理封面 此时 jquery 还没加载
+  if ("none" == "none") { // 移除封面
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "none";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.add("show");
+  } else {
+    if ("none" == "half") { // 半屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'half');
+      document.getElementsByClassName('scroll-down')[0].style.display = "none";
+    } else if ("none" == "full") { // 全屏
+      document.getElementsByClassName('cover-wrapper')[0].setAttribute('id', 'full');
+      document.getElementsByClassName('scroll-down')[0].style.display = "";
+    }
+    document.getElementsByClassName('cover-wrapper')[0].style.display = "";
+    document.getElementsByClassName('l_header', 'cover-wrapper')[0].classList.remove("show");
+  }
+</script>
+
+
+        
+        
+
+<div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title">
+        Objc Tips
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="https://lc-gluttony.s3.amazonaws.com/9zYt4jSanPYX/a764dcce0b25a615c8ac.jpg/PgrSQHZ6fBidbRF.jpg">
+    <p>JonyFang</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/Objective-C/">Objective-C</a><span class="sep"></span><a class="category-link" href="/categories/iOS/">iOS</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2016年4月3日</p>
+  </a>
+</div>
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <p>总结记录 Objective-C 使用过程中一些 Tips。</p>
+<a id="more"></a>
+
+<h2 id="NS-ENUM-和-NS-OPTIONS"><a href="#NS-ENUM-和-NS-OPTIONS" class="headerlink" title="NS_ENUM 和 NS_OPTIONS"></a>NS_ENUM 和 NS_OPTIONS</h2><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="built_in">NS_ENUM</span>(<span class="built_in">NSInteger</span>, <span class="built_in">UIViewAnimationCurve</span>) &#123;</span><br><span class="line">    <span class="built_in">UIViewAnimationCurveEaseInOut</span>,         <span class="comment">// slow at beginning and end</span></span><br><span class="line">    <span class="built_in">UIViewAnimationCurveEaseIn</span>,            <span class="comment">// slow at beginning</span></span><br><span class="line">    <span class="built_in">UIViewAnimationCurveEaseOut</span>,           <span class="comment">// slow at end</span></span><br><span class="line">    <span class="built_in">UIViewAnimationCurveLinear</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="built_in">NS_OPTIONS</span>(<span class="built_in">NSUInteger</span>, <span class="built_in">UIViewAutoresizing</span>) &#123;</span><br><span class="line">    <span class="built_in">UIViewAutoresizingNone</span>                 = <span class="number">0</span>,</span><br><span class="line">    <span class="built_in">UIViewAutoresizingFlexibleLeftMargin</span>   = <span class="number">1</span> &lt;&lt; <span class="number">0</span>,</span><br><span class="line">    <span class="built_in">UIViewAutoresizingFlexibleWidth</span>        = <span class="number">1</span> &lt;&lt; <span class="number">1</span>,</span><br><span class="line">    <span class="built_in">UIViewAutoresizingFlexibleRightMargin</span>  = <span class="number">1</span> &lt;&lt; <span class="number">2</span>,</span><br><span class="line">    <span class="built_in">UIViewAutoresizingFlexibleTopMargin</span>    = <span class="number">1</span> &lt;&lt; <span class="number">3</span>,</span><br><span class="line">    <span class="built_in">UIViewAutoresizingFlexibleHeight</span>       = <span class="number">1</span> &lt;&lt; <span class="number">4</span>,</span><br><span class="line">    <span class="built_in">UIViewAutoresizingFlexibleBottomMargin</span> = <span class="number">1</span> &lt;&lt; <span class="number">5</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用法</span></span><br><span class="line"><span class="built_in">UIViewAutoresizing</span> resizing = <span class="built_in">UIViewAutoresizingFlexibleWidth</span> | <span class="built_in">UIViewAutoresizingFlexibleHeight</span>;</span><br><span class="line"><span class="comment">// 转换为二进制计算</span></span><br><span class="line"><span class="built_in">UIViewAutoresizing</span> resizing = <span class="number">000010</span> | <span class="number">010000</span> = <span class="number">010010</span></span><br><span class="line"><span class="comment">// 通过 &amp; 判断是否满足条件之一</span></span><br><span class="line"><span class="comment">// resizing &amp; UIViewAutoresizingFlexibleWidth </span></span><br><span class="line"><span class="comment">// -&gt; 010010 &amp; 000010 = 000010</span></span><br><span class="line"><span class="keyword">if</span> (resizing &amp; <span class="built_in">UIViewAutoresizingFlexibleWidth</span>) &#123;</span><br><span class="line">       <span class="comment">// UIViewAutoresizingFlexibleWidth is set</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>NS_OPTIONS</code> 可以同时选择多个枚举值，使用了移位运算来保证相加结果的唯一性。简而言之，<code>NS_ENUM</code> 在互斥环境下使用；<code>NS_OPTIONS</code> 在多选情况下使用。</p>
+<h2 id="简介接口设计模板"><a href="#简介接口设计模板" class="headerlink" title="简介接口设计模板"></a>简介接口设计模板</h2><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="built_in">NS_ENUM</span>(<span class="built_in">NSInteger</span>, UserSex) &#123;</span><br><span class="line">    UserSexMale,</span><br><span class="line">    UserSexFemale</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">DIYUser</span> : <span class="title">NSObject</span>&lt;<span class="title">NSCopying</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">readonly</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *name;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">readonly</span>, <span class="keyword">assign</span>) <span class="built_in">NSUInteger</span> age;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">readwrite</span>, <span class="keyword">assign</span>) UserSex sex;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithName:(<span class="built_in">NSString</span> *)name age:(<span class="built_in">NSUInteger</span>)age;</span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithName:(<span class="built_in">NSString</span> *)name age:(<span class="built_in">NSUInteger</span>)age sex:(UserSex)sex;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">instancetype</span>)userWithName:(<span class="built_in">NSString</span> *)name age:(<span class="built_in">NSUInteger</span>)age sex:(UserSex)sex;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="weak-和-assign-对比"><a href="#weak-和-assign-对比" class="headerlink" title="weak 和 assign 对比"></a>weak 和 assign 对比</h2><h3 id="什么情况下使用-weak？"><a href="#什么情况下使用-weak？" class="headerlink" title="什么情况下使用 weak？"></a>什么情况下使用 weak？</h3><ul>
+<li>用来避免循环引用</li>
+<li>OBOutlet 默认为 weak</li>
+</ul>
+<h3 id="与-assign-的区别"><a href="#与-assign-的区别" class="headerlink" title="与 assign 的区别"></a>与 assign 的区别</h3><ul>
+<li>weak 为该属性定义了一种<strong>非拥有关系</strong>，不影响引用计数，在属性所指对象销毁时，属性值也会自动置为 nil</li>
+<li>assign 用来修饰基础类型变量（如 CGFloat、NSInteger）</li>
+<li>assign 可用于非 OC 对象，weak 必须用于 OC 对象</li>
+</ul>
+<h3 id="weak-的实现原理"><a href="#weak-的实现原理" class="headerlink" title="weak 的实现原理"></a>weak 的实现原理</h3><p>weak 有两种作用：</p>
+<ul>
+<li>被 weak 修饰符修饰的<strong>弱引用</strong>除了不会增加对象的<strong>引用计数</strong>外</li>
+<li>在<strong>引用对象</strong>被释放后，这个<strong>弱引用</strong>会自动失效并置为 nil</li>
+</ul>
+<p>实现原理</p>
+<ul>
+<li>源码入口 objc_initWeak()<ul>
+<li>查看对象是否有效，无效置空</li>
+<li>调用 storeWeak</li>
+</ul>
+</li>
+<li>storeWeak<ul>
+<li>核心方法 <code>weak_unregister_no_lock</code> 和 <code>weak_register_no_lock</code></li>
+<li>都是对 SideTable 的实例进行操作</li>
+</ul>
+</li>
+<li>SideTable<ul>
+<li>内含有 <code>weak_table_t</code>，是 oc 中 weak 的核心数据结构</li>
+<li>weak 表通过哈希表实现</li>
+<li>通过<strong>目标对象的地址</strong>作为 key 检索得到对应弱引用变量地址</li>
+<li>需要注意：一个 key 可能对应多个弱引用变量地址，放存放在 <code>weak_entry</code></li>
+</ul>
+</li>
+<li>weak_register_no_lock<ul>
+<li>先校验是否满足校验条件（计数方式、是否在析构，是否能弱引用）</li>
+<li>通过弱引用对象的地址，在 <code>weak_table</code> 查找 <code>weak_entry</code><ul>
+<li>找到，在 <code>weak_entry</code> 中的 <code>referrers</code> 添加新的弱引用地址</li>
+<li>若未找到，新建 <code>weak_entry</code> 并添加</li>
+<li>数组中 <code>referrers</code> 起始为静态数组，如果在操作过程中发现静态数组空间不够用切换为动态数组，如果动态数组超过总空间 3/4，扩容一倍</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>weak_unregister_no_lock<ul>
+<li>根据对象地址，找出 <code>weak_entry</code></li>
+<li>删除 <code>weak_entry</code> 中的弱引用地址</li>
+<li>如果最后发现 <code>weak_entry</code> 空了，从 weak_table 移除</li>
+</ul>
+</li>
+<li>自动置为 nil<ul>
+<li>底层触发 <code>clearDeallocating</code> 方法</li>
+<li>先校验对象是否满足弱引用 dealloc </li>
+<li>对象 dealloc 时，通过 this 指针（对象指针），找到 SideTable。再通过对象地址在 SideTable 上找到所有的弱引用指针，逐个置 nil</li>
+</ul>
+</li>
+</ul>
+<h2 id="atomic-和-nonatomic"><a href="#atomic-和-nonatomic" class="headerlink" title="atomic 和 nonatomic"></a>atomic 和 nonatomic</h2><p>atomic 属性使用了互斥锁。一般情况下不适用 atomic，因为并不能保证线程安全，若要实现线程安全。</p>
+<p>如，一个线程在连续多次读取某属性值的过程中有别的线程在同时改写该值，则即使声明为 atomic，也还是会读到不同的属性值。</p>
+<h2 id="copy-和-mutableCopy"><a href="#copy-和-mutableCopy" class="headerlink" title="copy 和 mutableCopy"></a>copy 和 mutableCopy</h2><p>NSString、NSArray、NSDictionary 常用 copy。因为各自对应了可变类型 NSMutableString、NSMutableArray、NSMutableDictionary，防止内容在不知情的情况下被更改。所以使用 copy 来复制一份不可变的。</p>
+<h3 id="对-NSMutableArray-使用-copy"><a href="#对-NSMutableArray-使用-copy" class="headerlink" title="对 NSMutableArray 使用 copy"></a>对 NSMutableArray 使用 copy</h3><p>添加、删除、修改组内的元素时，程序会因为找不到对应的方法而崩溃，原因是 copy 复制了一份不可变的 NSArray 对象。错误代码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSMutableArray</span> *mutableArray;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSMutableArray</span> *array = [<span class="built_in">NSMutableArray</span> arrayWithObjects:@<span class="number">1</span>, @<span class="number">2</span>, <span class="literal">nil</span>];</span><br><span class="line"><span class="keyword">self</span>.mutableArray = array;</span><br><span class="line">[<span class="keyword">self</span>.mutableArray removeObjectAtIndex:<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+
+<h3 id="strong-修饰-NSArray-时"><a href="#strong-修饰-NSArray-时" class="headerlink" title="strong 修饰 NSArray 时"></a>strong 修饰 NSArray 时</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSArray</span> *array;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSArray</span> *array = @[ @<span class="number">1</span>, @<span class="number">2</span>, @<span class="number">3</span>, @<span class="number">4</span> ];</span><br><span class="line"><span class="built_in">NSMutableArray</span> *mutableArray = [<span class="built_in">NSMutableArray</span> arrayWithArray:array];</span><br><span class="line"></span><br><span class="line"><span class="keyword">self</span>.array = mutableArray;</span><br><span class="line">[mutableArray removeAllObjects];;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,<span class="keyword">self</span>.array);</span><br><span class="line"></span><br><span class="line">[mutableArray addObjectsFromArray:array];</span><br><span class="line"><span class="keyword">self</span>.array = [mutableArray <span class="keyword">copy</span>];</span><br><span class="line">[mutableArray removeAllObjects];;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,<span class="keyword">self</span>.array);</span><br></pre></td></tr></table></figure>
+
+<p>打印结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2016-04-03 00:10:10.765 DIYArrayCopyDemo[10681:713670] (</span><br><span class="line">)</span><br><span class="line">2016-04-03 00:10:10.766 DIYArrayCopyDemo[10681:713670] (</span><br><span class="line">   1,</span><br><span class="line">   2,</span><br><span class="line">   3,</span><br><span class="line">   4</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>所以 strong 的问题很明显，数据存在被篡改风险。</p>
+<h3 id="对象拷贝"><a href="#对象拷贝" class="headerlink" title="对象拷贝"></a>对象拷贝</h3><ul>
+<li>声明该类遵循 NSCopying 协议</li>
+<li>实现 NSCopying 协议方法 <code>-copyWithZone:</code></li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">id</span>)copyWithZone:(<span class="built_in">NSZone</span> *)zone &#123;</span><br><span class="line">   DIYUser *<span class="keyword">copy</span> = [[[<span class="keyword">self</span> <span class="keyword">class</span>] allocWithZone:zone]</span><br><span class="line">                    initWithName:_name</span><br><span class="line">                    age:_age</span><br><span class="line">                    sex:_sex];</span><br><span class="line">   <span class="keyword">copy</span>-&gt;_friends = [_friends mutableCopy];</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">copy</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对象也进行深拷贝</span></span><br><span class="line"><span class="comment">// 写专门的深拷贝方法</span></span><br><span class="line">- (<span class="keyword">id</span>)deepCopy &#123;</span><br><span class="line">   DIYUser *<span class="keyword">copy</span> = [[[<span class="keyword">self</span> <span class="keyword">class</span>] alloc]</span><br><span class="line">                    initWithName:_name</span><br><span class="line">                    age:_age</span><br><span class="line">                    sex:_sex];</span><br><span class="line">   <span class="keyword">copy</span>-&gt;_friends = [[<span class="built_in">NSMutableSet</span> alloc] initWithSet:_friends</span><br><span class="line">                                            copyItems:<span class="literal">YES</span>];</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">copy</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="集合-非集合类对象-copy"><a href="#集合-非集合类对象-copy" class="headerlink" title="集合/非集合类对象 copy"></a>集合/非集合类对象 copy</h4><p>非集合类对象：</p>
+<ul>
+<li>不可变对象：<ul>
+<li>copy：指针拷贝</li>
+<li>mutableCopy：内容拷贝</li>
+</ul>
+</li>
+<li>可变对象：<ul>
+<li>copy：内容拷贝</li>
+<li>mutableCopy：内容拷贝</li>
+</ul>
+</li>
+</ul>
+<p>集合类对象：NSArray、NSDictionary、NSSet 等</p>
+<ul>
+<li>不可变对象：<ul>
+<li>copy：指针拷贝</li>
+<li>mutableCopy：单层深拷贝。（如对 NSArray，是拷贝 array 这个对象，但 Array 内部元素任是指针拷贝）</li>
+</ul>
+</li>
+<li>可变对象：<ul>
+<li>copy：单层深拷贝</li>
+<li>mutableCopy：单层深拷贝</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">[array <span class="keyword">copy</span>] <span class="comment">//浅拷贝</span></span><br><span class="line">[array mutableCopy] <span class="comment">//单层深拷贝</span></span><br><span class="line">[mutableArray <span class="keyword">copy</span>] <span class="comment">//单层深拷贝</span></span><br><span class="line">[mutableArray mutableCopy] <span class="comment">//单层深拷贝</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="property"><a href="#property" class="headerlink" title="@property"></a>@property</h2><p>@property = ivar + getter + setter，即属性 = 实例变量 + 存取方法。</p>
+<p>完成属性定义后，编译器在编译期会自动编写访问这些属性所需要的方法，即“自动合成”。除了生成 getter、setter 外，编译器还会向类中添加适当类型的实例变量，名称为 <code>_propertyName</code>。我们也可以通过 <code>@synthesize</code> 来指定实例变量的名称。</p>
+<h3 id="property-大致的实现过程"><a href="#property-大致的实现过程" class="headerlink" title="@property 大致的实现过程"></a>@property 大致的实现过程</h3><p>属性的源码实现结构：</p>
+<ul>
+<li>偏移量</li>
+<li>setter、getter 实现函数</li>
+<li>ivar_list：成员变量列表</li>
+<li>method_list：方法列表</li>
+<li>prop_list：属性列表</li>
+</ul>
+<p>实现过程：</p>
+<ul>
+<li>每增加一个属性，系统就会在 ivar_list 中添加一个成员变量；在 method_list 中添加对应的 setter 和 getter 方法；在 prop_list 中添加一个属性。</li>
+<li>之后计算该属性在对象中的偏移量，给出 setter、getter 方法对应的实现。setter 方法中从偏移量位置开始赋值；getter 方法中从偏移量开始取值。</li>
+</ul>
+<h3 id="protocol-和-category-如何使用-property"><a href="#protocol-和-category-如何使用-property" class="headerlink" title="@protocol 和 category 如何使用 @property"></a>@protocol 和 category 如何使用 @property</h3><p>protocol 中使用 property 只会生成 setter 和 getter 方法声明。我们使用属性的目的是，希望遵循协议的对象能实现该属性。</p>
+<p>category 使用 @property 只会生成 setter 和 getter 方法的声明。如果我们需要给 category 增加属性的实现，需要借助 runtime 函数：</p>
+<ul>
+<li>objc_setAssociatedObject</li>
+<li>objc_getAssociatedObject</li>
+</ul>
+<h3 id="property-的修饰符归类"><a href="#property-的修饰符归类" class="headerlink" title="@property 的修饰符归类"></a>@property 的修饰符归类</h3><ol>
+<li>原子性<ul>
+<li>atomic</li>
+<li>nonatomic</li>
+</ul>
+</li>
+<li>读写权限<ul>
+<li>readwrite</li>
+<li>readonly</li>
+</ul>
+</li>
+<li>内存管理语义<ul>
+<li>assign</li>
+<li>strong</li>
+<li>weak</li>
+<li>unsafe_unretained</li>
+<li>copy</li>
+</ul>
+</li>
+<li>方法名<ul>
+<li>getter=<name>，如 getter=isOn</li>
+<li>setter=<name></li>
+</ul>
+</li>
+<li>nullable<ul>
+<li>nonnull</li>
+<li>null_resettable</li>
+<li>nullable</li>
+</ul>
+</li>
+<li>ARC 下不显示关键字是，默认为：<ul>
+<li>基本类型<ul>
+<li>atomic</li>
+<li>readwrite</li>
+<li>assign</li>
+</ul>
+</li>
+<li>普通 OC 对象<ul>
+<li>atomic</li>
+<li>readwrite</li>
+<li>strong</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="synthesize-和-dynamic"><a href="#synthesize-和-dynamic" class="headerlink" title="@synthesize 和 @dynamic"></a>@synthesize 和 @dynamic</h2><ol>
+<li><code>@property</code> 如果都没写，默认为：<code>@synthesize = _var;</code></li>
+<li><code>@systhesize</code> 语义是，默认让编译器加上 setter 和 getter 方法</li>
+<li><code>@dynamic</code>（动态绑定）作用：告诉编译器，属性的 setter、getter 方法不自动生成</li>
+</ol>
+<h3 id="什么时候不会-autosynthesis？"><a href="#什么时候不会-autosynthesis？" class="headerlink" title="什么时候不会 autosynthesis？"></a>什么时候不会 autosynthesis？</h3><ul>
+<li>同时重写了 setter 和 getter</li>
+<li>重写了只读属性的 getter</li>
+<li>使用了 @dynamic</li>
+<li>@protocol 中定义的所有属性</li>
+<li>category 中定义的所有属性</li>
+<li>重写的属性</li>
+</ul>
+<p>注意点：</p>
+<ul>
+<li>若子类重写了父类属性，必须用 @synthesize 来手动合成 ivar</li>
+</ul>
+
+  
+    
+    <div class='footer'>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=https://blog.jonyfang.com/2016/04/03/2016-04-03-objc-tips/>https://blog.jonyfang.com/2016/04/03/2016-04-03-objc-tips/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/iOS/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>iOS</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Objective-C/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Objective-C</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://blog.jonyfang.com/2016/04/03/2016-04-03-objc-tips/&title=Objc Tips - JonyFang&summary=总结记录 Objective-C 使用过程中一些 Tips。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://blog.jonyfang.com/2016/04/03/2016-04-03-objc-tips/&title=Objc Tips - JonyFang&summary=总结记录 Objective-C 使用过程中一些 Tips。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://blog.jonyfang.com/2016/04/03/2016-04-03-objc-tips/&title=Objc Tips - JonyFang&summary=总结记录 Objective-C 使用过程中一些 Tips。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-telegram" title="" rel="external nofollow noopener noreferrer"
+          
+            href="https://t.me/share/url?url=https://blog.jonyfang.com/2016/04/03/2016-04-03-objc-tips/&text=Objc Tips - JonyFang"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/telegram.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2016/05/15/2016-05-15-http-and-https/'>
+          <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>HTTP 和 HTTPS</p>
+          <p class='content'>
+OSI 七层模型OSI（Open System Interconnection），由底层到高层分别为：
+
+物理层
+数据链路层
+网络层
+传输层：TCP/UDP
+会话层
+表示层
+应用层：HTTP
+...</p>
+        </a>
+      
+      
+        <a class='next' href='/2016/03/25/2016-03-25-objc-kvc/'>
+          <p class='title'>KVC 梳理<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>KVC 即键值编码。是一种可以不通过存取方法，直接通过属性名称字符串简介访问属性的机制。
+
+
+KVC 用法- (id)valueForKey:(NSString *)key;- (void)se...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+  
+
+  <article class="post white-box reveal shadow" id="comments">
+    <p ct><i class='fas fa-comments'></i> 评论</p>
+    
+    <div id="valine_container" class="valine_thread">
+  <i class="fas fa-cog fa-spin fa-fw fa-2x"></i>
+</div>
+
+  </article>
+
+
+
+
+
+
+</div>
+<aside class='l_side'>
+  
+  
+    
+    
+
+
+
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#NS-ENUM-和-NS-OPTIONS"><span class="toc-text">NS_ENUM 和 NS_OPTIONS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#简介接口设计模板"><span class="toc-text">简介接口设计模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#weak-和-assign-对比"><span class="toc-text">weak 和 assign 对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么情况下使用-weak？"><span class="toc-text">什么情况下使用 weak？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#与-assign-的区别"><span class="toc-text">与 assign 的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#weak-的实现原理"><span class="toc-text">weak 的实现原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#atomic-和-nonatomic"><span class="toc-text">atomic 和 nonatomic</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#copy-和-mutableCopy"><span class="toc-text">copy 和 mutableCopy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#对-NSMutableArray-使用-copy"><span class="toc-text">对 NSMutableArray 使用 copy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#strong-修饰-NSArray-时"><span class="toc-text">strong 修饰 NSArray 时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象拷贝"><span class="toc-text">对象拷贝</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#集合-非集合类对象-copy"><span class="toc-text">集合&#x2F;非集合类对象 copy</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#property"><span class="toc-text">@property</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#property-大致的实现过程"><span class="toc-text">@property 大致的实现过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#protocol-和-category-如何使用-property"><span class="toc-text">@protocol 和 category 如何使用 @property</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#property-的修饰符归类"><span class="toc-text">@property 的修饰符归类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#synthesize-和-dynamic"><span class="toc-text">@synthesize 和 @dynamic</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么时候不会-autosynthesis？"><span class="toc-text">什么时候不会 autosynthesis？</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+
+      </div>
+      
+  
+  <footer class="footer clearfix">
+    <br><br>
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="mailto:jony.chunfang@gmaill.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://github.com/JonyFang"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=1063555"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+                
+              </a>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © 2015-2020 JonyFang</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+
+      <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+  </div>
+  <div>
+    <!-- required -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5/dist/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  function pjax_fancybox() {
+    $(".md").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+      var element = document.createElement("a"); // a 标签
+      $(element).attr("class", "fancybox");
+      $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+      $(element).attr("href", $(this).attr("src"));
+      if ($(this).attr("data-original")) {
+        $(element).attr("href", $(this).attr("data-original"));
+      }
+      $(element).attr("data-fancybox", "images");
+      var caption = "";   // 描述信息
+      if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+        $(element).attr('data-caption', $(this).attr('alt'));
+        caption = $(this).attr('alt');
+      }
+      var div = document.createElement("div");
+      $(div).addClass("fancybox");
+      $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+      var span = document.createElement("span");
+      $(span).addClass("image-caption");
+      $(span).text(caption); // 加描述
+      $(this).after(span);  // 再套一层描述
+      // 背景层
+      var bgDiv = document.createElement("div");
+      $(bgDiv).addClass("bg");
+      if ($(this).attr('bg')) {
+        $(bgDiv).css('background', $(this).attr('bg'));
+      }
+      $(this).wrap(bgDiv); // 背景层
+      $(this).wrap(element);  // 最后套 a 标签
+    })
+    $(".md").find("img").fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+      closeClick: true,
+      helpers: {
+        overlay: {closeClick: true}
+      },
+      buttons: [
+        "zoom",
+        "close"
+      ]
+    });
+  };
+  $(function () {
+    pjax_fancybox();
+  });
+</script>
+
+
+<!-- internal -->
+
+
+
+
+<!-- optional -->
+
+  <script>
+  
+  var SEARCH_SERVICE = "hexo" || "hexo";
+  var ROOT = "/" || "/";
+  if (!ROOT.endsWith('/')) ROOT += '/';
+</script>
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.0/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+  
+    <script>
+      window.FPConfig = {
+        delay: 0,
+        ignoreKeywords: [],
+        maxRPS: 5,
+        hoverDelay: 25
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script>
+  
+
+
+
+
+
+
+
+
+  <script>
+  let APlayerController = new Object();
+  APlayerController.id = '1063555';  // 设定全局音乐播放ID
+  APlayerController.volume = '0.7';
+</script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js"></script>
+
+
+
+
+
+
+
+
+  
+  
+<script src="/js/valine.js"></script>
+
+
+<script>
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link'.split(',').filter(function (item) {
+    return GUEST_INFO.indexOf(item) > -1
+  });
+  var REQUIRED_FIELDS = ['nick', 'mail', 'link'];
+  var requiredFields = 'nick,mail'.split(',').filter(function (item) {
+    return REQUIRED_FIELDS.indexOf(item) > -1
+  });
+
+  function emoji(path, idx, ext) {
+    return path + "/" + path + "-" + idx + "." + ext;
+  }
+
+  var emojiMaps = {};
+  for (var i = 1; i <= 54; i++) {
+    emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+  }
+  for (var i = 1; i <= 101; i++) {
+    emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+  }
+  for (var i = 1; i <= 116; i++) {
+    emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+  }
+  for (var i = 1; i <= 125; i++) {
+    emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+  }
+  for (var i = 1; i <= 4; i++) {
+    emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+  }
+
+  function pjax_valine() {
+    if(!document.querySelectorAll("#valine_container")[0])return;
+
+    let pagePlaceholder = $.trim($('#pjax-comment-placeholder').text()) || "快来评论吧~";
+
+    let path = $.trim($('#pjax-comment-path').text());
+    if (path.length == 0) {
+      let defaultPath = '';
+      path = defaultPath || decodeURI(window.location.pathname);
+    }
+
+    var valine = new Valine();
+    valine.init({
+      el: '#valine_container',
+      meta: meta,
+      placeholder: pagePlaceholder,
+      path: path,
+      appId: "9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI",
+      appKey: "tIyMmSe8wzMgEJRCoUgzKV1B",
+      pageSize: '10',
+      avatar: 'robohash',
+      lang: 'zh-cn',
+      visitor: 'true',
+      highlight: 'true',
+      mathJax: 'false',
+      enableQQ: 'true',
+      requiredFields: requiredFields,
+      emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+      emojiMaps: emojiMaps
+    })
+  }
+
+  $(function () {
+    pjax_valine();
+  });
+</script>
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+
+  
+    
+<script src="/js/search.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script defer>
+
+  const LCCounter = {
+    app_id: '9zYt4jSanPYX08bgjnMzdgrt-MdYXbMMI',
+    app_key: 'tIyMmSe8wzMgEJRCoUgzKV1B',
+    custom_api_server: '',
+
+    // 查询存储的记录
+    getRecord(Counter, url, title) {
+      return new Promise(function (resolve, reject) {
+        Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({url})))
+          .then(resp => resp.json())
+          .then(({results, code, error}) => {
+            if (code === 401) {
+              throw error;
+            }
+            if (results && results.length > 0) {
+              var record = results[0];
+              resolve(record);
+            } else {
+              Counter('post', '/classes/Counter', {url, title: title, times: 0})
+                .then(resp => resp.json())
+                .then((record, error) => {
+                  if (error) {
+                    throw error;
+                  }
+                  resolve(record);
+                }).catch(error => {
+                console.error('Failed to create', error);
+                reject(error);
+              });
+            }
+          }).catch((error) => {
+          console.error('LeanCloud Counter Error:', error);
+          reject(error);
+        });
+      })
+    },
+
+    // 发起自增请求
+    increment(Counter, incrArr) {
+      return new Promise(function (resolve, reject) {
+        Counter('post', '/batch', {
+          "requests": incrArr
+        }).then((res) => {
+          res = res.json();
+          if (res.error) {
+            throw res.error;
+          }
+          resolve(res);
+        }).catch((error) => {
+          console.error('Failed to save visitor count', error);
+          reject(error);
+        });
+      });
+    },
+
+    // 构建自增请求体
+    buildIncrement(objectId) {
+      return {
+        "method": "PUT",
+        "path": `/1.1/classes/Counter/${ objectId }`,
+        "body": {
+          "times": {
+            '__op': 'Increment',
+            'amount': 1
+          }
+        }
+      }
+    },
+
+    // 校验是否为有效的 UV
+    validUV() {
+      var key = 'LeanCloudUVTimestamp';
+      var flag = localStorage.getItem(key);
+      if (flag) {
+        // 距离标记小于 24 小时则不计为 UV
+        if (new Date().getTime() - parseInt(flag) <= 86400000) {
+          return false;
+        }
+      }
+      localStorage.setItem(key, new Date().getTime().toString());
+      return true;
+    },
+
+    addCount(Counter) {
+      var enableIncr = '' === 'true' && window.location.hostname !== 'localhost';
+      enableIncr = true;
+      var getterArr = [];
+      var incrArr = [];
+      // 请求 PV 并自增
+      var pvCtn = document.querySelector('#lc-sv');
+      if (pvCtn || enableIncr) {
+        var pvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-sv', 'Visits').then((record) => {
+          incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-sv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + 1;
+              if (pvCtn) {
+                pvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(pvGetter);
+      }
+
+      // 请求 UV 并自增
+      var uvCtn = document.querySelector('#lc-uv');
+      if (uvCtn || enableIncr) {
+        var uvGetter = this.getRecord(Counter, 'https://blog.jonyfang.com' + '/#lc-uv', 'Visitors').then((record) => {
+          var vuv = this.validUV();
+          vuv && incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-uv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + (vuv ? 1 : 0);
+              if (uvCtn) {
+                uvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(uvGetter);
+      }
+
+      // 请求文章的浏览数，如果是当前页面就自增
+      var allPV = document.querySelectorAll('#lc-pv');
+      if (allPV.length > 0 || enableIncr) {
+        for (i = 0; i < allPV.length; i++) {
+          let pv = allPV[i];
+          let title = pv.getAttribute('data-title');
+          var url = 'https://blog.jonyfang.com' + pv.getAttribute('data-path');
+          if (url) {
+            var viewGetter = this.getRecord(Counter, url, title).then((record) => {
+              // 是当前页面就自增
+              if (pv.getAttribute('data-path') == window.location.pathname) {
+                incrArr.push(this.buildIncrement(record.objectId));
+              }
+              if (pv) {
+                var ele = pv.querySelector('#lc-pv #number');
+                if (ele) {
+                  if (pv.getAttribute('data-path') == window.location.pathname) {
+                    ele.innerText = (record.times || 0) + 1;
+                  } else {
+                    ele.innerText = record.times || 0;
+                  }
+                  pv.style.display = 'inline';
+                }
+              }
+            });
+            getterArr.push(viewGetter);
+          }
+        }
+      }
+
+      // 如果启动计数自增，批量发起自增请求
+      if (enableIncr) {
+        Promise.all(getterArr).then(() => {
+          incrArr.length > 0 && this.increment(Counter, incrArr);
+        })
+      }
+
+    },
+
+
+    fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${ api_server }/1.1${ url }`, {
+          method,
+          headers: {
+            'X-LC-Id': this.app_id,
+            'X-LC-Key': this.app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      this.addCount(Counter);
+    },
+
+    refreshCounter() {
+      var api_server = this.app_id.slice(-9) !== '-MdYXbMMI' ? this.custom_api_server : `https://${ this.app_id.slice(0, 8).toLowerCase() }.api.lncldglobal.com`;
+      if (api_server) {
+        this.fetchData(api_server);
+      } else {
+        fetch('https://app-router.leancloud.cn/2/route?appId=' + this.app_id)
+          .then(resp => resp.json())
+          .then(({api_server}) => {
+            this.fetchData('https://' + api_server);
+          });
+      }
+    }
+
+  };
+
+  LCCounter.refreshCounter();
+
+  document.addEventListener('pjax:complete', function () {
+    LCCounter.refreshCounter();
+  });
+</script>
+
+
+
+<!-- more -->
+
+
+    
+      
+
+
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+
+<!-- 样式位于：source/css/_third-party/pjaxanimate.styl -->
+
+<div class="pjax-animate">
+  
+    <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+    <div id="loading-bar-wrapper"><script>NProgress.configure({parent:"#loading-bar-wrapper",trickleSpeed: 100})</script></div>
+    <script>
+      window.ShowLoading = function() {
+        NProgress.start();
+      };
+      window.HideLoading = function() {
+        NProgress.done();
+      }
+    </script>
+  
+</div>
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox])',
+        selectors: [
+          "title",
+          "#pjax-container",
+          "#pjax-header-nav-list"
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      window.subData = null; // 移除标题（用于一二级导航栏切换处）
+      $.fancybox.close();    // 关闭弹窗
+      $('.l_header .switcher .s-search').removeClass('active'); // 关闭移动端激活的搜索框
+      $('.l_header').removeClass('z_search-open'); // 关闭移动端激活的搜索框
+      $('.wrapper').removeClass('sub'); // 跳转页面时关闭二级导航
+
+      // 解绑事件 避免重复监听
+      $('.s-top').unbind('click');
+      $('.menu a').unbind('click');
+      $(window).unbind('resize');
+      $(window).unbind('scroll');
+      $(document).unbind('scroll');
+      $(document).unbind('click');
+      $('body').unbind('click');
+      window.ShowLoading();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 关于百度统计对 SPA 页面的处理：
+      // 方案一：百度统计>管理>单页应用设置中，打开开启按钮即可对SPA进行统计。 https://tongji.baidu.com/web/help/article?id=324
+      // 方案二：取消注释下列代码。 https://tongji.baidu.com/web/help/article?id=235
+      // 
+
+      // 关于谷歌统计对 SPA 页面的处理：
+      // 当应用以动态方式加载内容并更新地址栏中的网址时，也应该更新通过 gtag.js 存储的网页网址。
+      // https://developers.google.cn/analytics/devguides/collection/gtagjs/single-page-applications?hl=zh-cn
+      
+
+      $('.nav-main').find('.list-v').not('.menu-phone').removeAttr("style",""); // 移除小尾巴的移除
+      $('.menu-phone.list-v').removeAttr("style",""); // 移除小尾巴的移除
+      $('script[data-pjax], .pjax-reload script').each(function () {
+        $(this).parent().append($(this).remove());
+      });
+      try{
+        pjax_fancybox();
+        
+        
+        
+        
+        
+          pjax_valine();
+        
+        
+        
+        
+        
+      } catch (e) {
+        console.log(e);
+      }
+      window.HideLoading();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      window.HideLoading();
+      window.location.href = e.triggerElement.href;
+    });
+</script>
+
+    
+  </div>
+</body>
+</html>
